@@ -10,7 +10,6 @@
 GuiWidget::GuiWidget() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
-
     ImGui::NewFrame();
 }
 
@@ -20,7 +19,7 @@ void GuiWidget::setUp() {
     ImGui::Begin("Settings", &my_tool_active, f);
         ImGui::SetWindowPos({0, 0});
         ImGui::SetWindowSize({300, 300});
-        ImGui::SetWindowFontScale(2);
+        /*ImGui::SetWindowFontScale(2);*/
 
         static float color[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
         ImGui::ColorEdit4("Szín", color);
@@ -46,7 +45,6 @@ void GuiWidget::initGui(GLFWwindow *window) {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();

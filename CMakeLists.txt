@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 set(IMGUI_SOURCES imgui/imgui.cpp imgui/imgui_draw.cpp imgui/imgui_widgets.cpp imgui/imgui_tables.cpp imgui/backends/imgui_impl_opengl3.cpp imgui/backends/imgui_impl_glfw.cpp)
 
-set(SOURCE_FILES main.cpp Shaders.h Shaders.cpp Circle.cpp Circle.h Geometry.h Scene.cpp Scene.h Point.cpp Point.h GuiWidget.cpp GuiWidget.h)
+set(SOURCE_FILES mainnnn.cpp Shaders.h Shaders.cpp Geometry.h Scene.cpp Scene.h Point.cpp Point.h GuiWidget.cpp GuiWidget.h Application.cpp Application.h main.cpp window/Window.cpp window/Window.h window/UIContext.cpp window/UIContext.h)
 
 include_directories(${PROJECT_SOURCE_DIR}/Dependencies/GLEW/include)
 include_directories(${PROJECT_SOURCE_DIR}/Dependencies/GLFW/include)

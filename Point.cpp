@@ -59,3 +59,28 @@ Point::Point(vec2 position, const float *color) : Point(position) {
     }
 }
 
+void Point::simulate(float timestep) {
+    vel.x += gravity.x * timestep;
+    vel.y += gravity.y * timestep;
+    p.x += vel.x * timestep;
+    p.y += vel.y * timestep;
+
+//    ball.vel.x += gravity.x * timeStep;
+//    ball.vel.y += gravity.y * timeStep;
+//    ball.pos.x += ball.vel.x * timeStep;
+//    ball.pos.y += ball.vel.y * timeStep;
+//
+//    if (ball.pos.x < 0.0) {
+//        ball.pos.x = 0.0;
+//        ball.vel.x = -ball.vel.x;
+//    }
+//    if (ball.pos.x > simWidth) {
+//        ball.pos.x = simWidth;
+//        ball.vel.x = -ball.vel.x;
+//    }
+//    if (ball.pos.y < 0.0) {
+//        ball.pos.y = 0.0;
+//        ball.vel.y = -ball.vel.y;
+//    }
+}
+

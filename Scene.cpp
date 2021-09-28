@@ -3,15 +3,14 @@
 //
 
 #include "Scene.h"
-#include "Circle.h"
 #include "Point.h"
 
 void Scene::Build() {
     //ide jöhetnek a cuccok
 
-    auto* c = new Circle({0.0, 0.0}, 1, {0.8, 0.8, 0.8, 1});
-    c->create(); //TODO ezt NE így!
-    geometries.push_back(c);
+//    auto* c = new Circle({0.0, 0.0}, 1, {0.8, 0.8, 0.8, 1});
+//    c->create(); //TODO ezt NE így!
+//    geometries.push_back(c);
 
 }
 
@@ -37,6 +36,7 @@ Geometry* Scene::getTopGeometry(vec2 position) const{
 void Scene::Animate() {
     for(Geometry* g : geometries) {
         if(g->isMovable()) {
+            g->simulate();
             g->create();
             g->Draw();
         }

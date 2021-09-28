@@ -13,6 +13,9 @@ class Point : public Geometry {
     vec2 p;
     float size = 7;
     float color[4] = {0.0, 0.0, 0.0, 0.0};
+
+    vec2 vel = {0.3, 0.3};
+    vec2 gravity = {0, -9.8};
 public:
     Point(vec2 position);
     Point(vec2 position, const float* color);
@@ -23,6 +26,7 @@ public:
     bool isMovable() const override;
     void changeSize(float size);
     void toString() const;
+    void simulate(float timestep = 1.0/60);
 };
 
 

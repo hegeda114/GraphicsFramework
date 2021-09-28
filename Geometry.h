@@ -21,6 +21,7 @@ public:
     virtual void create() = 0;
     virtual bool isInside(float x, float y) const = 0;
     virtual void Grab(float toX, float toY) = 0;
+    virtual void simulate(float timestep = 1.0/60) = 0;
 
     virtual bool isMovable() const { return false; }
     virtual void toString() const = 0;
