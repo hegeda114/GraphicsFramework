@@ -8,6 +8,7 @@
 #include <glew.h>
 #include <GLFW/glfw3.h>
 #include <string>
+#include "MouseButton.h"
 
 class Window {
 public:

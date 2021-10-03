@@ -32,6 +32,8 @@ bool Window::init(int width, int height) {
 //    glfwSetScrollCallback(glWindow, on_scroll_callback);
 //    glfwSetWindowSizeCallback(glWindow, on_window_size_callback);
 //    glfwSetWindowCloseCallback(glWindow, on_window_close_callback);
+//    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
     glfwSetWindowCloseCallback(window, on_window_close_callback);
 
     /* Make the window's context current */

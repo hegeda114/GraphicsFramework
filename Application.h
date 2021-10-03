@@ -10,6 +10,8 @@
 #include <memory>
 #include "window/Window.h"
 #include "window/UIContext.h"
+#include "geometry/Point.h"
+#include "ui/Scene.h"
 
 class Application {
 public:
@@ -17,8 +19,14 @@ public:
     void loop();
 
 private:
+    void handleInput();
+
     std::unique_ptr<Window> mainWindow;
     std::unique_ptr<UIContext> uiContext;
+    std::unique_ptr<Scene> sceneView;
+
+    int width;
+    int height;
 };
 
 
