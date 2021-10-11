@@ -6,13 +6,15 @@
 #define GRAPHICSFRAMEWORK_SCENE_H
 
 
+#include <vector>
+#include <memory>
 #include "../geometry/Point.h"
 #include "../window/MouseButton.h"
 
 class Scene {
 public:
     Scene() = default;
-    void render();
+    void render(bool simulateOn);
 
     void init();
 
@@ -22,10 +24,20 @@ public:
 
     void setSimulationState(SimulationState simulationState);
 
+    void addPoint(vec2 position);
+
+    void addStaticPoint(vec2 position);
+
+    std::map<size_t, std::string> getGeometries() const;
+
+    void setActiveGeom(size_t activeGeomId);
+
+    const std::unique_ptr<Geometry>& getActiveGeom() const;
+
 private:
     SimulationState simulationState;
-    std::unique_ptr<Point> testPoint;
-    std::unique_ptr<Vector> testVector;
+    std::map<size_t, std::unique_ptr<Geometry>> geomMap;
+    size_t activeGeomId = -1;
 
     vec2 buttonLastPos = {0, 0};
     bool grabActive = false;

@@ -10,12 +10,10 @@ using namespace glm;
 Point::Point(vec2 position) : Geometry(),
     center(position),
     velocityVector(center, center),
-    forceVector(center, center) { }
-
-Point::Point(vec2 position, const float *color) : Point(position) {
-    for(int i = 0; i < 4; i++) {
-        this->color[i] = color[i];
-    }
+    forceVector(center, center){
+    name = "point";
+    defaultColor = {0.65f, 0.65f, 0.8f, 1.0f};
+    color = defaultColor;
 }
 
 void Point::create() {
@@ -50,14 +48,10 @@ void Point::move(double toX, double toY) {
     center.y = toY;
 }
 
-void Point::setVel(double x, double y) {
-    vel.x = x;
-    vel.y = y;
-}
-
 void Point::explicitEuler(SimulationState simState) {
     double timestep = simState.getTimestep();
     vec2 gravity = simState.getGravity();
+    currentForces = gravity;
 
     vel.x += gravity.x * timestep;
     vel.y += gravity.y * timestep;
@@ -79,9 +73,29 @@ void Point::explicitEuler(SimulationState simState) {
 }
 
 void Point::showHelpers() {
-    velocityVector.setStartPoint(center);
-    velocityVector.setEndPoint(center + 0.05f*vel);
-    velocityVector.create();
+    if (fix) {
+        return;
+    }
+    if(showVelocity) {
+        velocityVector.setStartPoint(center);
+        velocityVector.setEndPoint(center + 0.05f*vel);
+        velocityVector.create();
 
-    velocityVector.draw();
+        velocityVector.draw();
+    }
+    if(showForces) {
+        forceVector.setStartPoint(center);
+        forceVector.setEndPoint(center + 0.05f*currentForces);
+        forceVector.create();
+
+        forceVector.draw();
+    }
+}
+
+void Point::setShowVelocity(bool showVelocity) {
+    this->showVelocity = showVelocity;
+}
+
+void Point::setShowForces(bool showForces) {
+    this->showForces = showForces;
 }

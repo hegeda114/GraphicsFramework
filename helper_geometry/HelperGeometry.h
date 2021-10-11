@@ -8,6 +8,8 @@
 #include "../geometry/Geometry.h"
 
 class HelperGeometry : public Geometry {
+public:
+    HelperGeometry() : Geometry() {};
     void create() override = 0;
     void draw() override = 0;
 

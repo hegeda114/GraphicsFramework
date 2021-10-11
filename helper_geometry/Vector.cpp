@@ -4,7 +4,12 @@
 
 #include "Vector.h"
 
-Vector::Vector(vec2 start, vec2 end) : startPoint(start), endPoint(end) { }
+Vector::Vector(vec2 start, vec2 end) : HelperGeometry(),
+startPoint(start), endPoint(end) {
+    defaultColor = {0.8f, 0.3f, 0.3f, 1.0f};
+    color = {0.8f, 0.3f, 0.3f, 1.0f};
+    name = "vector";
+}
 
 void Vector::setStartPoint(vec2 start) {
     this->startPoint = start;
@@ -19,9 +24,18 @@ void Vector::setLineWidth(double width) {
 }
 
 void Vector::create() {
-    vec2 vertices[2] = {startPoint, endPoint};
+    float h = 0.015f;
+    float w = 0.02f;
+    vec2 dir = normalize(startPoint - endPoint);
+    vec2 mid = endPoint + h * dir;
+    vec2 left = mid + w * vec2(dir.y, -dir.x);
+    vec2 right = mid - w * vec2(dir.y, -dir.x);
+    //vec2 vertices[2] = {startPoint, endPoint};
+    vec2 vertices[6] = {startPoint, endPoint,
+                        endPoint, left,
+                        right, endPoint};
 
-    glBufferData(GL_ARRAY_BUFFER, 2 * sizeof(vec2), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(vec2), vertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 }
@@ -30,7 +44,7 @@ void Vector::draw() {
     int colorLocation = glGetUniformLocation(Shaders::shaderProgramId, "color");
     glUniform4f(colorLocation, color[0], color[1], color[2], color[3]);
 
-    //glLineWidth(this->lineWidth);
+    glLineWidth(this->lineWidth);
     glBindVertexArray(vao);
-    glDrawArrays(GL_LINES, 0, 2);
+    glDrawArrays(GL_LINES, 0, 6);
 }

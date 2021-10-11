@@ -7,31 +7,37 @@
 
 
 #include "Window.h"
+#include "../ui/Scene.h"
 #include "../SimulationState.h"
+#include "GuiState.h"
 #include <memory>
 #include <imgui.h>
 
 class UIContext {
 public:
-    bool init(Window* parentWindow);
+    bool init(std::shared_ptr<Window> parentWindow, std::shared_ptr<Scene> scene);
     void pre_render();
     void render();
     void post_render();
 
     bool isSimStateChanged();
-    SimulationState getCurrentSimState() const;
-    void setFPS(size_t currentFPS);
+    std::shared_ptr<GuiState> getGuiState() const;
+    std::vector<int> selection;
+
 //    void end;
 private:
-    Window* parentWindow;
-    ImGuiWindowFlags windowFlags;
-    ImGuiViewport* viewport;
-    SimulationState currentSimState;
+    std::shared_ptr<Window> parentWindow{};
+    std::shared_ptr<Scene> scene{};
+    ImGuiWindowFlags windowFlags{};
+    ImGuiViewport* viewport{};
+    std::shared_ptr<GuiState> guiState;
     bool simStateChanged = false;
-    size_t fps = 0;
 
+    void guiAddElements();
     void guiGlobalSettings();
     void guiOutput();
+    void guiGeometriesList();
+    void guiCurrentGeomSettings();
 };
 
 

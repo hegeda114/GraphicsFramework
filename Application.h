@@ -21,9 +21,11 @@ public:
 private:
     void handleInput();
 
-    std::unique_ptr<Window> mainWindow;
+    std::shared_ptr<Window> mainWindow;
     std::unique_ptr<UIContext> uiContext;
-    std::unique_ptr<Scene> sceneView;
+    std::shared_ptr<Scene> sceneView;
+    std::shared_ptr<GuiState> guiState;
+    Shaders basicShaders = Shaders();
 
     int width;
     int height;

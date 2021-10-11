@@ -5,7 +5,11 @@
 #include "Application.h"
 #include <chrono>
 #include <thread>
+#include<windows.h>
+#include <accctrl.h>
+
 using namespace std::chrono;
+
 
 Application::Application(const std::string& app_name) {
     width = 800;
@@ -14,22 +18,32 @@ Application::Application(const std::string& app_name) {
 
     mainWindow = std::make_unique<Window>(app_name);
     mainWindow->init(width, height);
-    uiContext = std::make_unique<UIContext>();
-    uiContext->init(mainWindow.get());
 
     sceneView = std::make_unique<Scene>();
     sceneView->init();
+
+    uiContext = std::make_unique<UIContext>();
+    uiContext->init(mainWindow, sceneView);
+
+    guiState = uiContext->getGuiState();
+
+    basicShaders.CreateShader();
+    glUseProgram(Shaders::shaderProgramId);
 }
 
 void Application::loop() {
     auto start = high_resolution_clock::now();
-    size_t frameCounter = 0;
+    int counter = 0;
+    float past_time = 0;
     while (mainWindow->isRunning())
     {
+        counter++;
+        start = std::chrono::high_resolution_clock::now();
         mainWindow->pre_render();
         uiContext->pre_render();
 
-        sceneView->render();
+        bool sim_flag = !guiState->renderStop && (!guiState->delayOn || (guiState->delayOn && past_time < 0));
+        sceneView->render(sim_flag);
 
         uiContext->render();
         uiContext->post_render();
@@ -37,11 +51,18 @@ void Application::loop() {
 
         handleInput();
 
-        frameCounter++;
-        if(duration_cast<seconds>(high_resolution_clock::now() - start) > seconds(1)) {
-            uiContext->setFPS(frameCounter);
-            start = std::chrono::high_resolution_clock::now();
-            frameCounter = 0;
+        duration<float> duration = (high_resolution_clock::now() - start);
+        if(counter > 20) {
+            counter = 0;
+            uiContext->getGuiState()->fps = (int) (1.0f / duration.count());
+        }
+
+        if(guiState->delayOn) {
+            if (past_time > 0) {
+                past_time -= duration.count() * 1000;
+            } else {
+                past_time = (float) guiState->delay;
+            }
         }
     }
 }
@@ -73,6 +94,6 @@ void Application::handleInput() {
     sceneView->on_mouse_move(wxPos, wyPos, Input::GetPressedButton(winPtr));
 
     if(uiContext->isSimStateChanged()) {
-        sceneView->setSimulationState(uiContext->getCurrentSimState());
+        sceneView->setSimulationState(guiState->currentSimState);
     }
 }

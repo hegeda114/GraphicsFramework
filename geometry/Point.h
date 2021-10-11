@@ -18,14 +18,16 @@ private:
     double radius = 0.01;
     size_t samples = 100;
 
-    vec2 vel = {0.0, 0.0};
+    vec2 currentForces = {0, 0};
 
     Vector velocityVector;
     Vector forceVector;
 
+    bool showVelocity = true;
+    bool showForces = false;
+
 public:
     explicit Point(vec2 position);  //TODO rádiusz-os konstruktor is kell
-    Point(vec2 position, const float* color);
 
     void create() override;
     void draw() override;
@@ -34,10 +36,12 @@ public:
 
     void move(double toX, double toY) override;
 
-    void showHelpers();
+    void showHelpers() override;
 
-    void setVel(double x, double y);
     void explicitEuler(SimulationState simState) override;
+
+    void setShowVelocity(bool showVelocity);
+    void setShowForces(bool showForces);
 };
 
 
