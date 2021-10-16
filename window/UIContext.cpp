@@ -194,7 +194,7 @@ void UIContext::guiOutput() {
 }
 
 void UIContext::guiGeometriesList() {
-    auto geomMap = scene->getGeometries();
+    auto geomMap = scene->getObjects();
 //    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4{ 0.4f, 0.15f, 0.15f, 1.0f });
 //    ImGui::PushStyleColor(ImGuiCol_Header, ImVec4{  0.7f, 0.15f, 0.15f, 1.0f });
     if (ImGui::CollapsingHeader("Geometries", ImGuiTreeNodeFlags_DefaultOpen)) {
@@ -215,7 +215,7 @@ void UIContext::guiGeometriesList() {
                 {
                     selection.clear();
                     selection.push_back(geom.first);
-                    scene->setActiveGeom(geom.first);
+                    scene->setActiveObject(geom.first);
                 }
                 i++;
             }
@@ -229,7 +229,7 @@ void UIContext::guiCurrentGeomSettings() {
         return;
     }
     if (ImGui::CollapsingHeader("Active Geometry Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
-        const auto& currentGeom = scene->getActiveGeom();
+        const auto& currentGeom = scene->getActiveObject();
         ImGui::Text("Name: %s", currentGeom->getName().c_str());
     }
 }

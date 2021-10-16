@@ -11,52 +11,45 @@
 #include "../SimulationMode.h"
 #include "../SimulationState.h"
 #include "../Shaders.h"
-using namespace glm;
 
 class Geometry {
-private:
-    static size_t current_id;
-    static size_t getNextId();
 protected:
-    unsigned int vao{}, vbo{};
-    bool fix = false;
-    bool is_static = false;
-    size_t id;
-    std::string name;
-    vec2 vel = {0.0, 0.0};
+    /**
+     * The vertex array object id of the geometry.
+     */
+    unsigned int vao{};
 
-    glm::vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
-    glm::vec4 defaultColor = {1.0f, 1.0f, 1.0f, 1.0f};
+    /**
+     * The vertex buffer object id of the geometry.
+     */
+    unsigned int vbo{};
 
-    virtual void explicitEuler(SimulationState simState) = 0;
+    /**
+     * The current color of the object.
+     */
+    glm::vec4 m_color = {1.0f, 1.0f, 1.0f, 1.0f};
+
+    /**
+     * The default color of the object. This value should be object specific.
+     */
+    glm::vec4 m_defaultColor = {1.0f, 1.0f, 1.0f, 1.0f};
+
+    glm::vec2 m_position = {0, 0};
+
 public:
     Geometry() {
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
         glGenBuffers(1, &vbo);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        id = getNextId();
     }
     virtual void create() = 0;
     virtual void draw() = 0;
 
-    virtual bool isInside(double x, double y) const = 0;
-
-    bool isStatic() const;
-    void setStatic(bool isStatic);
-    bool isFix() const;
-    void setFix(bool isFix);
-    virtual void move(double toX, double toY) = 0;
-
-    void setVel(double x, double y);
-
-    void simulate(SimulationState simState);
-    virtual void showHelpers() {};
+    void setPosition(const glm::vec2& position);
 
     void setColor(double red, double green, double blue, double alpha);
     void setColorToDefault();
-    std::string getName() const;
-    size_t getId() const;
 
     ~Geometry() {
         glDeleteBuffers(1, &vbo);

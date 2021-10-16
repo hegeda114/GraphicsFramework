@@ -1,0 +1,14 @@
+//
+// Created by hegeda on 2021-10-16.
+//
+
+#ifndef GRAPHICSFRAMEWORK_GEOMETRYLINE_H
+#define GRAPHICSFRAMEWORK_GEOMETRYLINE_H
+
+
+class GeometryLine {
+
+};
+
+
+#endif //GRAPHICSFRAMEWORK_GEOMETRYLINE_H

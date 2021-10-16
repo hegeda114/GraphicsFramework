@@ -10,7 +10,7 @@
 struct GuiState {
     SimulationState currentSimState = SimulationState();
     size_t fps = 0;
-    bool renderStop = false;
+    bool renderStop = true;
     bool delayOn = false;
     int delay = 100;
 };

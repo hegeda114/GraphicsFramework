@@ -8,8 +8,9 @@
 
 #include <vector>
 #include <memory>
-#include "../geometry/Point.h"
 #include "../window/MouseButton.h"
+#include "../SimulationState.h"
+#include "../object/Object.h"
 
 class Scene {
 public:
@@ -24,22 +25,22 @@ public:
 
     void setSimulationState(SimulationState simulationState);
 
-    void addPoint(vec2 position);
+    void addPoint(glm::vec2 position);
 
-    void addStaticPoint(vec2 position);
+    void addStaticPoint(glm::vec2 position);
 
-    std::map<size_t, std::string> getGeometries() const;
+    std::map<size_t, std::string> getObjects() const;
 
-    void setActiveGeom(size_t activeGeomId);
+    void setActiveObject(size_t activeObjectId);
 
-    const std::unique_ptr<Geometry>& getActiveGeom() const;
+    const std::unique_ptr<Object>& getActiveObject() const;
 
 private:
     SimulationState simulationState;
-    std::map<size_t, std::unique_ptr<Geometry>> geomMap;
-    size_t activeGeomId = -1;
+    std::map<size_t, std::unique_ptr<Object>> objects;
+    size_t activeObjectId = -1;
 
-    vec2 buttonLastPos = {0, 0};
+    glm::vec2 buttonLastPos = {0, 0};
     bool grabActive = false;
 };
 

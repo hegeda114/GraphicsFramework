@@ -10,7 +10,6 @@
 #include <memory>
 #include "window/Window.h"
 #include "window/UIContext.h"
-#include "geometry/Point.h"
 #include "ui/Scene.h"
 
 class Application {
