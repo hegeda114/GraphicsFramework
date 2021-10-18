@@ -57,7 +57,7 @@ void Application::loop() {
 
         if(guiState->delayOn) {
             if (past_time > 0) {
-                past_time -= duration.count() * 1000;
+                past_time -= duration.count() * 10000;
             } else {
                 past_time = (float) guiState->delay;
             }
