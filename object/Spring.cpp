@@ -24,6 +24,8 @@ void Spring::connectionChangedEvent() {
 }
 
 glm::vec2 Spring::getExertedForce(const Geometry *targetObject) const {
-    glm::vec2 force = {0, 0}; // TODO javítani!
-    return force;
+    glm::vec2 posdiff = (m_j->getPosition() - m_i->getPosition());
+    glm::vec2 veldiff = (m_j->getVelocity() - m_i->getVelocity());
+    float lenposdiff = glm::length(posdiff);
+    return (posdiff / lenposdiff) * ( m_ks * (lenposdiff - m_l0) + m_ks * (veldiff * (posdiff / lenposdiff)));
 }

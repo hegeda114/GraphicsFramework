@@ -11,10 +11,10 @@
 
 class Spring : public Object {
 private:
-    double m_ks; // stretching
-    double m_kd; // damping coefficients
-    double m_l0; // default length
-    double m_l;
+    float m_ks; // stretching
+    float m_kd; // damping coefficients
+    float m_l0; // default length
+    float m_l;
     std::shared_ptr<Point> m_i;
     std::shared_ptr<Point> m_j;
 public:

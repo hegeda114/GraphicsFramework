@@ -132,3 +132,7 @@ glm::vec2 Object::getPosition() const {
 void Object::addConnection(std::shared_ptr<Object> object) {
     m_connections.emplace_back(object);
 }
+
+glm::vec2 Object::getVelocity() const {
+    return m_physicalProperties->getVelocity();
+}

@@ -16,7 +16,8 @@ class SimulationState {
 private:
     SimulationMode simMode;
     double timestep;
-    glm::vec2 gravity = {0, -9.8};
+    glm::vec2 gravity = {0, 0};
+    //glm::vec2 gravity = {0, -9.8};
 
     std::map<Direction, double> boundigBox;
 public:

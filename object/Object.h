@@ -167,6 +167,8 @@ public:
 
     glm::vec2 getPosition() const;
 
+    glm::vec2 getVelocity() const;
+
     void setShowVelocity(bool showVelocity);
     void setShowForces(bool showForces);
 

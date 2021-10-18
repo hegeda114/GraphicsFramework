@@ -34,7 +34,6 @@ glm::vec2 PhysicalProperties::getResultaltForces() const {
 }
 
 void PhysicalProperties::explicitEuler(const SimulationState &simState) {
-    m_forces.clear();
     double timestep = simState.getTimestep();
     glm::vec2 gravity = simState.getGravity();
     addForce(gravity);
@@ -58,6 +57,7 @@ void PhysicalProperties::explicitEuler(const SimulationState &simState) {
         m_position.y = 2 * simState.getBoundingBottom() - m_position.y;
         m_velocity.y = -m_velocity.y;
     }
+    m_forces.clear();
 }
 
 const glm::vec2 &PhysicalProperties::getVelocity() const {
