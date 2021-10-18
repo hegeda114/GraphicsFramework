@@ -86,6 +86,9 @@ void Object::simulate(SimulationState simState) {
 
     m_pivot = m_physicalProperties->getPosition();
     m_geometry->setPosition(m_pivot);
+    for(const auto& connection : m_connections) {
+        connection->connectionChangedEvent();
+    }
 }
 
 void Object::showHelpers() {
