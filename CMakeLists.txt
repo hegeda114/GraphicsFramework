@@ -12,12 +12,20 @@ include_directories(${PROJECT_SOURCE_DIR}/Dependencies/GLFW/include)
 include_directories(${PROJECT_SOURCE_DIR}/Dependencies/glm)
 include_directories(${PROJECT_SOURCE_DIR}/imgui)
 
-link_directories(${PROJECT_SOURCE_DIR}/Dependencies/GLEW/lib)
-link_directories(${PROJECT_SOURCE_DIR}/Dependencies/GLFW/lib)
+if (${WIN32})
+    link_directories(${PROJECT_SOURCE_DIR}/Dependencies/GLEW/lib)
+    link_directories(${PROJECT_SOURCE_DIR}/Dependencies/GLFW/lib)
+endif()
+
 
 #add_compile_definitions(GLEW_STATIC)
 
 find_package(OpenGL REQUIRED)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${IMGUI_SOURCES})
-target_link_libraries(${PROJECT_NAME} glew32 glfw3 OpenGL::GL)
+
+if (${WIN32})
+    target_link_libraries(${PROJECT_NAME} glew32 glfw3 OpenGL::GL)
+elseif(${UNIX})
+    target_link_libraries(${PROJECT_NAME} GLEW glfw OpenGL::GL)
+endif()
