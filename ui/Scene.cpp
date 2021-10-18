@@ -4,13 +4,15 @@
 
 #include <memory>
 #include "Scene.h"
-#include "../object/Point.h"
+#include "../object/Spring.h"
 
 void Scene::init() {
     simulationState = SimulationState(SimulationMode::ExplicitEuler, 1.0/60.0);
     simulationState.setBoundingBox(1.0, 1.0, -1.0, -1.0);
 
-    this->addPoint({0, 0});
+    auto point1 = this->addPoint({0, 0});
+    auto point2 = this->addPoint({0.5, 0.2});
+    this->addSpring(point1, point2);
 }
 
 void Scene::render(bool simulateOn) {
@@ -59,8 +61,16 @@ void Scene::setSimulationState(SimulationState simulationState) {
     this->simulationState = simulationState;
 }
 
-void Scene::addPoint(glm::vec2 position) {
-    auto object = std::make_unique<Point>(position);
+std::shared_ptr<Point> Scene::addPoint(glm::vec2 position) {
+    auto object = std::make_shared<Point>(position);
+    objects.insert(std::make_pair(object->getId(), object));
+    return object;
+}
+
+void Scene::addSpring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j) {
+    auto object = std::make_shared<Spring>(i, j, 0.5, 0.5, 0.3);
+    i->addConnection(object);
+    j->addConnection(object);
     objects.insert(std::make_pair(object->getId(), std::move(object)));
 }
 
@@ -73,21 +83,25 @@ std::map<size_t, std::string> Scene::getObjects() const {
 }
 
 void Scene::setActiveObject(size_t activeObjectId) {
-    if (this->activeObjectId != -1) {
-        getActiveObject()->getGeometry()->setColorToDefault();
-    }
     this->activeObjectId = activeObjectId;
     getActiveObject()->getGeometry()->setColor(1.0f, 0.4f, 0.4f, 1.0f);
 }
 
-const std::unique_ptr<Object> &Scene::getActiveObject() const {
+
+const std::shared_ptr<Object> &Scene::getActiveObject() const {
     if(activeObjectId >= 0) {
         return objects.find(this->activeObjectId)->second;
     }
 }
 
 void Scene::addStaticPoint(glm::vec2 position) {
-    auto object = std::make_unique<Point>(position);
+    auto object = std::make_shared<Point>(position);
     object->setStatic(true);
     objects.insert(std::make_pair(object->getId(), std::move(object)));
+}
+
+void Scene::disableActiveObject() {
+    if (this->activeObjectId != -1) {
+        getActiveObject()->getGeometry()->setColorToDefault();
+    }
 }

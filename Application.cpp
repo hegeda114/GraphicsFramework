@@ -5,8 +5,6 @@
 #include "Application.h"
 #include <chrono>
 #include <thread>
-#include<windows.h>
-#include <accctrl.h>
 
 using namespace std::chrono;
 

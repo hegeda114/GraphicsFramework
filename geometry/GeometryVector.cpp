@@ -7,8 +7,8 @@
 
 GeometryVector::GeometryVector(glm::vec2 start, glm::vec2 end) : Geometry(),
                                                  startPoint(start), endPoint(end) {
-    m_defaultColor = {0.8f, 0.3f, 0.3f, 1.0f};
-    m_color = {0.8f, 0.3f, 0.3f, 1.0f};
+    m_defaultColor = {0.3f, 0.3f, 0.8f, 1.0f};
+    m_color = {0.3f, 0.3f, 0.8f, 1.0f};
 }
 
 void GeometryVector::setStartPoint(glm::vec2 start) {

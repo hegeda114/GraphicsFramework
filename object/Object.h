@@ -40,9 +40,6 @@ protected:
      */
     std::unique_ptr<PhysicalProperties> m_physicalProperties;
 
-    /**
-     * The connections of the object. For example the neighbors the opposite side of the springs.
-     */
     std::vector<std::shared_ptr<Object>> m_connections;
 
     /**
@@ -168,10 +165,18 @@ public:
      */
     void showHelpers();
 
+    glm::vec2 getPosition() const;
+
     void setShowVelocity(bool showVelocity);
     void setShowForces(bool showForces);
 
     void createAndDraw();
+
+    virtual void connectionChangedEvent() {};
+
+    void addConnection(std::shared_ptr<Object> object);
+
+    virtual glm::vec2 getExertedForce(const Geometry* targetObject) const {};
 
 };
 

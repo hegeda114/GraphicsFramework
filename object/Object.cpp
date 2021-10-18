@@ -66,13 +66,21 @@ void Object::move(double toX, double toY) {
     m_pivot.y = (float) toY;
     m_physicalProperties->setPosition(m_pivot);
     m_geometry->setPosition(m_pivot);
+    for(const auto& connection : m_connections) {
+        connection->connectionChangedEvent();
+    }
 }
 
 void Object::simulate(SimulationState simState) {
     if(m_fix || m_static) {
         return;
     }
+    glm::vec2 forceFromConnection = {0, 0};
+    for(const auto& connection : m_connections) {
+        forceFromConnection = connection->getExertedForce(reinterpret_cast<const Geometry *>(this));
+    }
     if(simState.getSimMode() == SimulationMode::ExplicitEuler) {
+        m_physicalProperties->addForce(forceFromConnection);
         m_physicalProperties->explicitEuler(simState);
     }
 
@@ -112,4 +120,12 @@ void Object::setShowForces(bool showForces) {
 void Object::createAndDraw() {
     m_geometry->create();
     m_geometry->draw();
+}
+
+glm::vec2 Object::getPosition() const {
+    return m_pivot;
+}
+
+void Object::addConnection(std::shared_ptr<Object> object) {
+    m_connections.emplace_back(object);
 }

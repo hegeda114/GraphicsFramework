@@ -214,8 +214,13 @@ void UIContext::guiGeometriesList() {
                 if (ImGui::Selectable(label, item_is_selected, selectable_flags))
                 {
                     selection.clear();
+                    scene->disableActiveObject();
                     selection.push_back(geom.first);
                     scene->setActiveObject(geom.first);
+//                    if(selection[0] != item_is_selected) {
+//                        selection.push_back(geom.first);
+//                        scene->setActiveObject(geom.first);
+//                    }
                 }
                 i++;
             }

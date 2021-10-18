@@ -11,6 +11,7 @@
 #include "../window/MouseButton.h"
 #include "../SimulationState.h"
 #include "../object/Object.h"
+#include "../object/Point.h"
 
 class Scene {
 public:
@@ -25,7 +26,9 @@ public:
 
     void setSimulationState(SimulationState simulationState);
 
-    void addPoint(glm::vec2 position);
+    std::shared_ptr<Point> addPoint(glm::vec2 position);
+
+    void addSpring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j);
 
     void addStaticPoint(glm::vec2 position);
 
@@ -33,11 +36,13 @@ public:
 
     void setActiveObject(size_t activeObjectId);
 
-    const std::unique_ptr<Object>& getActiveObject() const;
+    void disableActiveObject();
+
+    const std::shared_ptr<Object>& getActiveObject() const;
 
 private:
     SimulationState simulationState;
-    std::map<size_t, std::unique_ptr<Object>> objects;
+    std::map<size_t, std::shared_ptr<Object>> objects;
     size_t activeObjectId = -1;
 
     glm::vec2 buttonLastPos = {0, 0};
