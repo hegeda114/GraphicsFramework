@@ -155,7 +155,7 @@ void UIContext::guiGlobalSettings() {
 
         ImGui::Checkbox("Delay", &guiState->delayOn);
         ImGui::SameLine();
-        ImGui::SliderInt("##2", &guiState->delay, 0, 1000);
+        ImGui::SliderInt("##2", &guiState->delay, 1, 1000);
 
     }
 }
