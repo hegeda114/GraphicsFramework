@@ -160,6 +160,8 @@ public:
      */
     void simulate(SimulationState simState);
 
+    glm::vec2 calculateSpringForces();
+
     /**
      * Sets up and renders the helper geometries.
      */

@@ -40,8 +40,10 @@ void Application::loop() {
         mainWindow->pre_render();
         uiContext->pre_render();
 
-        bool sim_flag = !guiState->renderStop && (!guiState->delayOn || (guiState->delayOn && past_time < 0));
-        sceneView->render(sim_flag);
+        if(!guiState->renderStop && (!guiState->delayOn || (guiState->delayOn && past_time < 0))) {
+            sceneView->simulate();
+        }
+        sceneView->render();
 
         uiContext->render();
         uiContext->post_render();

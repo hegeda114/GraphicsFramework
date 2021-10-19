@@ -16,7 +16,9 @@
 class Scene {
 public:
     Scene() = default;
-    void render(bool simulateOn);
+    void render();
+
+    void simulate();
 
     void init();
 

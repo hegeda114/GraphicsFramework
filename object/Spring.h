@@ -18,7 +18,7 @@ private:
     std::shared_ptr<Point> m_i;
     std::shared_ptr<Point> m_j;
 public:
-    Spring(const std::shared_ptr<Point>& m_i, const std::shared_ptr<Point>& m_j, double stretching, double dampingCoeff, double defaultLength);
+    Spring(const std::shared_ptr<Point>& m_i, const std::shared_ptr<Point>& m_j, float stretching, float dampingCoeff, float defaultLength);
 
     bool isInside(double x, double y) const override;
 

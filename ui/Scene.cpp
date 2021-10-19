@@ -18,12 +18,23 @@ void Scene::init() {
     this->addSpring(point2, point3);
 }
 
-void Scene::render(bool simulateOn) {
+void Scene::simulate() {
+    //calculate forces
     for(const auto &objectPair : objects) {
         const auto &object = objectPair.second;
-        if(simulateOn) {
-            object->simulate(simulationState);
-        }
+        object->getPhysicalProperties()->addForce(simulationState.getGravity()); // add gravity
+        object->getPhysicalProperties()->addForce(object->calculateSpringForces()); // add spring forces
+    }
+    //calculate new position and velocity
+    for(const auto &objectPair : objects) {
+        const auto &object = objectPair.second;
+        object->simulate(simulationState);
+    }
+}
+
+void Scene::render() {
+    for(const auto &objectPair : objects) {
+        const auto &object = objectPair.second;
         object->createAndDraw();
         object->showHelpers();
     }
