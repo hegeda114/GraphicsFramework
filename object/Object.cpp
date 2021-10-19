@@ -108,7 +108,7 @@ void Object::showHelpers() {
     if(m_showForces) {
         m_forceVector.setStartPoint(m_pivot);
         glm::vec2 forcesSum = m_physicalProperties->getResultaltForces();
-        m_forceVector.setEndPoint(m_pivot + 0.05f*forcesSum);
+        m_forceVector.setEndPoint(m_pivot - 0.5f*forcesSum);
         m_forceVector.create();
 
         m_forceVector.draw();

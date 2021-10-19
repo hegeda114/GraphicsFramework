@@ -12,9 +12,12 @@ void Scene::init() {
 
     auto point1 = this->addPoint({0, 0});
     point1->setStatic(true);
-    auto point2 = this->addPoint({0.2, 0.1});
+    auto point2 = this->addPoint({0.2, 0.0});
+    point2->setShowForces(true);
     this->addSpring(point1, point2);
-    auto point3 = this->addPoint({0.4, 0.2});
+    point2->getPhysicalProperties()->setVelocity(0.01, 0.0);
+    auto point3 = this->addPoint({0.4, 0.0});
+    point3->setStatic(true);
     this->addSpring(point2, point3);
 }
 
@@ -82,7 +85,7 @@ std::shared_ptr<Point> Scene::addPoint(glm::vec2 position) {
 }
 
 void Scene::addSpring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j) {
-    auto object = std::make_shared<Spring>(i, j, 0.1, 0.1, 0.1);
+    auto object = std::make_shared<Spring>(i, j, 10.0, 0.0, 0.1);
     i->addConnection(object);
     j->addConnection(object);
     objects.insert(std::make_pair(object->getId(), std::move(object)));

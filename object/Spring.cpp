@@ -33,5 +33,5 @@ glm::vec2 Spring::getExertedForce(const Geometry *targetObject) const {
         veldiff = (m_i->getVelocity() - m_j->getVelocity());
     }
     float lenposdiff = glm::length(posdiff);
-    return (posdiff / lenposdiff) * ( m_ks * (lenposdiff - m_l0) + m_ks * (veldiff * (posdiff / lenposdiff)));
+    return (posdiff / lenposdiff) * m_ks * (lenposdiff - m_l0);
 }
