@@ -22,8 +22,8 @@ private:
 
     std::shared_ptr<Window> mainWindow;
     std::unique_ptr<UIContext> uiContext;
-    std::shared_ptr<Scene> sceneView;
     std::shared_ptr<GuiState> guiState;
+    std::shared_ptr<Scene> sceneView;
     Shaders basicShaders = Shaders();
 
     int width;

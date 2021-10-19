@@ -22,7 +22,7 @@ public:
 
     bool isSimStateChanged();
     std::shared_ptr<GuiState> getGuiState() const;
-    std::vector<int> selection;
+    int selectedObjectId = -1;
 
 //    void end;
 private:

@@ -205,7 +205,7 @@ void UIContext::guiGeometriesList() {
             {
                 char label[32];
                 sprintf(label, "%s##%d", geom.second.c_str(), i);
-                const bool item_is_selected = !selection.empty() && selection[0] == geom.first;
+                const bool item_is_selected = (selectedObjectId == geom.first);
 
                 ImGui::TableNextRow();
                 ImGui::TableSetColumnIndex(0);
@@ -213,10 +213,13 @@ void UIContext::guiGeometriesList() {
                 ImGuiSelectableFlags selectable_flags = ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap;
                 if (ImGui::Selectable(label, item_is_selected, selectable_flags))
                 {
-                    selection.clear();
                     scene->disableActiveObject();
-                    selection.push_back(geom.first);
-                    scene->setActiveObject(geom.first);
+                    selectedObjectId = -1;
+                    if(!item_is_selected) {
+                        scene->setActiveObject(geom.first);
+                        selectedObjectId = geom.first;
+                    }
+                    //scene->setActiveObject(geom.first);
 //                    if(selection[0] != item_is_selected) {
 //                        selection.push_back(geom.first);
 //                        scene->setActiveObject(geom.first);
@@ -230,7 +233,7 @@ void UIContext::guiGeometriesList() {
 }
 
 void UIContext::guiCurrentGeomSettings() {
-    if (selection.empty()) {
+    if (selectedObjectId == -1) {
         return;
     }
     if (ImGui::CollapsingHeader("Active Geometry Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
