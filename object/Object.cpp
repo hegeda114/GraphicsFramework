@@ -62,6 +62,8 @@ void Object::move(const glm::vec2 &targetPosition) {
 }
 
 void Object::move(double toX, double toY) {
+    m_physicalProperties->setVelocity(0, 0);
+    m_physicalProperties->clearForces();
     m_pivot.x = (float) toX;
     m_pivot.y = (float) toY;
     m_physicalProperties->setPosition(m_pivot);
@@ -120,14 +122,11 @@ void Object::createAndDraw() {
     m_geometry->draw();
 }
 
-glm::vec2 Object::getPosition() const {
-    return m_pivot;
-}
-
 void Object::addConnection(std::shared_ptr<Object> object) {
     m_connections.emplace_back(object);
 }
 
-glm::vec2 Object::getVelocity() const {
-    return m_physicalProperties->getVelocity();
+void Object::setPosition(glm::vec2 position) {
+    m_pivot = position;
+    m_physicalProperties->setPosition(position);
 }

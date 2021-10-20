@@ -9,7 +9,7 @@ using namespace std::chrono;
 
 Application::Application(const std::string& app_name) {
     m_width = 800;
-    //width = 1200;
+    //m_width = 1200;
     m_height = 800;
 
     m_mainWindow = std::make_unique<Window>(app_name);

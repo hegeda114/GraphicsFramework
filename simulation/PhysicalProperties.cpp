@@ -41,19 +41,6 @@ void PhysicalProperties::explicitEuler(const SimulationState &simState) {
     m_velocity.y += resultaltForce.y * (float) timestep;
     m_position.x += m_velocity.x * (float) timestep;
     m_position.y += m_velocity.y * (float) timestep;
-
-    if (m_position.x < simState.getBoundingLeft()) {
-        m_position.x = 2 * simState.getBoundingLeft() - m_position.x;
-        m_velocity.x = -m_velocity.x;
-    }
-    if (m_position.x > simState.getBoundingRight()) {
-        m_position.x = 2 * simState.getBoundingRight() - m_position.x;
-        m_velocity.x = -m_velocity.x;
-    }
-    if (m_position.y < simState.getBoundingBottom()) {
-        m_position.y = 2 * simState.getBoundingBottom() - m_position.y;
-        m_velocity.y = -m_velocity.y;
-    }
     m_forces.clear();
 }
 
@@ -71,4 +58,8 @@ void PhysicalProperties::setPosition(double x, double y) {
 
 void PhysicalProperties::setPosition(const glm::vec2 &position) {
     m_position = position;
+}
+
+void PhysicalProperties::clearForces() {
+    m_forces.clear();
 }

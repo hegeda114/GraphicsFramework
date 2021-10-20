@@ -12,11 +12,11 @@
 #include "../simulation/PhysicalProperties.h"
 #include "../geometry/GeometryVector.h"
 
+enum ObjectType { PointObject, SpringObject};
+
 class Object {
 private:
-    /**
-     * Stores the currently last object id.
-     */
+    // Stores the currently last object id.
     static size_t lastId;
 
     /**
@@ -25,51 +25,49 @@ private:
      */
     static size_t nextId();
 protected:
-    /**
-     * The pivot point of the object.
-     */
+    // The pivot point of the object.
     glm::vec2 m_pivot = {0, 0};
 
-    /**
-     * The geometry of the object.
-     */
+    // The geometry of the object.
     std::unique_ptr<Geometry> m_geometry;
 
-    /**
-     * The physical properties of the object.
-     */
+    // The physical properties of the object.
     std::unique_ptr<PhysicalProperties> m_physicalProperties;
 
+    // List of the connected objects, for example springs.
     std::vector<std::shared_ptr<Object>> m_connections;
 
-    /**
-     * If true, the object could temporarily behave like a static object.
-     */
+    // If true, the object could temporarily behave like a static object.
     bool m_fix = false;
 
-    /**
-     * If true, the simulate function of the object does nothing.
-     * Otherwise the object could move during the simulation.
-     */
+    // If true, the simulate function of the object does nothing.
+    // Otherwise the object could move during the simulation.
     bool m_static = false;
 
-    /**
-     * The name of the object.
-     */
+    // The name of the object.
     std::string m_name;
 
-    /**
-     * The id of the object.
-     */
+    // The id of the object.
     size_t m_id;
 
+    // The velocity vector object of the current object.
     GeometryVector m_velocityVector;
+
+    // The forve vector object of the current object.
     GeometryVector m_forceVector;
 
+    // If true, the velocity vector is visible, otherwise it is hidden.
     bool m_showVelocity = false;
+
+    // If true, the force vector is visible, otherwise it is hidden.
     bool m_showForces = false;
 
 public:
+    /**
+     * Constructor, creates an object with the given geometry and physical properties.
+     * @param geometry The geometry of the object.
+     * @param physicalProperties The physical properties of the object.
+     */
     Object(std::unique_ptr<Geometry> geometry, std::unique_ptr<PhysicalProperties> physicalProperties);
 
     /**
@@ -165,11 +163,16 @@ public:
      */
     void showHelpers();
 
-    glm::vec2 getPosition() const;
-
-    glm::vec2 getVelocity() const;
-
+    /**
+     * Sets the show velocity flag to the given value.
+     * @param showVelocity True or false.
+     */
     void setShowVelocity(bool showVelocity);
+
+    /**
+     * Sets the show forces flag to the given value.
+     * @param showVelocity True or false.
+     */
     void setShowForces(bool showForces);
 
     /**
@@ -183,7 +186,15 @@ public:
      */
     virtual void connectionChangedEvent() {};
 
+    /**
+     * Adds the object to the list of connected objects.
+     * @param object
+     */
     void addConnection(std::shared_ptr<Object> object);
+
+    virtual ObjectType getType() const = 0;
+
+    void setPosition(glm::vec2 position);
 
 };
 

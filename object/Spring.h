@@ -14,6 +14,15 @@
  */
 class Spring : public Object {
 private:
+    // Stores the currently last spring id.
+    static size_t lastSpringId;
+
+    /**
+     * Returns the next free spring id based on lastId.
+     * @return The next free spring id.
+     */
+    static size_t nextSpringId();
+private:
     float m_ks; // stretching
     float m_kd; // damping coefficients
     float m_l0; // default length
@@ -42,6 +51,8 @@ public:
      * Refreshes the start and end position of the spring, based on the spring's points position.
      */
     void connectionChangedEvent() override;
+
+    ObjectType getType() const override;
 };
 
 
