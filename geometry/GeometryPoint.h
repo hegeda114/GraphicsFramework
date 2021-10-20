@@ -11,7 +11,6 @@
 class GeometryPoint : public Geometry {
 private:
     double m_radius = 0.01;
-    int m_samples = 100;
 
 public:
     explicit GeometryPoint(glm::vec2 position, double radius);

@@ -10,7 +10,7 @@
 #include <vec2.hpp>
 #include <map>
 #include "SimulationMode.h"
-#include "Direction.h"
+#include "../Direction.h"
 
 class SimulationState {
 private:

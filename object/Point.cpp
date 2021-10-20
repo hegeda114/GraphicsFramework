@@ -8,8 +8,8 @@
 Point::Point(glm::vec2 pivotPoint, double radius) :
     Object(std::make_unique<GeometryPoint>(pivotPoint, radius),
             std::make_unique<PhysicalProperties>(pivotPoint)) {
-    m_name = "point";
     m_pivot = pivotPoint;
+    m_name = "point";
     m_radius = radius;
 }
 

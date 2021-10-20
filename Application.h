@@ -8,9 +8,12 @@
 
 #include <string>
 #include <memory>
+#include <chrono>
+#include <thread>
+
 #include "window/Window.h"
-#include "window/UIContext.h"
-#include "ui/Scene.h"
+#include "ui/UIContext.h"
+#include "Scene.h"
 
 class Application {
 public:
@@ -20,14 +23,14 @@ public:
 private:
     void handleInput();
 
-    std::shared_ptr<Window> mainWindow;
-    std::unique_ptr<UIContext> uiContext;
-    std::shared_ptr<GuiState> guiState;
-    std::shared_ptr<Scene> sceneView;
-    Shaders basicShaders = Shaders();
+    std::shared_ptr<Window> m_mainWindow;
+    std::unique_ptr<UIContext> m_uiContext;
+    std::shared_ptr<GuiState> m_guiState;
+    std::shared_ptr<Scene> m_sceneView;
+    std::unique_ptr<Shaders> m_basicShaders;
 
-    int width;
-    int height;
+    int m_width;
+    int m_height;
 };
 
 

@@ -14,13 +14,13 @@ GeometryPoint::GeometryPoint(glm::vec2 position, double radius):
 }
 
 void GeometryPoint::create() {
-    glm::vec2 vertices[m_samples];
-    for (size_t i = 0; i < m_samples; i++) {
-        float fi = (float) i * (float) (2 * M_PI) / (float) m_samples;
+    glm::vec2 vertices[100];
+    for (size_t i = 0; i < 100; i++) {
+        float fi = (float) i * (float) (2 * M_PI) / (float) 100;
         vertices[i] = glm::vec2(cosf(fi) * m_radius + m_position.x, sinf(fi) * m_radius + m_position.y);
     }
 
-    glBufferData(GL_ARRAY_BUFFER, m_samples * sizeof(glm::vec2), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 100 * sizeof(glm::vec2), vertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 }
@@ -30,5 +30,5 @@ void GeometryPoint::draw() {
     glUniform4f(colorLocation, m_color[0], m_color[1], m_color[2], m_color[3]);
 
     glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLE_FAN, 0, m_samples);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 100);
 }

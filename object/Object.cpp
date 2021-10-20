@@ -71,14 +71,6 @@ void Object::move(double toX, double toY) {
     }
 }
 
-glm::vec2 Object::calculateSpringForces() {
-    glm::vec2 forceFromConnection = {0, 0};
-    for(const auto& connection : m_connections) {
-        forceFromConnection = connection->getExertedForce(reinterpret_cast<const Geometry *>(this));
-    }
-    return forceFromConnection;
-}
-
 void Object::simulate(SimulationState simState) {
     if(m_fix || m_static) {
         return;

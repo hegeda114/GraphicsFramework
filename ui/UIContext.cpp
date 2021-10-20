@@ -205,7 +205,7 @@ void UIContext::guiGeometriesList() {
             {
                 char label[32];
                 sprintf(label, "%s##%d", geom.second.c_str(), i);
-                const bool item_is_selected = (selectedObjectId == geom.first);
+                const bool item_is_selected = (selectedObjectId == (int) geom.first);
 
                 ImGui::TableNextRow();
                 ImGui::TableSetColumnIndex(0);

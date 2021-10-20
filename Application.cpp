@@ -3,72 +3,75 @@
 //
 
 #include "Application.h"
-#include <chrono>
-#include <thread>
 
 using namespace std::chrono;
 
 
 Application::Application(const std::string& app_name) {
-    width = 800;
+    m_width = 800;
     //width = 1200;
-    height = 800;
+    m_height = 800;
 
-    mainWindow = std::make_unique<Window>(app_name);
-    mainWindow->init(width, height);
+    m_mainWindow = std::make_unique<Window>(app_name);
+    m_mainWindow->init(m_width, m_height);
 
-    sceneView = std::make_unique<Scene>();
-    sceneView->init();
+    m_sceneView = std::make_unique<Scene>();
+    m_sceneView->init();
 
-    uiContext = std::make_unique<UIContext>();
-    uiContext->init(mainWindow, sceneView);
+    m_uiContext = std::make_unique<UIContext>();
+    m_uiContext->init(m_mainWindow, m_sceneView);
 
-    guiState = uiContext->getGuiState();
+    m_guiState = m_uiContext->getGuiState();
 
-    basicShaders.CreateShader();
+    m_basicShaders = std::make_unique<Shaders>();
+    m_basicShaders->CreateShader();
     glUseProgram(Shaders::shaderProgramId);
 }
 
 void Application::loop() {
     auto start = high_resolution_clock::now();
-    int counter = 0;
+    size_t counter = 0;
     float past_time = 0;
-    while (mainWindow->isRunning())
+    while (m_mainWindow->isRunning())
     {
         counter++;
         start = std::chrono::high_resolution_clock::now();
-        mainWindow->pre_render();
-        uiContext->pre_render();
 
-        if(!guiState->renderStop && (!guiState->delayOn || (guiState->delayOn && past_time < 0))) {
-            sceneView->simulate();
+        // pre render
+        m_mainWindow->pre_render();
+        m_uiContext->pre_render();
+
+        // simulation and render
+        if(!m_guiState->renderStop && (!m_guiState->delayOn || (m_guiState->delayOn && past_time < 0))) {
+            m_sceneView->simulate();
         }
-        sceneView->render();
+        m_sceneView->render();
+        m_uiContext->render();
 
-        uiContext->render();
-        uiContext->post_render();
-        mainWindow->post_render();
+        // post render
+        m_uiContext->post_render();
+        m_mainWindow->post_render();
 
         handleInput();
 
         duration<float> duration = (high_resolution_clock::now() - start);
         if(counter > 20) {
             counter = 0;
-            uiContext->getGuiState()->fps = (int) (1.0f / duration.count());
+            m_uiContext->getGuiState()->fps = (int) (1.0f / duration.count());
         }
 
-        if(guiState->delayOn) {
+        if(m_guiState->delayOn) {
             if (past_time > 0) {
                 past_time -= duration.count() * 10000;
             } else {
-                past_time = (float) guiState->delay;
+                past_time = (float) m_guiState->delay;
             }
         }
     }
 }
 
 void Application::handleInput() {
-    auto *winPtr = mainWindow->getGLFWWindow();
+    auto *winPtr = m_mainWindow->getGLFWWindow();
 
     double x, y;
     glfwGetCursorPos(winPtr, &x, &y);
@@ -77,23 +80,13 @@ void Application::handleInput() {
     double wxPos = (x / curr_width) * 2 - 1;
     double wyPos = - ((y / curr_height) * 2 - 1);
 
-//    if (glfwGetKey(winPtr, GLFW_KEY_W) == GLFW_PRESS)
-//    {
-//        mSceneView->on_mouse_wheel(-0.4f);
-//    }
-//
-//    if (glfwGetKey(winPtr, GLFW_KEY_S) == GLFW_PRESS)
-//    {
-//        mSceneView->on_mouse_wheel(0.4f);
-//    }
-//
     if (glfwGetKey(winPtr, GLFW_KEY_H) == GLFW_PRESS)
     {
-        sceneView->move_to_home(wxPos, wyPos);
+        m_sceneView->move_to_home(wxPos, wyPos);
     }
-    sceneView->on_mouse_move(wxPos, wyPos, Input::GetPressedButton(winPtr));
+    m_sceneView->on_mouse_move(wxPos, wyPos, Input::GetPressedButton(winPtr));
 
-    if(uiContext->isSimStateChanged()) {
-        sceneView->setSimulationState(guiState->currentSimState);
+    if(m_uiContext->isSimStateChanged()) {
+        m_sceneView->setSimulationState(m_guiState->currentSimState);
     }
 }

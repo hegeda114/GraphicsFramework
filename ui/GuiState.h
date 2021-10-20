@@ -5,7 +5,7 @@
 #ifndef GRAPHICSFRAMEWORK_GUISTATE_H
 #define GRAPHICSFRAMEWORK_GUISTATE_H
 
-#include "../SimulationState.h"
+#include "../simulation/SimulationState.h"
 
 struct GuiState {
     SimulationState currentSimState = SimulationState();

@@ -6,9 +6,9 @@
 #define GRAPHICSFRAMEWORK_UICONTEXT_H
 
 
-#include "Window.h"
-#include "../ui/Scene.h"
-#include "../SimulationState.h"
+#include "../window/Window.h"
+#include "../Scene.h"
+#include "../simulation/SimulationState.h"
 #include "GuiState.h"
 #include <memory>
 #include <imgui.h>

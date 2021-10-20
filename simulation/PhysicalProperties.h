@@ -7,7 +7,7 @@
 
 #include <vector>
 #include "glm.hpp"
-#include "../SimulationState.h"
+#include "SimulationState.h"
 
 class PhysicalProperties {
 protected:

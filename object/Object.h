@@ -9,7 +9,7 @@
 #include <memory>
 #include "glm.hpp"
 #include "../geometry/Geometry.h"
-#include "../physicalProperties/PhysicalProperties.h"
+#include "../simulation/PhysicalProperties.h"
 #include "../geometry/GeometryVector.h"
 
 class Object {
@@ -160,8 +160,6 @@ public:
      */
     void simulate(SimulationState simState);
 
-    glm::vec2 calculateSpringForces();
-
     /**
      * Sets up and renders the helper geometries.
      */
@@ -174,13 +172,18 @@ public:
     void setShowVelocity(bool showVelocity);
     void setShowForces(bool showForces);
 
+    /**
+     * Creates and draws the geometry of the object.
+     */
     void createAndDraw();
 
+    /**
+     * Default implementation is empty.
+     * This function is useful, when an object depends on some other object's position. It will be called for all connections of an object, is the object moves.
+     */
     virtual void connectionChangedEvent() {};
 
     void addConnection(std::shared_ptr<Object> object);
-
-    virtual glm::vec2 getExertedForce(const Geometry* targetObject) const {};
 
 };
 
