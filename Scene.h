@@ -27,16 +27,22 @@ public:
     void setSimulationState(SimulationState simulationState);
 
     std::map<size_t, std::string> getObjects() const;
+    std::vector<std::shared_ptr<Point>> getPoints() const;
+    std::vector<std::shared_ptr<Spring>> getSprings() const;
 
     void disableActiveObject() const;
     void setActiveObject(size_t activeObjectId);
     const std::shared_ptr<Object>& getActiveObject() const;
+    const std::shared_ptr<Object>& getObjectByName(const std::string& objectName) const;
 
     // Add functions:
     std::shared_ptr<Point> addPoint(glm::vec2 position);
+    std::shared_ptr<Point> addPoint(std::shared_ptr<Point> object);
     void addStaticPoint(glm::vec2 position);
     void addSpring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j, float stretchnig, float dampingCoeffitient, float defaultLengeth);
+    void addSpring(std::shared_ptr<Spring> object);
 
+    void clearAllObject();
 private:
     SimulationState m_simulationState;
     std::map<size_t, std::shared_ptr<Object>> m_objects;

@@ -38,6 +38,10 @@ public:
 
     ObjectType getType() const override;
 
+    std::string getSerializedData() const override;
+
+    static std::shared_ptr<Point> createPointFromSavedData(const std::string& serializedData);
+
 };
 
 

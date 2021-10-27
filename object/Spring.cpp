@@ -2,6 +2,7 @@
 // Created by hegeda on 2021-10-13.
 //
 
+#include <sstream>
 #include "Spring.h"
 #include "../geometry/GeometryLine.h"
 
@@ -47,4 +48,46 @@ void Spring::connectionChangedEvent() {
 
 ObjectType Spring::getType() const {
     return ObjectType::SpringObject;
+}
+
+std::string Spring::getSerializedData() const {
+    //TODO: m_name-be ne lehessen speciális karakter, és max hossza is legyen!
+    //(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j, float stretching, float dampingCoefficient, float defaultLength
+    char buffer [200];
+    std::string is_static = "true";
+    if(!m_static) is_static = "false";
+    sprintf(buffer, "%s;%s;%f;%f;%f;%s", m_i->getName().c_str(), m_j->getName().c_str(), m_ks, m_kd, m_l0, m_name.c_str());
+    return buffer;
+}
+
+std::shared_ptr<Spring> Spring::createSpringFromSavedData(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j, const std::string &serializedData) {
+    std::stringstream ss(serializedData);
+    std::string val;
+
+    getline(ss, val, ';'); // point i
+    getline(ss, val, ';'); // point j
+
+    getline(ss, val, ';');
+    double ks = std::stod(val);
+
+    getline(ss, val, ';');
+    double kd= std::stod(val);
+
+    getline(ss, val, ';');
+    double l0 = std::stod(val);
+
+    getline(ss, val, ';');
+    std::string name = val;
+
+    std::shared_ptr<Spring> spring = std::make_shared<Spring>(i, j, ks, kd, l0);
+    spring->setName(name);
+    return spring;
+}
+
+std::shared_ptr<Point> Spring::getI() const {
+    return m_i;
+}
+
+std::shared_ptr<Point> Spring::getJ() const {
+    return m_j;
 }

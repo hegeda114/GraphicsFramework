@@ -10,7 +10,7 @@ void Scene::init() {
     m_simulationState = SimulationState(SimulationMode::ExplicitEuler, 1.0/60.0);
     m_simulationState.setBoundingBox(1.0, 1.0, -1.0, -1.0);
 
-    auto point1 = this->addPoint({0, 0});
+    auto point1 = this->addPoint(glm::vec2(0, 0));
     point1->setStatic(true);
     auto point2 = this->addPoint({0.2, 0.0});
     point2->setShowForces(true);
@@ -90,6 +90,12 @@ std::shared_ptr<Point> Scene::addPoint(glm::vec2 position) {
     return object;
 }
 
+std::shared_ptr<Point> Scene::addPoint(std::shared_ptr<Point> object) {
+    m_objects.insert(std::make_pair(object->getId(), object));
+    m_points.push_back(object);
+    return object;
+}
+
 void Scene::addSpring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j, float stretchnig, float dampingCoeffitient, float defaultLengeth) {
     auto object = std::make_shared<Spring>(i, j, stretchnig, dampingCoeffitient, defaultLengeth);
     i->addConnection(object);
@@ -97,6 +103,14 @@ void Scene::addSpring(const std::shared_ptr<Point>& i, const std::shared_ptr<Poi
     m_objects.insert(std::make_pair(object->getId(), object));
     m_springs.push_back(object);
 }
+
+void Scene::addSpring(std::shared_ptr<Spring> object) {
+    object->getI()->addConnection(object);
+    object->getJ()->addConnection(object);
+    m_objects.insert(std::make_pair(object->getId(), object));
+    m_springs.push_back(object);
+}
+
 
 std::map<size_t, std::string> Scene::getObjects() const {
     std::map<size_t, std::string> geometries;
@@ -110,7 +124,6 @@ void Scene::setActiveObject(size_t activeObjectId) {
     this->m_activeObjectId = activeObjectId;
     getActiveObject()->getGeometry()->setColor(1.0f, 0.4f, 0.4f, 1.0f);
 }
-
 
 const std::shared_ptr<Object> &Scene::getActiveObject() const {
     if(m_activeObjectId >= 0) {
@@ -131,3 +144,29 @@ void Scene::disableActiveObject() const {
         getActiveObject()->getGeometry()->setColorToDefault();
     }
 }
+
+std::vector<std::shared_ptr<Point>> Scene::getPoints() const {
+    return m_points;
+}
+
+std::vector<std::shared_ptr<Spring>> Scene::getSprings() const {
+    return m_springs;
+}
+
+void Scene::clearAllObject() {
+    m_objects.clear();
+    m_springs.clear();
+    m_points.clear();
+    m_activeObjectId = -1;
+}
+
+const std::shared_ptr<Object> &Scene::getObjectByName(const std::string &objectName) const {
+    for(const auto& obj : m_objects) {
+        if(obj.second->getName() == objectName) {
+            return obj.second;
+        }
+    }
+    throw std::out_of_range("Name is not exist!");
+}
+
+

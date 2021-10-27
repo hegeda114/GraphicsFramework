@@ -196,6 +196,8 @@ public:
 
     void setPosition(glm::vec2 position);
 
+    virtual std::string getSerializedData() const = 0;
+
 };
 
 

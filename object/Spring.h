@@ -53,6 +53,13 @@ public:
     void connectionChangedEvent() override;
 
     ObjectType getType() const override;
+
+    std::string getSerializedData() const override;
+
+    std::shared_ptr<Point> getI() const;
+    std::shared_ptr<Point> getJ() const;
+
+    static std::shared_ptr<Spring> createSpringFromSavedData(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j, const std::string& serializedData);
 };
 
 
