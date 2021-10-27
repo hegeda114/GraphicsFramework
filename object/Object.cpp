@@ -28,6 +28,11 @@ bool Object::isStatic() const {
 
 void Object::setStatic(bool isStatic) {
     m_static = isStatic;
+    if(m_static) {
+        m_geometry->setColor(0.3f, 0.3f, 0.95f, 1.0f);
+    } else {
+        m_geometry->setColorToDefault();
+    }
 }
 
 bool Object::isFix() const {

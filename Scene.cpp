@@ -20,20 +20,39 @@ void Scene::init() {
 //    point3->setStatic(true);
 //    this->addSpring(point2, point3, 10, 0, 0.2);
 
-    std::shared_ptr<Point> previousRow;
-    std::shared_ptr<Point> previousColumn;
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
-            auto point = this->addPoint(glm::vec2(0.2*i, 0.2*j));
+    int maxNum = 4;
+    float length = 0.2;
+
+    std::vector<std::shared_ptr<Point>> springs;
+    std::shared_ptr<Point> prevCol;
+    for(int i = 0; i < maxNum; i++) {
+        for(int j = 0; j < maxNum; j++) {
+            auto point = this->addPoint(glm::vec2(length*i, length*j));
+            springs.push_back(point);
             if(i == 0) {
                 point->setStatic(true);
-                previousColumn = point;
             }
-            if(i < 2) {
-                this->addSpring(previousColumn, point, 10, 0, 0.2);
-                previousColumn = point;
+            if(j == 0) {
+                prevCol = point;
             }
+            if(j > 0) {
+                this->addSpring(prevCol, point, 1000, 0, length);
+                prevCol = point;
+            }
+            if(i > 0) {
+                int own_idx = i*maxNum+j;
+                this->addSpring(springs[own_idx-maxNum], point, 1000, 0, length);
+            }
+            if(i*3+j > maxNum-1 && j < maxNum-1 && i < maxNum) {
+                int own_idx = i * maxNum + j;
+                this->addSpring(springs[own_idx - maxNum + 1], point, 1000, 0, std::sqrt(length * length));
+            }
+            //if(i*3+j > maxNum-1 && j < maxNum-1 && i < maxNum) {
+            //    int own_idx = i*maxNum+j;
+            //    this->addSpring(springs[own_idx-maxNum+1], point, 10, 0, std::sqrt(length*length));
+            //}
         }
+        //prevRow.clear();
     }
 }
 
