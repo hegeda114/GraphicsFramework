@@ -2,14 +2,14 @@
 // Created by hegeda on 2021-10-12.
 //
 
-#ifndef GRAPHICSFRAMEWORK_PHYSICALPROPERTIES_H
-#define GRAPHICSFRAMEWORK_PHYSICALPROPERTIES_H
+#ifndef GRAPHICSFRAMEWORK_SIMULATIONPROPERTIES_H
+#define GRAPHICSFRAMEWORK_SIMULATIONPROPERTIES_H
 
 #include <vector>
 #include "glm.hpp"
 #include "SimulationState.h"
 
-class PhysicalProperties {
+class SimulationProperties {
 protected:
     glm::vec2 m_velocity = {0.0, 0.0};
     glm::vec2 m_position = {0.0, 0.0};
@@ -17,7 +17,7 @@ protected:
     double m_mass = 1;
 
 public:
-    explicit PhysicalProperties(glm::vec2 position);
+    explicit SimulationProperties(glm::vec2 position);
 
     void addForce(double x, double y);
     void addForce(const glm::vec2& force);
@@ -36,4 +36,4 @@ public:
 };
 
 
-#endif //GRAPHICSFRAMEWORK_PHYSICALPROPERTIES_H
+#endif //GRAPHICSFRAMEWORK_SIMULATIONPROPERTIES_H

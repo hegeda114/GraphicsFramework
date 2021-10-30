@@ -9,17 +9,15 @@
 #include <vector>
 #include <vec2.hpp>
 #include <map>
-#include "SimulationMode.h"
-#include "../Direction.h"
+#include "../CommonEnums.h"
 
 class SimulationState {
 private:
-    SimulationMode simMode;
-    double timestep;
-    glm::vec2 gravity = {0, 0};
-    //glm::vec2 gravity = {0, -9.8};
+    SimulationMode m_simMode;
+    double m_timestep;
+    glm::vec2 m_gravity = {0, 0};
 
-    std::map<Direction, double> boundigBox;
+    std::map<Direction, double> m_boundigBox;
 public:
     SimulationState();
     SimulationState(SimulationMode simulationMode, double timestep);

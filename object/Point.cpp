@@ -8,15 +8,15 @@
 #include <chrono>
 #include <sstream>
 
-size_t Point::lastPointId = 1;
+int Point::lastPointId = 1;
 
-size_t Point::nextPointId() {
+int Point::nextPointId() {
     return lastPointId++;
 }
 
 Point::Point(glm::vec2 pivotPoint, double radius) :
     Object(std::make_unique<GeometryPoint>(pivotPoint, radius),
-            std::make_unique<PhysicalProperties>(pivotPoint)) {
+            std::make_unique<SimulationProperties>(pivotPoint)) {
     m_name = std::string("Point_") + std::to_string(nextPointId());
     m_pivot = pivotPoint;
     m_radius = radius;

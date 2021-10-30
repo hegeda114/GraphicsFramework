@@ -15,13 +15,13 @@
 class Spring : public Object {
 private:
     // Stores the currently last spring id.
-    static size_t lastSpringId;
+    static int lastSpringId;
 
     /**
      * Returns the next free spring id based on lastId.
      * @return The next free spring id.
      */
-    static size_t nextSpringId();
+    static int nextSpringId();
 private:
     float m_ks; // stretching
     float m_kd; // damping coefficients

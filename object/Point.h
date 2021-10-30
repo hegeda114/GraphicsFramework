@@ -12,13 +12,13 @@
 class Point : public Object {
 private:
     // Stores the currently last point id.
-    static size_t lastPointId;
+    static int lastPointId;
 
     /**
      * Returns the next free point id based on lastId.
      * @return The next free point id.
      */
-    static size_t nextPointId();
+    static int nextPointId();
     double m_radius;
 public:
     /**

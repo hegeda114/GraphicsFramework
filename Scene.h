@@ -21,7 +21,7 @@ public:
     void simulate();
     void render();
 
-    void on_mouse_move(double x, double y, MouseButton button);
+    void inputEvent(double x, double y, MouseButton button, ViewportMode mode);
     void move_to_home(double x, double y);
 
     void setSimulationState(SimulationState simulationState);
@@ -30,8 +30,7 @@ public:
     std::vector<std::shared_ptr<Point>> getPoints() const;
     std::vector<std::shared_ptr<Spring>> getSprings() const;
 
-    void disableActiveObject() const;
-    void setActiveObject(size_t activeObjectId);
+    void setActiveObject(int activeObjectId);
     const std::shared_ptr<Object>& getActiveObject() const;
     const std::shared_ptr<Object>& getObjectByName(const std::string& objectName) const;
 
@@ -50,8 +49,8 @@ private:
     std::vector<std::shared_ptr<Spring>> m_springs;
     int m_activeObjectId = -1;
 
-    glm::vec2 m_buttonLastPos = {0, 0};
-    bool m_grabActive = false;
+    glm::vec2 m_mouseLastPosition = {0, 0};
+    bool m_mouseLeftPressActive = false;
 };
 
 

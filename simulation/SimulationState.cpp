@@ -5,70 +5,70 @@
 #include "SimulationState.h"
 
 SimulationMode SimulationState::getSimMode() const {
-    return simMode;
+    return m_simMode;
 }
 
 void SimulationState::setSimMode(SimulationMode simulationMode) {
-    simMode = simulationMode;
+    m_simMode = simulationMode;
 }
 
 double SimulationState::getTimestep() const {
-    return timestep;
+    return m_timestep;
 }
 
 void SimulationState::setTimestep(double timestep) {
-    this->timestep = timestep;
+    m_timestep = timestep;
 }
 
 glm::vec2 SimulationState::getGravity() const {
-    return gravity;
+    return m_gravity;
 }
 
 void SimulationState::setGravity(glm::vec2 gravity) {
-    this->gravity = gravity;
+    m_gravity = gravity;
 }
 
 std::vector<glm::vec2> SimulationState::getGlobalForces() const {
     std::vector<glm::vec2> forces;
-    forces.push_back(this->gravity);
+    forces.push_back(m_gravity);
     return forces;
 }
 
 void SimulationState::setBoundingBox(double top, double right, double bottom, double left) {
-    boundigBox.insert({Direction::Top, top});
-    boundigBox.insert({Direction::Right, right});
-    boundigBox.insert({Direction::Bottom, bottom});
-    boundigBox.insert({Direction::Left, left});
+    m_boundigBox.insert({Direction::Top, top});
+    m_boundigBox.insert({Direction::Right, right});
+    m_boundigBox.insert({Direction::Bottom, bottom});
+    m_boundigBox.insert({Direction::Left, left});
 }
 
 std::map<Direction, double> SimulationState::getBoundigBox() const {
-    return boundigBox;
+    return m_boundigBox;
 }
 
 double SimulationState::getBoundingTop() const {
-    return boundigBox.at(Direction::Top);
+    return m_boundigBox.at(Direction::Top);
 }
 
 double SimulationState::getBoundingRight() const {
-    return boundigBox.at(Direction::Right);
+    return m_boundigBox.at(Direction::Right);
 }
 
 double SimulationState::getBoundingBottom() const {
-    return boundigBox.at(Direction::Bottom);
+    return m_boundigBox.at(Direction::Bottom);
 }
 
 double SimulationState::getBoundingLeft() const {
-    return boundigBox.at(Direction::Left);
+    return m_boundigBox.at(Direction::Left);
 }
 
 SimulationState::SimulationState(SimulationMode simulationMode, double timestep) {
-    this->simMode = simulationMode;
-    this->timestep = timestep;
+    m_simMode = simulationMode;
+    m_timestep = timestep;
 }
 
 SimulationState::SimulationState() {
-    this->simMode = SimulationMode::ExplicitEuler;
-    this->timestep = 1.0/60.0;
-    this->gravity = {0, -9.8};
-    this->setBoundingBox(1, 1, -1, -1);
+    m_simMode = SimulationMode::ExplicitEuler;
+    m_timestep = 1.0/60.0;
+    m_gravity = {0, -9.8};
+    setBoundingBox(1, 1, -1, -1);
 }

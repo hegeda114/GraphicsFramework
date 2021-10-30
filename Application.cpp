@@ -26,6 +26,31 @@ Application::Application(const std::string& app_name) {
     m_basicShaders = std::make_unique<Shaders>();
     m_basicShaders->CreateShader();
     glUseProgram(Shaders::shaderProgramId);
+
+//    // The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth buffer.
+//    FramebufferName = 0;
+//    glGenFramebuffers(1, &FramebufferName);
+//    glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+//
+//    // The texture we're going to render to
+//    GLuint renderedTexture;
+//    glGenTextures(1, &renderedTexture);
+//
+//    // "Bind" the newly created texture : all future texture functions will modify this texture
+//    glBindTexture(GL_TEXTURE_2D, renderedTexture);
+//
+//    // Give an empty image to OpenGL ( the last "0" )
+//    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 1024, 768, 0,GL_RGB, GL_UNSIGNED_BYTE, 0);
+//
+//    // Poor filtering. Needed !
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//
+//    // Render to our framebuffer
+//    glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+//    glViewport(0,0,1024,768); // Render on the whole framebuffer, complete from the lower left corner to the upper right
+//
+//    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Application::loop() {
@@ -80,11 +105,20 @@ void Application::handleInput() {
     double wxPos = (x / curr_width) * 2 - 1;
     double wyPos = - ((y / curr_height) * 2 - 1);
 
-    if (glfwGetKey(winPtr, GLFW_KEY_H) == GLFW_PRESS)
-    {
+    if (glfwGetKey(winPtr, GLFW_KEY_H) == GLFW_PRESS) {
         m_sceneView->move_to_home(wxPos, wyPos);
     }
-    m_sceneView->on_mouse_move(wxPos, wyPos, Input::GetPressedButton(winPtr));
+    if (glfwGetKey(winPtr, GLFW_KEY_G) == GLFW_PRESS) {
+        m_mode = ViewportMode::Grab;
+    }
+    if (glfwGetKey(winPtr, GLFW_KEY_S) == GLFW_PRESS) {
+        m_mode = ViewportMode::Selection;
+    }
+    if (glfwGetKey(winPtr, GLFW_KEY_C) == GLFW_PRESS) {
+        m_mode = ViewportMode::Creation;
+    }
+
+    m_sceneView->inputEvent(wxPos, wyPos, Input::GetPressedButton(winPtr), m_mode);
 
     if(m_uiContext->isSimStateChanged()) {
         m_sceneView->setSimulationState(m_guiState->currentSimState);

@@ -2,30 +2,30 @@
 // Created by hegeda on 2021-10-12.
 //
 
-#include "PhysicalProperties.h"
+#include "SimulationProperties.h"
 
-PhysicalProperties::PhysicalProperties(glm::vec2 position) {
+SimulationProperties::SimulationProperties(glm::vec2 position) {
     m_position = position;
 }
 
-void PhysicalProperties::setVelocity(double x, double y) {
+void SimulationProperties::setVelocity(double x, double y) {
     m_velocity.x = (float) x;
     m_velocity.y = (float) y;
 }
 
-void PhysicalProperties::setVelocity(const glm::vec2 &velocity) {
+void SimulationProperties::setVelocity(const glm::vec2 &velocity) {
     setVelocity(velocity.x, velocity.y);
 }
 
-void PhysicalProperties::addForce(double x, double y) {
+void SimulationProperties::addForce(double x, double y) {
     m_forces.emplace_back(glm::vec2(x, y));
 }
 
-void PhysicalProperties::addForce(const glm::vec2 &force) {
+void SimulationProperties::addForce(const glm::vec2 &force) {
     m_forces.push_back(force);
 }
 
-glm::vec2 PhysicalProperties::getResultaltForces() const {
+glm::vec2 SimulationProperties::getResultaltForces() const {
     glm::vec2 forcesSum = {0, 0};
     for (const auto& force : m_forces) {
         forcesSum += force;
@@ -33,7 +33,7 @@ glm::vec2 PhysicalProperties::getResultaltForces() const {
     return forcesSum;
 }
 
-void PhysicalProperties::explicitEuler(const SimulationState &simState) {
+void SimulationProperties::explicitEuler(const SimulationState &simState) {
     double timestep = simState.getTimestep();
     glm::vec2 resultaltForce = getResultaltForces();
 
@@ -44,22 +44,22 @@ void PhysicalProperties::explicitEuler(const SimulationState &simState) {
     m_forces.clear();
 }
 
-const glm::vec2 &PhysicalProperties::getVelocity() const {
+const glm::vec2 &SimulationProperties::getVelocity() const {
     return m_velocity;
 }
 
-const glm::vec2& PhysicalProperties::getPosition() const {
+const glm::vec2& SimulationProperties::getPosition() const {
     return m_position;
 }
 
-void PhysicalProperties::setPosition(double x, double y) {
+void SimulationProperties::setPosition(double x, double y) {
     setPosition({x, y});
 }
 
-void PhysicalProperties::setPosition(const glm::vec2 &position) {
+void SimulationProperties::setPosition(const glm::vec2 &position) {
     m_position = position;
 }
 
-void PhysicalProperties::clearForces() {
+void SimulationProperties::clearForces() {
     m_forces.clear();
 }

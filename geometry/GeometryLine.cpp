@@ -6,7 +6,7 @@
 
 GeometryLine::GeometryLine(glm::vec2 start, glm::vec2 end) : Geometry(), startPoint(start), endPoint(end) {
     m_defaultColor = {0.3f, 0.8f, 0.3f, 1.0f};
-    m_color = {0.3f, 0.8f, 0.3f, 1.0f};
+    m_color = {0.3f, 0.6f, 0.3f, 1.0f};
 }
 
 void GeometryLine::setStartPoint(glm::vec2 start) {

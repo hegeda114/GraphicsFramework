@@ -4,16 +4,16 @@
 
 #include "Object.h"
 
-size_t Object::lastId = 0;
+int Object::lastId = 0;
 
-size_t Object::nextId() {
+int Object::nextId() {
     return lastId++;
 }
 
-Object::Object(std::unique_ptr<Geometry> geometry, std::unique_ptr<PhysicalProperties> physicalProperties) :
+Object::Object(std::unique_ptr<Geometry> geometry, std::unique_ptr<SimulationProperties> physicalProperties) :
         m_velocityVector({m_pivot, m_pivot}), m_forceVector({m_pivot, m_pivot}){
     m_geometry = std::move(geometry);
-    m_physicalProperties = std::move(physicalProperties);
+    m_simulationProperties = std::move(physicalProperties);
     m_id = nextId();
     m_name = "object";
 }
@@ -29,7 +29,7 @@ bool Object::isStatic() const {
 void Object::setStatic(bool isStatic) {
     m_static = isStatic;
     if(m_static) {
-        m_geometry->setColor(0.3f, 0.3f, 0.95f, 1.0f);
+        m_geometry->setColor(0.4f, 0.7f, 0.96f, 1.0f);
     } else {
         m_geometry->setColorToDefault();
     }
@@ -46,7 +46,7 @@ std::string Object::getName() const {
     return m_name;
 }
 
-size_t Object::getId() const {
+int Object::getId() const {
     return m_id;
 }
 
@@ -58,8 +58,8 @@ const std::unique_ptr<Geometry> &Object::getGeometry() const {
     return m_geometry;
 }
 
-const std::unique_ptr<PhysicalProperties> &Object::getPhysicalProperties() const {
-    return m_physicalProperties;
+const std::unique_ptr<SimulationProperties> &Object::getSimulationProperties() const {
+    return m_simulationProperties;
 }
 
 void Object::move(const glm::vec2 &targetPosition) {
@@ -67,11 +67,11 @@ void Object::move(const glm::vec2 &targetPosition) {
 }
 
 void Object::move(double toX, double toY) {
-    m_physicalProperties->setVelocity(0, 0);
-    m_physicalProperties->clearForces();
+    m_simulationProperties->setVelocity(0, 0);
+    m_simulationProperties->clearForces();
     m_pivot.x = (float) toX;
     m_pivot.y = (float) toY;
-    m_physicalProperties->setPosition(m_pivot);
+    m_simulationProperties->setPosition(m_pivot);
     m_geometry->setPosition(m_pivot);
     for(const auto& connection : m_connections) {
         connection->connectionChangedEvent();
@@ -83,10 +83,10 @@ void Object::simulate(SimulationState simState) {
         return;
     }
     if(simState.getSimMode() == SimulationMode::ExplicitEuler) {
-        m_physicalProperties->explicitEuler(simState);
+        m_simulationProperties->explicitEuler(simState);
     }
 
-    m_pivot = m_physicalProperties->getPosition();
+    m_pivot = m_simulationProperties->getPosition();
     m_geometry->setPosition(m_pivot);
     for(const auto& connection : m_connections) {
         connection->connectionChangedEvent();
@@ -99,14 +99,14 @@ void Object::showHelpers() {
     }
     if(m_showVelocity) {
         m_velocityVector.setStartPoint(m_pivot);
-        m_velocityVector.setEndPoint(m_pivot + 0.05f*m_physicalProperties->getVelocity());
+        m_velocityVector.setEndPoint(m_pivot + 0.05f * m_simulationProperties->getVelocity());
         m_velocityVector.create();
 
         m_velocityVector.draw();
     }
     if(m_showForces) {
         m_forceVector.setStartPoint(m_pivot);
-        glm::vec2 forcesSum = m_physicalProperties->getResultaltForces();
+        glm::vec2 forcesSum = m_simulationProperties->getResultaltForces();
         m_forceVector.setEndPoint(m_pivot - 0.5f*forcesSum);
         m_forceVector.create();
 
@@ -133,5 +133,5 @@ void Object::addConnection(std::shared_ptr<Object> object) {
 
 void Object::setPosition(glm::vec2 position) {
     m_pivot = position;
-    m_physicalProperties->setPosition(position);
+    m_simulationProperties->setPosition(position);
 }

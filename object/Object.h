@@ -9,7 +9,7 @@
 #include <memory>
 #include "glm.hpp"
 #include "../geometry/Geometry.h"
-#include "../simulation/PhysicalProperties.h"
+#include "../simulation/SimulationProperties.h"
 #include "../geometry/GeometryVector.h"
 
 enum ObjectType { PointObject, SpringObject};
@@ -17,13 +17,13 @@ enum ObjectType { PointObject, SpringObject};
 class Object {
 private:
     // Stores the currently last object id.
-    static size_t lastId;
+    static int lastId;
 
     /**
      * Returns the next free object id based on lastId.
      * @return The next free object id.
      */
-    static size_t nextId();
+    static int nextId();
 protected:
     // The pivot point of the object.
     glm::vec2 m_pivot = {0, 0};
@@ -31,8 +31,8 @@ protected:
     // The geometry of the object.
     std::unique_ptr<Geometry> m_geometry;
 
-    // The physical properties of the object.
-    std::unique_ptr<PhysicalProperties> m_physicalProperties;
+    // The simulation properties of the object.
+    std::unique_ptr<SimulationProperties> m_simulationProperties;
 
     // List of the connected objects, for example springs.
     std::vector<std::shared_ptr<Object>> m_connections;
@@ -41,34 +41,34 @@ protected:
     bool m_fix = false;
 
     // If true, the simulate function of the object does nothing.
-    // Otherwise the object could move during the simulation.
+    // Otherwise, the object could move during the simulation.
     bool m_static = false;
 
     // The name of the object.
     std::string m_name;
 
     // The id of the object.
-    size_t m_id;
+    int m_id;
 
     // The velocity vector object of the current object.
     GeometryVector m_velocityVector;
 
-    // The forve vector object of the current object.
+    // The force vector object of the current object.
     GeometryVector m_forceVector;
 
     // If true, the velocity vector is visible, otherwise it is hidden.
-    bool m_showVelocity = false;
+    bool m_showVelocity = true;
 
     // If true, the force vector is visible, otherwise it is hidden.
-    bool m_showForces = false;
+    bool m_showForces = true;
 
 public:
     /**
-     * Constructor, creates an object with the given geometry and physical properties.
+     * Constructor, creates an object with the given geometry and simulation properties.
      * @param geometry The geometry of the object.
-     * @param physicalProperties The physical properties of the object.
+     * @param simulationProperties The simulation properties of the object.
      */
-    Object(std::unique_ptr<Geometry> geometry, std::unique_ptr<PhysicalProperties> physicalProperties);
+    Object(std::unique_ptr<Geometry> geometry, std::unique_ptr<SimulationProperties> simulationProperties);
 
     /**
      * Returns a reference to the geometry of the object.
@@ -77,10 +77,10 @@ public:
     const std::unique_ptr<Geometry>& getGeometry() const;
 
     /**
-     * Returns a reference to the physical properties of the object.
-     * @return Reference to the physical properties of the object.
+     * Returns a reference to the simulation properties of the object.
+     * @return Reference to the simulation properties of the object.
      */
-    const std::unique_ptr<PhysicalProperties>& getPhysicalProperties() const;
+    const std::unique_ptr<SimulationProperties>& getSimulationProperties() const;
 
     /**
      * Returns true if the given position is inside of the object, otherwise false.
@@ -137,7 +137,7 @@ public:
      * Returns the id of the object.
      * @return The id of the object.
      */
-    size_t getId() const;
+    int getId() const;
 
     /**
      * Modify the object position to the target position.

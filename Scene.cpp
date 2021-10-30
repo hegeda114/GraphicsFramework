@@ -20,8 +20,8 @@ void Scene::init() {
 //    point3->setStatic(true);
 //    this->addSpring(point2, point3, 10, 0, 0.2);
 
-    int maxNum = 4;
-    float length = 0.2;
+    int maxNum = 10;
+    float length = 0.05;
 
     std::vector<std::shared_ptr<Point>> springs;
     std::shared_ptr<Point> prevCol;
@@ -36,16 +36,21 @@ void Scene::init() {
                 prevCol = point;
             }
             if(j > 0) {
-                this->addSpring(prevCol, point, 1000, 0, length);
+                this->addSpring(prevCol, point, 10000, 0, glm::length(prevCol->getSimulationProperties()->getPosition() -
+                                                                      point->getSimulationProperties()->getPosition()));
                 prevCol = point;
             }
             if(i > 0) {
                 int own_idx = i*maxNum+j;
-                this->addSpring(springs[own_idx-maxNum], point, 1000, 0, length);
+                this->addSpring(springs[own_idx-maxNum], point, 10000, 0, glm::length(
+                        springs[own_idx - maxNum]->getSimulationProperties()->getPosition() -
+                                                                                      point->getSimulationProperties()->getPosition()));
             }
-            if(i*3+j > maxNum-1 && j < maxNum-1 && i < maxNum) {
+            if(i*3+j >= maxNum-1 && j < maxNum-1 && i < maxNum) {
                 int own_idx = i * maxNum + j;
-                this->addSpring(springs[own_idx - maxNum + 1], point, 1000, 0, std::sqrt(length * length));
+                this->addSpring(springs[own_idx - maxNum + 1], point, 10000, 0, glm::length(
+                        springs[own_idx - maxNum + 1]->getSimulationProperties()->getPosition() -
+                                                                                            point->getSimulationProperties()->getPosition()));
             }
             //if(i*3+j > maxNum-1 && j < maxNum-1 && i < maxNum) {
             //    int own_idx = i*maxNum+j;
@@ -57,17 +62,21 @@ void Scene::init() {
 }
 
 void Scene::simulate() {
-    // calculate spring forces for each springs
-    for(const auto& spring : m_springs) {
-        spring->calculateSpringForces();
-    }
-    // calculate other forces for each points
-    for(const auto& point : m_points) {
-        point->getPhysicalProperties()->addForce(m_simulationState.getGravity()); // add gravity
-    }
-    //calculate new position and velocity
-    for(const auto& point : m_points) {
-        point->simulate(m_simulationState);
+    double frame_rate = 1.0/60.0;
+    int iteration = ceil(frame_rate / m_simulationState.getTimestep());
+    for(int i = 0; i < iteration; i++) {
+        // calculate spring forces for each springs
+        for(const auto& spring : m_springs) {
+            spring->calculateSpringForces();
+        }
+        // calculate other forces for each points
+        for(const auto& point : m_points) {
+            point->getSimulationProperties()->addForce(m_simulationState.getGravity()); // add gravity
+        }
+        //calculate new position and velocity
+        for(const auto& point : m_points) {
+            point->simulate(m_simulationState);
+        }
     }
 }
 
@@ -79,29 +88,49 @@ void Scene::render() {
     }
 }
 
-void Scene::on_mouse_move(double x, double y, MouseButton button)
-{
-    // If no selected object
-    if(this->m_activeObjectId == -1) {
-        return;
-    }
-    const auto& currentObject = getActiveObject();
-
-    // move start or continue
-    if(button == MouseButton::LeftPress && (currentObject->isInside(x, y) || m_grabActive)) {
-        m_grabActive = true;
-        m_buttonLastPos = {x, y};
-        currentObject->move(x, y);
-        currentObject->setFix(true);
+void Scene::inputEvent(double x, double y, MouseButton button, ViewportMode mode) {
+    bool activeObjectExist = false;
+    if(this->m_activeObjectId != -1) {
+        activeObjectExist = true;
     }
 
-    // move stop
-    if(button == MouseButton::LeftRelease && m_grabActive) {
-        m_grabActive = false;
-        glm::vec2 diff = glm::vec2(x, y) - m_buttonLastPos;
-        diff *= 15;
-        currentObject->getPhysicalProperties()->setVelocity(diff.x, diff.y);
-        currentObject->setFix(false);
+    bool lastMouseLeftPressActive = m_mouseLeftPressActive;
+    if(button == MouseButton::LeftPress) {
+        m_mouseLeftPressActive = true;
+    }
+    if(button == MouseButton::LeftRelease) {
+        m_mouseLeftPressActive = false;
+    }
+
+
+    if(mode == ViewportMode::Grab && activeObjectExist) {
+        const auto& currentObject = getActiveObject();
+
+        // move start or continue
+        if(m_mouseLeftPressActive && (currentObject->isInside(x, y) || lastMouseLeftPressActive)) {
+            m_mouseLastPosition = {x, y};
+            currentObject->move(x, y);
+            currentObject->setFix(true);
+        }
+
+        // move stop
+        if(!m_mouseLeftPressActive && lastMouseLeftPressActive) {
+            glm::vec2 diff = glm::vec2(x, y) - m_mouseLastPosition;
+            diff *= 15;
+            currentObject->getSimulationProperties()->setVelocity(diff.x, diff.y);
+            currentObject->setFix(false);
+        }
+    }
+
+    if(mode == ViewportMode::Selection) {
+        if(m_mouseLeftPressActive && (lastMouseLeftPressActive != m_mouseLeftPressActive)) {
+            printf("lent\n");
+            for(const auto& point : m_points) {
+                if(point->isInside(x, y)) {
+                    setActiveObject(point->getId());
+                }
+            }
+        }
     }
 }
 
@@ -155,9 +184,18 @@ std::map<size_t, std::string> Scene::getObjects() const {
     return geometries;
 }
 
-void Scene::setActiveObject(size_t activeObjectId) {
-    this->m_activeObjectId = activeObjectId;
-    getActiveObject()->getGeometry()->setColor(1.0f, 0.4f, 0.4f, 1.0f);
+void Scene::setActiveObject(int activeObjectId) {
+    if(m_activeObjectId != -1 && m_activeObjectId != activeObjectId) {
+        getActiveObject()->getGeometry()->setColorToDefault();
+        m_activeObjectId = -1;
+    }
+    if(m_activeObjectId != activeObjectId) {
+        this->m_activeObjectId = activeObjectId;
+        getActiveObject()->getGeometry()->setColor(1.0f, 0.4f, 0.4f, 1.0f);
+    } else {
+        getActiveObject()->getGeometry()->setColorToDefault();
+        m_activeObjectId = -1;
+    }
 }
 
 const std::shared_ptr<Object> &Scene::getActiveObject() const {
@@ -172,12 +210,6 @@ void Scene::addStaticPoint(glm::vec2 position) {
     object->setStatic(true);
     m_objects.insert(std::make_pair(object->getId(), std::move(object)));
     m_points.push_back(object);
-}
-
-void Scene::disableActiveObject() const {
-    if (this->m_activeObjectId != -1) {
-        getActiveObject()->getGeometry()->setColorToDefault();
-    }
 }
 
 std::vector<std::shared_ptr<Point>> Scene::getPoints() const {

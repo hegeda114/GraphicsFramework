@@ -8,7 +8,6 @@
 #include <glew.h>
 #include <vector>
 #include "glm.hpp"
-#include "../simulation/SimulationMode.h"
 #include "../simulation/SimulationState.h"
 #include "../Shaders.h"
 

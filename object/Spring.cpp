@@ -6,15 +6,15 @@
 #include "Spring.h"
 #include "../geometry/GeometryLine.h"
 
-size_t Spring::lastSpringId = 1;
+int Spring::lastSpringId = 1;
 
-size_t Spring::nextSpringId() {
+int Spring::nextSpringId() {
     return lastSpringId++;
 }
 
 Spring::Spring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j, float stretching, float dampingCoefficient, float defaultLength) :
-   Object(std::make_unique<GeometryLine>(i->getPhysicalProperties()->getPosition(), j->getPhysicalProperties()->getPosition()),
-   std::make_unique<PhysicalProperties>(glm::vec2(0, 0))), m_i(i), m_j(j) {
+   Object(std::make_unique<GeometryLine>(i->getSimulationProperties()->getPosition(), j->getSimulationProperties()->getPosition()),
+   std::make_unique<SimulationProperties>(glm::vec2(0, 0))), m_i(i), m_j(j) {
     m_name = std::string("Spring_") + std::to_string(nextSpringId());
     m_ks = stretching;
     m_kd = dampingCoefficient;
@@ -24,16 +24,16 @@ Spring::Spring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j,
 void Spring::calculateSpringForces() {
     // calculate force for i:
     glm::vec2 posDiff, velDiff;
-    posDiff = (m_j->getPhysicalProperties()->getPosition() - m_i->getPhysicalProperties()->getPosition());
-    velDiff = (m_j->getPhysicalProperties()->getVelocity() - m_i->getPhysicalProperties()->getVelocity());
+    posDiff = (m_j->getSimulationProperties()->getPosition() - m_i->getSimulationProperties()->getPosition());
+    velDiff = (m_j->getSimulationProperties()->getVelocity() - m_i->getSimulationProperties()->getVelocity());
     glm::vec2 force = calcForce(posDiff, velDiff);
-    m_i->getPhysicalProperties()->addForce(force);
+    m_i->getSimulationProperties()->addForce(force);
 
     // calculate force for j:
-    posDiff = (m_i->getPhysicalProperties()->getPosition() - m_j->getPhysicalProperties()->getPosition());
-    velDiff = (m_i->getPhysicalProperties()->getVelocity() - m_j->getPhysicalProperties()->getVelocity());
+    posDiff = (m_i->getSimulationProperties()->getPosition() - m_j->getSimulationProperties()->getPosition());
+    velDiff = (m_i->getSimulationProperties()->getVelocity() - m_j->getSimulationProperties()->getVelocity());
     force = calcForce(posDiff, velDiff);
-    m_j->getPhysicalProperties()->addForce(force);
+    m_j->getSimulationProperties()->addForce(force);
 }
 
 glm::vec2 Spring::calcForce(glm::vec2 posDiff, glm::vec2 velDiff) const {
@@ -42,8 +42,8 @@ glm::vec2 Spring::calcForce(glm::vec2 posDiff, glm::vec2 velDiff) const {
 }
 
 void Spring::connectionChangedEvent() {
-    dynamic_cast<GeometryLine&>(*m_geometry).setStartPoint(m_i->getPhysicalProperties()->getPosition());
-    dynamic_cast<GeometryLine&>(*m_geometry).setEndPoint(m_j->getPhysicalProperties()->getPosition());
+    dynamic_cast<GeometryLine&>(*m_geometry).setStartPoint(m_i->getSimulationProperties()->getPosition());
+    dynamic_cast<GeometryLine&>(*m_geometry).setEndPoint(m_j->getSimulationProperties()->getPosition());
 }
 
 ObjectType Spring::getType() const {

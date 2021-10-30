@@ -9,7 +9,7 @@
 GeometryPoint::GeometryPoint(glm::vec2 position, double radius):
     m_radius(radius) {
     m_position = position;
-    m_defaultColor = {0.4f, 0.7f, 0.86f, 1.0f};
+    m_defaultColor = {0.87f, 0.9f, 0.4f, 1.0f};
     m_color = m_defaultColor;
 }
 

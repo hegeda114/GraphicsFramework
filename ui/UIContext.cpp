@@ -281,7 +281,6 @@ void UIContext::guiGeometriesList() {
                 ImGuiSelectableFlags selectable_flags = ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap;
                 if (ImGui::Selectable(label, item_is_selected, selectable_flags))
                 {
-                    m_scene->disableActiveObject();
                     m_selectedObjectId = -1;
                     if(!item_is_selected) {
                         m_scene->setActiveObject(geom.first);
@@ -311,7 +310,7 @@ void UIContext::guiCurrentGeomSettings() {
 
         if(currentGeom->getType() == ObjectType::PointObject) {
             const auto& geom = std::dynamic_pointer_cast<Point>(currentGeom);
-            auto pos = geom->getPhysicalProperties()->getPosition();
+            auto pos = geom->getSimulationProperties()->getPosition();
 
             ImGui::Text("Position: %.4f %.4f", pos.x, pos.y);
 

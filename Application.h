@@ -29,6 +29,8 @@ private:
     std::shared_ptr<Scene> m_sceneView;
     std::unique_ptr<Shaders> m_basicShaders;
 
+    GLuint FramebufferName;
+    ViewportMode m_mode;
     int m_width;
     int m_height;
 };
