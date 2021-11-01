@@ -27,7 +27,7 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${IMGUI_SOURCES})
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic -Werror -Wno-unused-variable -Wno-unused-parameter)
 
 if (${WIN32})
-    target_link_libraries(${PROJECT_NAME} glew32 glfw3 OpenGL::GL)
+    target_link_libraries(${PROJECT_NAME} glew32 glfw3 imm32 OpenGL::GL)
 elseif(${UNIX})
     target_link_libraries(${PROJECT_NAME} GLEW glfw OpenGL::GL)
 endif()
