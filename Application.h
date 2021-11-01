@@ -30,8 +30,7 @@ private:
     std::shared_ptr<GuiState> m_guiState;
     std::shared_ptr<Scene> m_sceneView;
 
-    GLuint FramebufferName;
-    ViewportMode m_mode;
+    ViewportMode m_mode = ViewportMode::Selection;
     int m_width;
     int m_height;
 };

@@ -10,8 +10,8 @@
 
 class IO {
 public:
-    static void save_scene(const std::shared_ptr<Scene>& scene, const std::string& filePath);
-    static void open_scene(const std::string& filePath, std::shared_ptr<Scene>& scene);
+    static void save_scene(const Scene *scene, const std::string& filePath);
+    static void open_scene(const std::string& filePath, Scene *scene);
 };
 
 

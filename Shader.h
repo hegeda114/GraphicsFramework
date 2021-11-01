@@ -14,9 +14,11 @@ private:
         #version 410 core
         layout(location = 0) in vec4 position;
 
+        uniform mat4 viewProjMatrix;
+
         void main()
         {
-           gl_Position = position;
+           gl_Position = position * viewProjMatrix;
         }
     )";
     const std::string m_fragmentShader  = R"(
@@ -39,6 +41,8 @@ public:
     void createShader();
 
     void setColor(const glm::vec4& color) const;
+
+    void setViewProjMatrix(const glm::mat4& vpm) const;
 
     void use() const;
 };

@@ -61,3 +61,14 @@ void Shader::use() const {
 Shader::~Shader() {
     glDeleteProgram(m_shaderProgramId);
 }
+
+void Shader::setViewProjMatrix(const glm::mat4 &viewMx) const {
+    const GLfloat matrix[16] = {
+            viewMx[0][0], viewMx[0][1], viewMx[0][2], viewMx[0][3],
+            viewMx[1][0], viewMx[1][1], viewMx[1][2], viewMx[1][3],
+            viewMx[2][0], viewMx[2][1], viewMx[2][2], viewMx[2][3],
+            viewMx[3][0], viewMx[3][1], viewMx[3][2], viewMx[3][3]
+    };
+    int colorLocation = glGetUniformLocation(m_shaderProgramId, "viewProjMatrix");
+    glUniformMatrix4fv(colorLocation, 1, GL_TRUE, matrix);
+}

@@ -7,9 +7,15 @@
 
 
 #include "../Scene.h"
+#include "GuiState.h"
 
-struct SettingsWindow {
-    static void create(Scene* scene);
+class SettingsWindow {
+private:
+    static ViewportMode viewportMode;
+    static bool savePopup(Scene *scene);
+    static bool loadPopup(Scene *scene);
+public:
+    static void create(Scene *scene, GuiState *guiState);
 };
 
 

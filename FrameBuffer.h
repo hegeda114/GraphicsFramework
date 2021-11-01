@@ -10,8 +10,8 @@ class FrameBuffer {
 private:
     unsigned int m_fbo = -1;
     unsigned int m_texture = -1;
-    unsigned int m_width;
-    unsigned int m_height;
+    unsigned int m_width = 800;
+    unsigned int m_height = 800;
 
 public:
     FrameBuffer() = default;

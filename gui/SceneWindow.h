@@ -10,6 +10,8 @@
 
 struct SceneWindow {
     static void create(const Scene& scene);
+    static ImVec2 sceneWindowCurrentPos;
+    static ImVec2 sceneWindowCurrentSize;
 };
 
 

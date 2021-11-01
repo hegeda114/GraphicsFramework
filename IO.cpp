@@ -7,7 +7,7 @@
 #include <sstream>
 #include "IO.h"
 
-void IO::save_scene(const std::shared_ptr<Scene>& scene, const std::string &filePath) {
+void IO::save_scene(const Scene *scene, const std::string &filePath) {
     std::ofstream sceneFile(filePath + ".txt");
 
     if (!sceneFile.is_open()) {
@@ -34,7 +34,7 @@ void IO::save_scene(const std::shared_ptr<Scene>& scene, const std::string &file
     sceneFile.close();
 }
 
-void IO::open_scene(const std::string &filePath, std::shared_ptr<Scene>& scene) {
+void IO::open_scene(const std::string &filePath, Scene *scene) {
     scene->clearAllObject();
     std::ifstream sceneFile(filePath + ".txt");
 

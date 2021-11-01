@@ -14,8 +14,10 @@ void Scene::init() {
     m_shader = std::make_unique<Shader>();
     m_shader->createShader();
 
+    m_camera = std::make_unique<OrthogonalCamera>();
+
     m_frameBuffer = std::make_unique<FrameBuffer>();
-    m_frameBuffer->createBuffer(500, 500);
+    m_frameBuffer->createBuffer(800, 800);
 
 //    auto point1 = this->addPoint(glm::vec2(0, 0));
 //    point1->setStatic(true);
@@ -99,34 +101,6 @@ void Scene::render() {
     }
 
     m_frameBuffer->unbind();
-
-//    mShader->use();
-//
-//    mLight->update(mShader.get());
-//
-//    mFrameBuffer->bind();
-//
-//    if (mMesh)
-//    {
-//      mMesh->update(mShader.get());
-//      mMesh->render();
-//    }
-//
-//    mFrameBuffer->unbind();
-//
-//    ImGui::Begin("Scene");
-//
-//    ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-//    mSize = { viewportPanelSize.x, viewportPanelSize.y };
-//
-//    mCamera->set_aspect(mSize.x / mSize.y);
-//    mCamera->update(mShader.get());
-//
-//    // add rendered texture to ImGUI scene window
-//    uint64_t textureID = mFrameBuffer->get_texture();
-//    ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ mSize.x, mSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-//
-//    ImGui::End();
 }
 
 void Scene::inputEvent(double x, double y, MouseButton button, ViewportMode mode) {
@@ -165,7 +139,6 @@ void Scene::inputEvent(double x, double y, MouseButton button, ViewportMode mode
 
     if(mode == ViewportMode::Selection) {
         if(m_mouseLeftPressActive && (lastMouseLeftPressActive != m_mouseLeftPressActive)) {
-            printf("lent\n");
             for(const auto& point : m_points) {
                 if(point->isInside(x, y)) {
                     setActiveObject(point->getId());
@@ -195,6 +168,11 @@ std::shared_ptr<Point> Scene::addPoint(std::shared_ptr<Point> object) {
     m_objects.insert(std::make_pair(object->getId(), object));
     m_points.push_back(object);
     return object;
+}
+
+void Scene::addStaticPoint(glm::vec2 position) {
+    auto object = addPoint(position);
+    object->setStatic(true);
 }
 
 void Scene::addSpring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j, float stretchnig, float dampingCoeffitient, float defaultLengeth) {
@@ -242,13 +220,6 @@ const std::shared_ptr<Object> &Scene::getActiveObject() const {
     throw std::out_of_range("Get active object when active object id is -1!");
 }
 
-void Scene::addStaticPoint(glm::vec2 position) {
-    auto object = std::make_shared<Point>(position);
-    object->setStatic(true);
-    m_objects.insert(std::make_pair(object->getId(), std::move(object)));
-    m_points.push_back(object);
-}
-
 std::vector<std::shared_ptr<Point>> Scene::getPoints() const {
     return m_points;
 }
@@ -287,6 +258,12 @@ int Scene::getActiveObjectId() const {
 
 unsigned int Scene::getRenderTextureId() const {
     return m_frameBuffer->getRenderedTexture();
+}
+
+void Scene::updateCamera(float width, float height) const {
+    m_shader->use();
+    m_camera->setAspectRation(width / height);
+    m_camera->update(m_shader.get());
 }
 
 

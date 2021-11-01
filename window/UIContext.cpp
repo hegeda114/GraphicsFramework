@@ -103,8 +103,6 @@ void UIContext::post_render() {
 }
 
 void UIContext::render() {
-    //static bool open = true;
-    //ImGui::ShowDemoWindow(&open);
     ImGui::Begin("InvisibleWindow", nullptr, m_windowFlags);
         ImGui::AlignTextToFramePadding();
         ImGui::SetWindowSize({300, m_viewport->Size.y});
@@ -142,62 +140,7 @@ std::shared_ptr<GuiState> UIContext::getGuiState() const {
 }
 
 void UIContext::guiAddElements() {
-    static bool saveFileDialog = false;
-    static bool openFileDialog = false;
 
-    if (ImGui::CollapsingHeader("Add Elements", ImGuiTreeNodeFlags_DefaultOpen)) {
-        if(ImGui::Button("Create Point")) {
-            m_scene->addPoint(glm::vec2(0, 0));
-        }
-        if(ImGui::Button("Create Static Point")) {
-            m_scene->addStaticPoint({0, 0});
-        }
-        if(ImGui::Button("Save Scene")) {
-            saveFileDialog = true;
-        }
-        if(ImGui::Button("Load Scene")) {
-            openFileDialog = true;
-        }
-    }
-
-    if(saveFileDialog) {
-        ImGui::OpenPopup("Save File Dialog");
-        if (ImGui::BeginPopup("Save File Dialog")) {
-            static char buf[30] = { 0 };
-            ImGui::InputText("File path", buf, IM_ARRAYSIZE(buf));
-
-            ImGui::Spacing();
-
-            if (ImGui::Button("Save File")) {
-                IO::save_scene(m_scene, buf);
-                saveFileDialog = false;
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Cancel")) {
-                saveFileDialog = false;
-            }
-            ImGui::EndPopup();
-        }
-    }
-    if(openFileDialog) {
-        ImGui::OpenPopup("Open File Dialog");
-        if (ImGui::BeginPopup("Open File Dialog")) {
-            static char buf[30] = { 0 };
-            ImGui::InputText("File path", buf, IM_ARRAYSIZE(buf));
-
-            ImGui::Spacing();
-
-            if (ImGui::Button("Open File")) {
-                IO::open_scene(buf, m_scene);
-                openFileDialog = false;
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Cancel")) {
-                openFileDialog = false;
-            }
-            ImGui::EndPopup();
-        }
-    }
 }
 
 void UIContext::guiGlobalSettings() {

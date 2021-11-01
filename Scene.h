@@ -13,6 +13,7 @@
 #include "object/Point.h"
 #include "object/Spring.h"
 #include "FrameBuffer.h"
+#include "camera/OrthogonalCamera.h"
 
 class Scene {
 public:
@@ -48,12 +49,15 @@ public:
 
     void clearAllObject();
 
+    void updateCamera(float width, float height) const;
+
 private:
     std::map<size_t, std::shared_ptr<Object>> m_objects;
     std::vector<std::shared_ptr<Point>> m_points;
     std::vector<std::shared_ptr<Spring>> m_springs;
     std::unique_ptr<GlobalSimulationSettings> m_globalSimulationSettings;
     std::unique_ptr<Shader> m_shader;
+    std::unique_ptr<OrthogonalCamera> m_camera;
     std::unique_ptr<FrameBuffer> m_frameBuffer;
     int m_activeObjectId = -1;
 

@@ -18,7 +18,7 @@ void Gui::renderGui() {
     OutlinerWindow::create(m_scene.get());
     SceneWindow::create(*m_scene);
     SelectedObjectSettingsWindow::create(m_scene.get());
-    SettingsWindow::create(m_scene.get());
+    SettingsWindow::create(m_scene.get(), m_guiState.get());
     GlobalSettingsWindow::create(m_scene.get());
 }
 
