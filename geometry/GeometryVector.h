@@ -10,18 +10,18 @@
 
 class GeometryVector : public Geometry {
 private:
-    glm::vec2 startPoint;
-    glm::vec2 endPoint;
-    double lineWidth = 2;
+    glm::vec2 m_startPoint;
+    glm::vec2 m_endPoint;
+    GLfloat m_lineWidth = 2;
 public:
-    GeometryVector(glm::vec2 start, glm::vec2 end);
+    GeometryVector(const glm::vec2& start, const glm::vec2& end);
 
     void create() override;
-    void draw() override;
+    void draw() const override;
 
-    void setStartPoint(glm::vec2 start);
-    void setEndPoint(glm::vec2 end);
-    void setLineWidth(double width);
+    void setStartPoint(const glm::vec2& start);
+    void setEndPoint(const glm::vec2& end);
+    void setLineWidth(float width);
 };
 
 

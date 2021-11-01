@@ -4,7 +4,7 @@
 
 #include <sstream>
 #include "Spring.h"
-#include "../geometry/GeometryLine.h"
+#include "../geometry/GeometrySpring.h"
 
 int Spring::lastSpringId = 1;
 
@@ -13,7 +13,7 @@ int Spring::nextSpringId() {
 }
 
 Spring::Spring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j, float stretching, float dampingCoefficient, float defaultLength) :
-   Object(std::make_unique<GeometryLine>(i->getSimulationProperties()->getPosition(), j->getSimulationProperties()->getPosition()),
+   Object(std::make_unique<GeometrySpring>(i->getSimulationProperties()->getPosition(), j->getSimulationProperties()->getPosition()),
    std::make_unique<SimulationProperties>(glm::vec2(0, 0))), m_i(i), m_j(j) {
     m_name = std::string("Spring_") + std::to_string(nextSpringId());
     m_ks = stretching;
@@ -41,9 +41,9 @@ glm::vec2 Spring::calcForce(glm::vec2 posDiff, glm::vec2 velDiff) const {
     return (posDiff / lenposdiff) * m_ks * (lenposdiff - m_l0); //TODO ezt pontosítani!
 }
 
-void Spring::connectionChangedEvent() {
-    dynamic_cast<GeometryLine&>(*m_geometry).setStartPoint(m_i->getSimulationProperties()->getPosition());
-    dynamic_cast<GeometryLine&>(*m_geometry).setEndPoint(m_j->getSimulationProperties()->getPosition());
+void Spring::connectionChangedEvent() const {
+    dynamic_cast<GeometrySpring&>(*m_geometry).setStartPoint(m_i->getSimulationProperties()->getPosition());
+    dynamic_cast<GeometrySpring&>(*m_geometry).setEndPoint(m_j->getSimulationProperties()->getPosition());
 }
 
 ObjectType Spring::getType() const {
@@ -51,11 +51,9 @@ ObjectType Spring::getType() const {
 }
 
 std::string Spring::getSerializedData() const {
-    //TODO: m_name-be ne lehessen speciális karakter, és max hossza is legyen!
-    //(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j, float stretching, float dampingCoefficient, float defaultLength
     char buffer [200];
     std::string is_static = "true";
-    if(!m_static) is_static = "false";
+    if(!m_static) {is_static = "false"; }
     sprintf(buffer, "%s;%s;%f;%f;%f;%s", m_i->getName().c_str(), m_j->getName().c_str(), m_ks, m_kd, m_l0, m_name.c_str());
     return buffer;
 }

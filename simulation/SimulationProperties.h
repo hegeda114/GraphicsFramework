@@ -7,7 +7,7 @@
 
 #include <vector>
 #include "glm.hpp"
-#include "SimulationState.h"
+#include "GlobalSimulationSettings.h"
 
 class SimulationProperties {
 protected:
@@ -22,7 +22,7 @@ public:
     void addForce(double x, double y);
     void addForce(const glm::vec2& force);
     void clearForces();
-    glm::vec2 getResultaltForces() const;
+    glm::vec2 getResultantForces() const;
 
     void setPosition(double x, double y);
     void setPosition(const glm::vec2& position);
@@ -32,7 +32,7 @@ public:
     void setVelocity(const glm::vec2& velocity);
     const glm::vec2& getVelocity() const;
 
-    void explicitEuler(const SimulationState& simState);
+    void explicitEuler(const GlobalSimulationSettings* globalSimulationSettings);
 };
 
 

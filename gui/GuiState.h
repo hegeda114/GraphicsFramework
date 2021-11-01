@@ -5,10 +5,10 @@
 #ifndef GRAPHICSFRAMEWORK_GUISTATE_H
 #define GRAPHICSFRAMEWORK_GUISTATE_H
 
-#include "../simulation/SimulationState.h"
+#include "../simulation/GlobalSimulationSettings.h"
 
 struct GuiState {
-    SimulationState currentSimState = SimulationState();
+    GlobalSimulationSettings currentSimState = GlobalSimulationSettings(SimulationMode::ExplicitEuler, 1.0/60.0);
     size_t fps = 0;
     bool renderStop = true;
     bool delayOn = false;

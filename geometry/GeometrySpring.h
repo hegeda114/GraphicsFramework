@@ -1,20 +1,21 @@
 //
-// Created by hegeda on 2021-10-16.
+// Created by hegeda on 2021-11-01.
 //
 
-#ifndef GRAPHICSFRAMEWORK_GEOMETRYLINE_H
-#define GRAPHICSFRAMEWORK_GEOMETRYLINE_H
+#ifndef GRAPHICSFRAMEWORK_GEOMETRYSPRING_H
+#define GRAPHICSFRAMEWORK_GEOMETRYSPRING_H
 
 #include "glm.hpp"
 #include "Geometry.h"
 
-class GeometryLine : public Geometry {
+class GeometrySpring : public Geometry {
 private:
     glm::vec2 m_startPoint;
     glm::vec2 m_endPoint;
     GLfloat m_lineWidth = 2;
+    static const size_t m_count = 30;
 public:
-    GeometryLine(const glm::vec2& start, const glm::vec2& end);
+    GeometrySpring(const glm::vec2& start, const glm::vec2& end);
 
     void create() override;
     void draw() const override;
@@ -25,4 +26,4 @@ public:
 };
 
 
-#endif //GRAPHICSFRAMEWORK_GEOMETRYLINE_H
+#endif //GRAPHICSFRAMEWORK_GEOMETRYSPRING_H

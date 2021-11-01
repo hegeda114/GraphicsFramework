@@ -2,7 +2,6 @@
 // Created by hegeda on 2021-09-28.
 //
 
-#include <iostream>
 #include <memory>
 #include "Application.h"
 

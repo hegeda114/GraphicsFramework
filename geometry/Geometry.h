@@ -7,9 +7,10 @@
 
 #include <glew.h>
 #include <vector>
+#include <memory>
 #include "glm.hpp"
-#include "../simulation/SimulationState.h"
-#include "../Shaders.h"
+#include "../simulation/GlobalSimulationSettings.h"
+#include "../Shader.h"
 
 class Geometry {
 protected:
@@ -42,8 +43,9 @@ public:
         glGenBuffers(1, &vbo);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
     }
+    virtual void update(const Shader* shader) const;
     virtual void create() = 0;
-    virtual void draw() = 0;
+    virtual void draw() const = 0;
 
     void setPosition(const glm::vec2& position);
 

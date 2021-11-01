@@ -34,7 +34,6 @@ ObjectType Point::getType() const {
 }
 
 std::string Point::getSerializedData() const {
-    //TODO: m_name-be ne lehessen speciális karakter, és max hossza is legyen!
     char buffer [200];
     std::string is_static = "true";
     if(!m_static) is_static = "false";

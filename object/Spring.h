@@ -50,7 +50,7 @@ public:
     /**
      * Refreshes the start and end position of the spring, based on the spring's points position.
      */
-    void connectionChangedEvent() override;
+    void connectionChangedEvent() const override;
 
     ObjectType getType() const override;
 

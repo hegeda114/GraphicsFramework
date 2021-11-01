@@ -15,3 +15,7 @@ void Geometry::setColorToDefault() {
 void Geometry::setPosition(const glm::vec2 &position) {
     m_position = position;
 }
+
+void Geometry::update(const Shader* shader) const {
+    shader->setColor(m_color);
+}

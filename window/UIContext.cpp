@@ -6,6 +6,8 @@
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
+
+#include <utility>
 #include "../IO.h"
 
 void UIContext::pre_render() {
@@ -14,8 +16,7 @@ void UIContext::pre_render() {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    // Create the docking environment
-    m_windowFlags = /*ImGuiWindowFlags_NoTitleBar |*/ ImGuiWindowFlags_NoResize;
+    m_windowFlags = /*ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize*/0;
 
     m_viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(m_viewport->Pos);
@@ -28,12 +29,21 @@ void UIContext::pre_render() {
 void UIContext::post_render() {
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    // TODO ez kell?
+//    ImGuiIO& io = ImGui::GetIO();
+//
+//    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+//    {
+//        GLFWwindow* backup_current_context = glfwGetCurrentContext();
+//        ImGui::UpdatePlatformWindows();
+//        ImGui::RenderPlatformWindowsDefault();
+//        glfwMakeContextCurrent(backup_current_context);
+//    }
 }
 
-bool UIContext::init(std::shared_ptr<Window> parentWindow, std::shared_ptr<Scene> scene) {
-    this->m_guiState = std::make_shared<GuiState>();
-    this->m_parentWindow = parentWindow;
-    this->m_scene = scene;
+bool UIContext::init(std::shared_ptr<Window> parentWindow) {
+    this->m_parentWindow = std::move(parentWindow);
     const char* glsl_version = "#version 410";
 
     // Setup Dear ImGui context
@@ -114,12 +124,6 @@ void UIContext::render() {
 
 std::shared_ptr<GuiState> UIContext::getGuiState() const {
     return m_guiState;
-}
-
-bool UIContext::isSimStateChanged() {
-    bool res = m_simStateChanged;
-    m_simStateChanged = false;
-    return res;
 }
 
 void UIContext::guiAddElements() {
@@ -209,7 +213,6 @@ void UIContext::guiGlobalSettings() {
             m_guiState->currentSimState.setGravity({gravity[0], gravity[1]});
             m_guiState->currentSimState.setTimestep(timestep);
             m_guiState->currentSimState.setSimMode(static_cast<SimulationMode>(item_current));
-            m_simStateChanged = true;
         }
 
         ImGui::Spacing();

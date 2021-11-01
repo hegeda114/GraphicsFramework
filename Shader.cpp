@@ -1,14 +1,12 @@
 //
-// Created by hegeda on 2021-02-10.
+// Created by hegeda on 2021-11-01.
 //
 
-#include "Shaders.h"
+#include "Shader.h"
 #include <iostream>
 #include "glew.h"
 
-unsigned int Shaders::shaderProgramId = 0;
-
-unsigned int Shaders::CompileShader(unsigned int type, const std::string& src) {
+unsigned int Shader::compileShader(unsigned int type, const std::string& src) {
     unsigned int id = glCreateShader(type);
     const char* source = src.c_str();
     glShaderSource(id, 1, &source, nullptr);
@@ -35,10 +33,10 @@ unsigned int Shaders::CompileShader(unsigned int type, const std::string& src) {
     return id;
 }
 
-void Shaders::CreateShader() {
+void Shader::createShader() {
     unsigned int program = glCreateProgram();
-    unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
-    unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
+    unsigned int vs = compileShader(GL_VERTEX_SHADER, m_vertexShader);
+    unsigned int fs = compileShader(GL_FRAGMENT_SHADER, m_fragmentShader);
 
     glAttachShader(program, vs);
     glAttachShader(program, fs);
@@ -48,11 +46,18 @@ void Shaders::CreateShader() {
     glDeleteShader(vs);
     glDeleteShader(fs);
 
-    shaderProgramId = program;
+    m_shaderProgramId = program;
 }
 
-void Shaders::Bind() {
-    //setting uniforms TODO karban tartani
-    int colorLocation = glGetUniformLocation(Shaders::shaderProgramId, "color");
-    glUniform4f(colorLocation, 0.7, 0.7, 0.7, 1);
+void Shader::setColor(const glm::vec4& color) const {
+    int colorLocation = glGetUniformLocation(m_shaderProgramId, "color");
+    glUniform4f(colorLocation, color.x, color.y, color.z, color.w);
+}
+
+void Shader::use() const {
+    glUseProgram(m_shaderProgramId);
+}
+
+Shader::~Shader() {
+    glDeleteProgram(m_shaderProgramId);
 }

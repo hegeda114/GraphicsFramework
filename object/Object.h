@@ -131,7 +131,7 @@ public:
      * Sets the name of the object.
      * @param newName The new name of the object.
      */
-    void setName(const std::string& newName);
+    bool setName(const std::string& newName);
 
     /**
      * Returns the id of the object.
@@ -156,12 +156,12 @@ public:
      * Simulates the object with the given simulation state.
      * @param simState The simulation state for the simulation.
      */
-    void simulate(SimulationState simState);
+    void simulate(const GlobalSimulationSettings* globalSimulationSettings);
 
     /**
      * Sets up and renders the helper geometries.
      */
-    void showHelpers();
+    void renderHelpers(const Shader* shader);
 
     /**
      * Sets the show velocity flag to the given value.
@@ -178,23 +178,23 @@ public:
     /**
      * Creates and draws the geometry of the object.
      */
-    void createAndDraw();
+    void render(const Shader* shader) const;
 
     /**
      * Default implementation is empty.
      * This function is useful, when an object depends on some other object's position. It will be called for all connections of an object, is the object moves.
      */
-    virtual void connectionChangedEvent() {};
+    virtual void connectionChangedEvent() const {};
 
     /**
      * Adds the object to the list of connected objects.
      * @param object
      */
-    void addConnection(std::shared_ptr<Object> object);
+    void addConnection(const std::shared_ptr<Object>& object);
 
     virtual ObjectType getType() const = 0;
 
-    void setPosition(glm::vec2 position);
+    void setPosition(const glm::vec2& position);
 
     virtual std::string getSerializedData() const = 0;
 

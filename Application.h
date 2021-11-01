@@ -12,8 +12,9 @@
 #include <thread>
 
 #include "window/Window.h"
-#include "ui/UIContext.h"
+#include "window/UIContext.h"
 #include "Scene.h"
+#include "gui/Gui.h"
 
 class Application {
 public:
@@ -25,9 +26,9 @@ private:
 
     std::shared_ptr<Window> m_mainWindow;
     std::unique_ptr<UIContext> m_uiContext;
+    std::unique_ptr<Gui> m_gui;
     std::shared_ptr<GuiState> m_guiState;
     std::shared_ptr<Scene> m_sceneView;
-    std::unique_ptr<Shaders> m_basicShaders;
 
     GLuint FramebufferName;
     ViewportMode m_mode;

@@ -11,12 +11,13 @@
 class GeometryPoint : public Geometry {
 private:
     double m_radius = 0.01;
+    static const size_t m_resolution = 100;
 
 public:
-    explicit GeometryPoint(glm::vec2 position, double radius);
+    explicit GeometryPoint(const glm::vec2& position, double radius);
 
     void create() final;
-    void draw() final;
+    void draw() const final;
 };
 
 

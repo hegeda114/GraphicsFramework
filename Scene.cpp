@@ -3,12 +3,19 @@
 //
 
 #include <memory>
+#include <imgui.h>
 #include "Scene.h"
 
 void Scene::init() {
     // Init simulation state
-    m_simulationState = SimulationState(SimulationMode::ExplicitEuler, 1.0/60.0);
-    m_simulationState.setBoundingBox(1.0, 1.0, -1.0, -1.0);
+    m_globalSimulationSettings = std::make_unique<GlobalSimulationSettings>(SimulationMode::ExplicitEuler, 1.0/60.0);
+    m_globalSimulationSettings->setBorders(1.0, 1.0, -1.0, -1.0);
+
+    m_shader = std::make_unique<Shader>();
+    m_shader->createShader();
+
+    m_frameBuffer = std::make_unique<FrameBuffer>();
+    m_frameBuffer->createBuffer(500, 500);
 
 //    auto point1 = this->addPoint(glm::vec2(0, 0));
 //    point1->setStatic(true);
@@ -63,7 +70,7 @@ void Scene::init() {
 
 void Scene::simulate() {
     double frame_rate = 1.0/60.0;
-    int iteration = ceil(frame_rate / m_simulationState.getTimestep());
+    int iteration = ceil(frame_rate / m_globalSimulationSettings->getTimestep());
     for(int i = 0; i < iteration; i++) {
         // calculate spring forces for each springs
         for(const auto& spring : m_springs) {
@@ -71,21 +78,69 @@ void Scene::simulate() {
         }
         // calculate other forces for each points
         for(const auto& point : m_points) {
-            point->getSimulationProperties()->addForce(m_simulationState.getGravity()); // add gravity
+            point->getSimulationProperties()->addForce(m_globalSimulationSettings->getGravity()); // add gravity
         }
         //calculate new position and velocity
         for(const auto& point : m_points) {
-            point->simulate(m_simulationState);
+            point->simulate(m_globalSimulationSettings.get());
         }
     }
 }
 
 void Scene::render() {
+    m_shader->use();
+
+    m_frameBuffer->bind();
+
     for(const auto &objectPair : m_objects) {
         const auto &object = objectPair.second;
-        object->createAndDraw();
-        object->showHelpers();
+        object->render(m_shader.get());
+        object->renderHelpers(m_shader.get());
     }
+
+    m_frameBuffer->unbind();
+
+//    ImGui::Begin("Scene");
+//
+//    ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+//    glm::vec2 mSize = { viewportPanelSize.x, viewportPanelSize.y };
+//
+//    //mCamera->set_aspect(mSize.x / mSize.y);
+//    //mCamera->update(mShader.get());
+//
+//    // add rendered texture to ImGUI scene window
+//    uint64_t textureID = m_frameBuffer->getRenderedTexture();
+//    ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ mSize.x, mSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+//
+//    ImGui::End();
+
+//    mShader->use();
+//
+//    mLight->update(mShader.get());
+//
+//    mFrameBuffer->bind();
+//
+//    if (mMesh)
+//    {
+//      mMesh->update(mShader.get());
+//      mMesh->render();
+//    }
+//
+//    mFrameBuffer->unbind();
+//
+//    ImGui::Begin("Scene");
+//
+//    ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+//    mSize = { viewportPanelSize.x, viewportPanelSize.y };
+//
+//    mCamera->set_aspect(mSize.x / mSize.y);
+//    mCamera->update(mShader.get());
+//
+//    // add rendered texture to ImGUI scene window
+//    uint64_t textureID = mFrameBuffer->get_texture();
+//    ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ mSize.x, mSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+//
+//    ImGui::End();
 }
 
 void Scene::inputEvent(double x, double y, MouseButton button, ViewportMode mode) {
@@ -143,11 +198,7 @@ void Scene::move_to_home(double x, double y) {
     currentObject->setFix(true);
 }
 
-void Scene::setSimulationState(SimulationState simulationState) {
-    this->m_simulationState = simulationState;
-}
-
-std::shared_ptr<Point> Scene::addPoint(glm::vec2 position) {
+std::shared_ptr<Point> Scene::addPoint(const glm::vec2& position) {
     auto object = std::make_shared<Point>(position);
     m_objects.insert(std::make_pair(object->getId(), object));
     m_points.push_back(object);
@@ -234,6 +285,14 @@ const std::shared_ptr<Object> &Scene::getObjectByName(const std::string &objectN
         }
     }
     throw std::out_of_range("Name is not exist!");
+}
+
+const std::unique_ptr<GlobalSimulationSettings> &Scene::getGlobalSimulationSettings() const {
+    return m_globalSimulationSettings;
+}
+
+void Scene::setGlobalSimulationSettings(std::unique_ptr<GlobalSimulationSettings> globalSimulationSettings) {
+    m_globalSimulationSettings = std::move(globalSimulationSettings);
 }
 
 

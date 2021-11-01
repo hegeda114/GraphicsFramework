@@ -8,8 +8,7 @@ using namespace std::chrono;
 
 
 Application::Application(const std::string& app_name) {
-    m_width = 800;
-    //m_width = 1200;
+    m_width = 1200;
     m_height = 800;
 
     m_mainWindow = std::make_unique<Window>(app_name);
@@ -19,13 +18,12 @@ Application::Application(const std::string& app_name) {
     m_sceneView->init();
 
     m_uiContext = std::make_unique<UIContext>();
-    m_uiContext->init(m_mainWindow, m_sceneView);
+    m_uiContext->init(m_mainWindow);
 
-    m_guiState = m_uiContext->getGuiState();
+    m_gui = std::make_unique<Gui>();
+    m_gui->init(m_sceneView);
 
-    m_basicShaders = std::make_unique<Shaders>();
-    m_basicShaders->CreateShader();
-    glUseProgram(Shaders::shaderProgramId);
+    m_guiState = m_gui->getGuiState();
 
 //    // The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth buffer.
 //    FramebufferName = 0;
@@ -67,11 +65,14 @@ void Application::loop() {
         m_uiContext->pre_render();
 
         // simulation and render
+        //TODO mSceneView->render();
         if(!m_guiState->renderStop && (!m_guiState->delayOn || (m_guiState->delayOn && past_time < 0))) {
             m_sceneView->simulate();
         }
         m_sceneView->render();
-        m_uiContext->render();
+
+        m_gui->renderGui();
+        //m_uiContext->render(); //TODO mPropertyPanel->render(mSceneView.get());
 
         // post render
         m_uiContext->post_render();
@@ -82,7 +83,7 @@ void Application::loop() {
         duration<float> duration = (high_resolution_clock::now() - start);
         if(counter > 20) {
             counter = 0;
-            m_uiContext->getGuiState()->fps = (int) (1.0f / duration.count());
+            m_gui->getGuiState()->fps = (int) (1.0f / duration.count());
         }
 
         if(m_guiState->delayOn) {
@@ -120,7 +121,5 @@ void Application::handleInput() {
 
     m_sceneView->inputEvent(wxPos, wyPos, Input::GetPressedButton(winPtr), m_mode);
 
-    if(m_uiContext->isSimStateChanged()) {
-        m_sceneView->setSimulationState(m_guiState->currentSimState);
-    }
+    //TODO m_sceneView->setGlobalSimulationSettings(std::make_unique<GlobalSimulationSettings>(m_guiState->currentSimState));
 }

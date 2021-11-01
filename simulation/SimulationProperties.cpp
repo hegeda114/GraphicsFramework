@@ -25,7 +25,7 @@ void SimulationProperties::addForce(const glm::vec2 &force) {
     m_forces.push_back(force);
 }
 
-glm::vec2 SimulationProperties::getResultaltForces() const {
+glm::vec2 SimulationProperties::getResultantForces() const {
     glm::vec2 forcesSum = {0, 0};
     for (const auto& force : m_forces) {
         forcesSum += force;
@@ -33,12 +33,12 @@ glm::vec2 SimulationProperties::getResultaltForces() const {
     return forcesSum;
 }
 
-void SimulationProperties::explicitEuler(const SimulationState &simState) {
-    double timestep = simState.getTimestep();
-    glm::vec2 resultaltForce = getResultaltForces();
+void SimulationProperties::explicitEuler(const GlobalSimulationSettings* globalSimulationSettings) {
+    double timestep = globalSimulationSettings->getTimestep();
+    glm::vec2 resultantForce = getResultantForces();
 
-    m_velocity.x += resultaltForce.x * (float) timestep;
-    m_velocity.y += resultaltForce.y * (float) timestep;
+    m_velocity.x += resultantForce.x * (float) timestep;
+    m_velocity.y += resultantForce.y * (float) timestep;
     m_position.x += m_velocity.x * (float) timestep;
     m_position.y += m_velocity.y * (float) timestep;
     m_forces.clear();

@@ -50,8 +50,12 @@ int Object::getId() const {
     return m_id;
 }
 
-void Object::setName(const std::string &newName) {
+bool Object::setName(const std::string &newName) {
+    if(newName.find('\\') != std::string::npos || newName.find(';') != std::string::npos || newName.length() > 30) {
+        return false;
+    }
     m_name = newName;
+    return true;
 }
 
 const std::unique_ptr<Geometry> &Object::getGeometry() const {
@@ -78,12 +82,12 @@ void Object::move(double toX, double toY) {
     }
 }
 
-void Object::simulate(SimulationState simState) {
+void Object::simulate(const GlobalSimulationSettings* globalSimulationSettings) {
     if(m_fix || m_static) {
         return;
     }
-    if(simState.getSimMode() == SimulationMode::ExplicitEuler) {
-        m_simulationProperties->explicitEuler(simState);
+    if(globalSimulationSettings->getSimMode() == SimulationMode::ExplicitEuler) {
+        m_simulationProperties->explicitEuler(globalSimulationSettings);
     }
 
     m_pivot = m_simulationProperties->getPosition();
@@ -93,21 +97,23 @@ void Object::simulate(SimulationState simState) {
     }
 }
 
-void Object::showHelpers() {
+void Object::renderHelpers(const Shader *shader) {
     if (m_fix) {
         return;
     }
     if(m_showVelocity) {
         m_velocityVector.setStartPoint(m_pivot);
         m_velocityVector.setEndPoint(m_pivot + 0.05f * m_simulationProperties->getVelocity());
+        m_velocityVector.update(shader);
         m_velocityVector.create();
 
         m_velocityVector.draw();
     }
     if(m_showForces) {
         m_forceVector.setStartPoint(m_pivot);
-        glm::vec2 forcesSum = m_simulationProperties->getResultaltForces();
+        glm::vec2 forcesSum = m_simulationProperties->getResultantForces();
         m_forceVector.setEndPoint(m_pivot - 0.5f*forcesSum);
+        m_forceVector.update(shader);
         m_forceVector.create();
 
         m_forceVector.draw();
@@ -122,16 +128,17 @@ void Object::setShowForces(bool showForces) {
     this->m_showForces = showForces;
 }
 
-void Object::createAndDraw() {
+void Object::render(const Shader* shader) const {
+    m_geometry->update(shader);
     m_geometry->create();
     m_geometry->draw();
 }
 
-void Object::addConnection(std::shared_ptr<Object> object) {
+void Object::addConnection(const std::shared_ptr<Object>& object) {
     m_connections.emplace_back(object);
 }
 
-void Object::setPosition(glm::vec2 position) {
+void Object::setPosition(const glm::vec2& position) {
     m_pivot = position;
     m_simulationProperties->setPosition(position);
 }
