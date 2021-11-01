@@ -11,7 +11,7 @@ class Shader {
 private:
     unsigned int m_shaderProgramId = -1;
     const std::string m_vertexShader = R"(
-        #version 330 core
+        #version 410 core
         layout(location = 0) in vec4 position;
 
         void main()
@@ -20,7 +20,7 @@ private:
         }
     )";
     const std::string m_fragmentShader  = R"(
-        #version 330 core
+        #version 410 core
         precision highp float;
 
         uniform vec4 color;

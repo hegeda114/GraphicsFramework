@@ -16,9 +16,9 @@
 class UIContext {
 public:
     bool init(std::shared_ptr<Window> parentWindow);
-    void pre_render();
+    static void pre_render();
     void render();
-    void post_render();
+    static void post_render();
 
     std::shared_ptr<GuiState> getGuiState() const;
     int m_selectedObjectId = -1;

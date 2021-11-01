@@ -5,9 +5,10 @@
 #ifndef GRAPHICSFRAMEWORK_OUTLINERWINDOW_H
 #define GRAPHICSFRAMEWORK_OUTLINERWINDOW_H
 
+#include "../Scene.h"
 
 struct OutlinerWindow {
-    static void create();
+    static void create(Scene* scene);
 };
 
 

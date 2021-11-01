@@ -22,19 +22,22 @@ public:
     void simulate();
     void render();
 
+    unsigned int getRenderTextureId() const;
+
+    const std::shared_ptr<Object>& getObjectByName(const std::string& objectName) const;
     void inputEvent(double x, double y, MouseButton button, ViewportMode mode);
+
     void move_to_home(double x, double y);
-
     const std::unique_ptr<GlobalSimulationSettings>& getGlobalSimulationSettings() const;
-    void setGlobalSimulationSettings(std::unique_ptr<GlobalSimulationSettings> globalSimulationSettings);
 
+    void setGlobalSimulationSettings(std::unique_ptr<GlobalSimulationSettings> globalSimulationSettings);
     std::map<size_t, std::string> getObjects() const;
     std::vector<std::shared_ptr<Point>> getPoints() const;
-    std::vector<std::shared_ptr<Spring>> getSprings() const;
 
+    std::vector<std::shared_ptr<Spring>> getSprings() const;
     void setActiveObject(int activeObjectId);
     const std::shared_ptr<Object>& getActiveObject() const;
-    const std::shared_ptr<Object>& getObjectByName(const std::string& objectName) const;
+    int getActiveObjectId() const;
 
     // Add functions:
     std::shared_ptr<Point> addPoint(const glm::vec2& position);

@@ -17,9 +17,8 @@ private:
     std::shared_ptr<GuiState> m_guiState;
     int m_selectedObjectId = -1;
 
-    static void createMenuBar() ;
-
 public:
+    static float createMenuBar();
     void init(std::shared_ptr<Scene> scene);
     void renderGui();
     std::shared_ptr<GuiState> getGuiState() const;

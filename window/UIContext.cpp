@@ -6,41 +6,8 @@
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
-
-#include <utility>
 #include "../IO.h"
-
-void UIContext::pre_render() {
-    // Start the Dear ImGui frame
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-    m_windowFlags = /*ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize*/0;
-
-    m_viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(m_viewport->Pos);
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(3.0f, 3.0f));
-}
-
-void UIContext::post_render() {
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-    // TODO ez kell?
-//    ImGuiIO& io = ImGui::GetIO();
-//
-//    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-//    {
-//        GLFWwindow* backup_current_context = glfwGetCurrentContext();
-//        ImGui::UpdatePlatformWindows();
-//        ImGui::RenderPlatformWindowsDefault();
-//        glfwMakeContextCurrent(backup_current_context);
-//    }
-}
+#include "../gui/Gui.h"
 
 bool UIContext::init(std::shared_ptr<Window> parentWindow) {
     this->m_parentWindow = std::move(parentWindow);
@@ -52,6 +19,8 @@ bool UIContext::init(std::shared_ptr<Window> parentWindow) {
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.Fonts->AddFontFromFileTTF(R"(../fonts/Roboto-Regular.ttf)", 14.0f);
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -85,6 +54,52 @@ bool UIContext::init(std::shared_ptr<Window> parentWindow) {
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     return true;
+}
+
+void UIContext::pre_render() {
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    // Create the docking environment
+    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar |
+                                   ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+                                   ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
+                                   ImGuiWindowFlags_NoBackground;
+
+    float menuBarHeight = Gui::createMenuBar();
+
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos({viewport->Pos.x, viewport->Pos.y + menuBarHeight});
+    ImGui::SetNextWindowSize({viewport->Size.x, viewport->Size.y - menuBarHeight});
+    ImGui::SetNextWindowViewport(viewport->ID);
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+    ImGui::Begin("MainWindow", nullptr, windowFlags);
+        ImGui::PopStyleVar(3);
+        ImGuiID dockSpaceId = ImGui::GetID("MainWindowDockSpace");
+
+        ImGui::DockSpace(dockSpaceId, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
+    ImGui::End();
+}
+
+void UIContext::post_render() {
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    ImGuiIO& io = ImGui::GetIO();
+
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        GLFWwindow* backup_current_context = glfwGetCurrentContext();
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+        glfwMakeContextCurrent(backup_current_context);
+    }
 }
 
 void UIContext::render() {

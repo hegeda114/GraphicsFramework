@@ -100,20 +100,6 @@ void Scene::render() {
 
     m_frameBuffer->unbind();
 
-//    ImGui::Begin("Scene");
-//
-//    ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-//    glm::vec2 mSize = { viewportPanelSize.x, viewportPanelSize.y };
-//
-//    //mCamera->set_aspect(mSize.x / mSize.y);
-//    //mCamera->update(mShader.get());
-//
-//    // add rendered texture to ImGUI scene window
-//    uint64_t textureID = m_frameBuffer->getRenderedTexture();
-//    ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ mSize.x, mSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-//
-//    ImGui::End();
-
 //    mShader->use();
 //
 //    mLight->update(mShader.get());
@@ -293,6 +279,14 @@ const std::unique_ptr<GlobalSimulationSettings> &Scene::getGlobalSimulationSetti
 
 void Scene::setGlobalSimulationSettings(std::unique_ptr<GlobalSimulationSettings> globalSimulationSettings) {
     m_globalSimulationSettings = std::move(globalSimulationSettings);
+}
+
+int Scene::getActiveObjectId() const {
+    return m_activeObjectId;
+}
+
+unsigned int Scene::getRenderTextureId() const {
+    return m_frameBuffer->getRenderedTexture();
 }
 
 
