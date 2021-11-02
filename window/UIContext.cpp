@@ -193,7 +193,7 @@ void UIContext::guiOutput() {
     if (ImGui::CollapsingHeader("Output", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::Text("FPS:");
         ImGui::SameLine();
-        ImGui::Text("%d", m_guiState->fps);
+        ImGui::Text("%zu", m_guiState->fps);
 
 //        static float values[90] = { 0 };
 //        static int values_offset = 0;

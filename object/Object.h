@@ -198,6 +198,7 @@ public:
 
     virtual std::string getSerializedData() const = 0;
 
+    virtual ~Object() = default;
 };
 
 

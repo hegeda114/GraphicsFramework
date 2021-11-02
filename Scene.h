@@ -45,7 +45,7 @@ public:
     std::shared_ptr<Point> addPoint(std::shared_ptr<Point> object);
     void addStaticPoint(glm::vec2 position);
     void addSpring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j, float stretchnig, float dampingCoeffitient, float defaultLengeth);
-    void addSpring(std::shared_ptr<Spring> object);
+    void addSpring(const std::shared_ptr<Spring>& object);
 
     void clearAllObject();
 

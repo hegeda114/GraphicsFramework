@@ -52,7 +52,7 @@ public:
     void setColor(double red, double green, double blue, double alpha);
     void setColorToDefault();
 
-    ~Geometry() {
+    virtual ~Geometry() {
         glDeleteBuffers(1, &vbo);
         glDeleteVertexArrays(1, &vao);
     }

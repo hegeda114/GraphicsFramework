@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.17)
 project(GraphicsFramework)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -24,7 +24,7 @@ find_package(OpenGL REQUIRED)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${IMGUI_SOURCES})
 
-target_compile_options(${PROJECT_NAME} PRIVATE  -Wall -Wextra -pedantic -Werror -Wno-unused-variable -Wno-unused-parameter)
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic -Wno-unused-variable -Wno-unused-parameter -Werror) #-Werror
 
 if (${WIN32})
     target_link_libraries(${PROJECT_NAME} glew32 glfw3 imm32 OpenGL::GL)

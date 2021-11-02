@@ -19,55 +19,55 @@ void Scene::init() {
     m_frameBuffer = std::make_unique<FrameBuffer>();
     m_frameBuffer->createBuffer(800, 800);
 
-//    auto point1 = this->addPoint(glm::vec2(0, 0));
-//    point1->setStatic(true);
-//    auto point2 = this->addPoint({0.2, 0.0});
-//    point2->setShowForces(true);
-//    this->addSpring(point1, point2, 10, 0, 0.2);
-//    point2->getPhysicalProperties()->setVelocity(0.01, 0.0);
-//    auto point3 = this->addPoint({0.4, 0.0});
-//    point3->setStatic(true);
-//    this->addSpring(point2, point3, 10, 0, 0.2);
+    auto point1 = this->addPoint(glm::vec2(0, 0));
+    point1->setStatic(true);
+    auto point2 = this->addPoint({0.2, 0.0});
+    point2->setShowForces(true);
+    this->addSpring(point1, point2, 10, 0, 0.2);
+    point2->getSimulationProperties()->setVelocity(0.01, 0.0);
+    auto point3 = this->addPoint({0.4, 0.0});
+    point3->setStatic(true);
+    this->addSpring(point2, point3, 10, 0, 0.2);
 
-    int maxNum = 10;
-    float length = 0.05;
-
-    std::vector<std::shared_ptr<Point>> springs;
-    std::shared_ptr<Point> prevCol;
-    for(int i = 0; i < maxNum; i++) {
-        for(int j = 0; j < maxNum; j++) {
-            auto point = this->addPoint(glm::vec2(length*i, length*j));
-            springs.push_back(point);
-            if(i == 0) {
-                point->setStatic(true);
-            }
-            if(j == 0) {
-                prevCol = point;
-            }
-            if(j > 0) {
-                this->addSpring(prevCol, point, 10000, 0, glm::length(prevCol->getSimulationProperties()->getPosition() -
-                                                                      point->getSimulationProperties()->getPosition()));
-                prevCol = point;
-            }
-            if(i > 0) {
-                int own_idx = i*maxNum+j;
-                this->addSpring(springs[own_idx-maxNum], point, 10000, 0, glm::length(
-                        springs[own_idx - maxNum]->getSimulationProperties()->getPosition() -
-                                                                                      point->getSimulationProperties()->getPosition()));
-            }
-            if(i*3+j >= maxNum-1 && j < maxNum-1 && i < maxNum) {
-                int own_idx = i * maxNum + j;
-                this->addSpring(springs[own_idx - maxNum + 1], point, 10000, 0, glm::length(
-                        springs[own_idx - maxNum + 1]->getSimulationProperties()->getPosition() -
-                                                                                            point->getSimulationProperties()->getPosition()));
-            }
-            //if(i*3+j > maxNum-1 && j < maxNum-1 && i < maxNum) {
-            //    int own_idx = i*maxNum+j;
-            //    this->addSpring(springs[own_idx-maxNum+1], point, 10, 0, std::sqrt(length*length));
-            //}
-        }
-        //prevRow.clear();
-    }
+//    int maxNum = 10;
+//    float length = 0.05;
+//
+//    std::vector<std::shared_ptr<Point>> springs;
+//    std::shared_ptr<Point> prevCol;
+//    for(int i = 0; i < maxNum; i++) {
+//        for(int j = 0; j < maxNum; j++) {
+//            auto point = this->addPoint(glm::vec2(length*i, length*j));
+//            springs.push_back(point);
+//            if(i == 0) {
+//                point->setStatic(true);
+//            }
+//            if(j == 0) {
+//                prevCol = point;
+//            }
+//            if(j > 0) {
+//                this->addSpring(prevCol, point, 10000, 0, glm::length(prevCol->getSimulationProperties()->getPosition() -
+//                                                                      point->getSimulationProperties()->getPosition()));
+//                prevCol = point;
+//            }
+//            if(i > 0) {
+//                int own_idx = i*maxNum+j;
+//                this->addSpring(springs[own_idx-maxNum], point, 10000, 0, glm::length(
+//                        springs[own_idx - maxNum]->getSimulationProperties()->getPosition() -
+//                                                                                      point->getSimulationProperties()->getPosition()));
+//            }
+//            if(i*3+j >= maxNum-1 && j < maxNum-1 && i < maxNum) {
+//                int own_idx = i * maxNum + j;
+//                this->addSpring(springs[own_idx - maxNum + 1], point, 10000, 0, glm::length(
+//                        springs[own_idx - maxNum + 1]->getSimulationProperties()->getPosition() -
+//                                                                                            point->getSimulationProperties()->getPosition()));
+//            }
+//            //if(i*3+j > maxNum-1 && j < maxNum-1 && i < maxNum) {
+//            //    int own_idx = i*maxNum+j;
+//            //    this->addSpring(springs[own_idx-maxNum+1], point, 10, 0, std::sqrt(length*length));
+//            //}
+//        }
+//        //prevRow.clear();
+//    }
 }
 
 void Scene::simulate() {
@@ -183,7 +183,7 @@ void Scene::addSpring(const std::shared_ptr<Point>& i, const std::shared_ptr<Poi
     m_springs.push_back(object);
 }
 
-void Scene::addSpring(std::shared_ptr<Spring> object) {
+void Scene::addSpring(const std::shared_ptr<Spring>& object) {
     object->getI()->addConnection(object);
     object->getJ()->addConnection(object);
     m_objects.insert(std::make_pair(object->getId(), object));

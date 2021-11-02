@@ -34,13 +34,15 @@ public:
      * @param y The y coordinate of the tested position.
      * @return True if the position is inside of the point, otherwise false.
      */
-    bool isInside(double x, double y) const override;
+    bool isInside(double x, double y) const final;
 
-    ObjectType getType() const override;
+    ObjectType getType() const final;
 
-    std::string getSerializedData() const override;
+    std::string getSerializedData() const final;
 
     static std::shared_ptr<Point> createPointFromSavedData(const std::string& serializedData);
+
+    void connectionChangedEvent() const final {};
 
 };
 

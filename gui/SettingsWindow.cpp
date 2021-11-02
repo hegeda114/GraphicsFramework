@@ -83,7 +83,7 @@ bool SettingsWindow::loadPopup(Scene *scene) {
                         continue;
                     }
 
-                    char label[32];
+                    char label[300];
                     sprintf(label, "%s##%d", d->d_name, i);
                     const bool item_is_selected = (selectedFile == d->d_name);
 
