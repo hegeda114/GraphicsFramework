@@ -73,7 +73,7 @@ bool SettingsWindow::loadPopup(Scene *scene) {
     if (ImGui::BeginPopup("Open File Dialog")) {
         struct dirent *d;
         DIR *dr;
-        dr = opendir("..\\saved_scenes");
+        dr = opendir("../saved_scenes");
         if(dr!=nullptr)
         {
             if (ImGui::BeginTable("FileList", 1)) {
