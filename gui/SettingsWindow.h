@@ -12,6 +12,7 @@
 class SettingsWindow {
 private:
     static ViewportMode viewportMode;
+    static std::string selectedFile;
     static bool savePopup(Scene *scene);
     static bool loadPopup(Scene *scene);
 public:

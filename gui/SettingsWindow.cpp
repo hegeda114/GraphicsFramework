@@ -5,8 +5,11 @@
 #include <imgui.h>
 #include "SettingsWindow.h"
 #include "../IO.h"
+#include <iostream>
+#include <dirent.h>
 
 ViewportMode SettingsWindow::viewportMode = ViewportMode::Selection;
+std::string SettingsWindow::selectedFile = "";
 
 void SettingsWindow::create(Scene *scene, GuiState *guiState) {
     static bool saveFileDialog = false;
@@ -68,13 +71,43 @@ bool SettingsWindow::loadPopup(Scene *scene) {
     bool res = true;
     ImGui::OpenPopup("Open File Dialog");
     if (ImGui::BeginPopup("Open File Dialog")) {
-        static char buf[30] = { 0 };
-        ImGui::InputText("File path", buf, IM_ARRAYSIZE(buf));
+        struct dirent *d;
+        DIR *dr;
+        dr = opendir("..\\saved_scenes");
+        if(dr!=nullptr)
+        {
+            if (ImGui::BeginTable("FileList", 1)) {
+                int i = 0;
+                for (d = readdir(dr); d != nullptr; d = readdir(dr)) {
+                    if(d->d_name[0] == '.') {
+                        continue;
+                    }
+
+                    char label[32];
+                    sprintf(label, "%s##%d", d->d_name, i);
+                    const bool item_is_selected = (selectedFile == d->d_name);
+
+                    ImGui::TableNextRow();
+                    ImGui::TableSetColumnIndex(0);
+
+                    ImGuiSelectableFlags selectable_flags =
+                            ImGuiSelectableFlags_SpanAllColumns;
+                    if (ImGui::Selectable(label, item_is_selected, selectable_flags)) {
+                        if (!item_is_selected) {
+                            selectedFile = d->d_name;
+                        }
+                    }
+                    i++;
+                }
+                ImGui::EndTable();
+                closedir(dr);
+            }
+        }
 
         ImGui::Spacing();
 
         if (ImGui::Button("Open File")) {
-            IO::open_scene(buf, scene);
+            IO::open_scene("../saved_scenes/" + selectedFile, scene);
             res = false;
         }
         ImGui::SameLine();
@@ -95,7 +128,11 @@ bool SettingsWindow::savePopup(Scene *scene) {
 
         ImGui::Spacing();
 
-        if (ImGui::Button("Save File")) {
+        bool validFileName = std::string(buf).find('.') == std::string::npos &&
+                std::string(buf).find('\\') == std::string::npos &&
+                std::string(buf).find('/') == std::string::npos;
+
+        if (ImGui::Button("Save File") && validFileName ) {
             IO::save_scene(scene, buf);
             res = false;
         }

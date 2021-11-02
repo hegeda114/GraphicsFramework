@@ -36,7 +36,7 @@ void IO::save_scene(const Scene *scene, const std::string &filePath) {
 
 void IO::open_scene(const std::string &filePath, Scene *scene) {
     scene->clearAllObject();
-    std::ifstream sceneFile(filePath + ".txt");
+    std::ifstream sceneFile(filePath);
 
     if (!sceneFile.is_open()) {
         std::cerr << "Unable to open file" << std::endl;
