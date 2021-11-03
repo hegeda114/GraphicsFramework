@@ -12,6 +12,7 @@ struct GuiState {
     size_t fps = 0;
     bool renderStop = true;
     bool delayOn = false;
+    bool blockViewportActions = false;
     int delay = 100;
 };
 

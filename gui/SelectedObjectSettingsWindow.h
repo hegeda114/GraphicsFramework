@@ -8,7 +8,14 @@
 
 #include "../Scene.h"
 
-struct SelectedObjectSettingsWindow {
+class SelectedObjectSettingsWindow {
+private:
+    static void createPointSettings(Point* activePoint, bool editMode);
+    static void createSpringSettings(Spring* activeSpring, bool editMode);
+
+    static void coordOutput(const std::string& title, float x, float y);
+    static glm::vec2 coordInput(const std::string& title, float x, float y);
+public:
     static void create(Scene* scene);
 };
 

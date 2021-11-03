@@ -22,18 +22,22 @@ Spring::Spring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j,
 }
 
 void Spring::calculateSpringForces() {
-    // calculate force for i:
-    glm::vec2 posDiff, velDiff;
+    glm::vec2 posDiff, velDiff, force;
     posDiff = (m_j->getSimulationProperties()->getPosition() - m_i->getSimulationProperties()->getPosition());
     velDiff = (m_j->getSimulationProperties()->getVelocity() - m_i->getSimulationProperties()->getVelocity());
-    glm::vec2 force = calcForce(posDiff, velDiff);
-    m_i->getSimulationProperties()->addForce(force);
+    m_l = glm::length(posDiff);
+
+    // calculate force for i:
+    if(m_j->isStatic()) {
+        force = calcForce(posDiff, velDiff);
+        m_i->getSimulationProperties()->addForce(force);
+    }
 
     // calculate force for j:
-    posDiff = (m_i->getSimulationProperties()->getPosition() - m_j->getSimulationProperties()->getPosition());
-    velDiff = (m_i->getSimulationProperties()->getVelocity() - m_j->getSimulationProperties()->getVelocity());
-    force = calcForce(posDiff, velDiff);
-    m_j->getSimulationProperties()->addForce(force);
+    if(m_i->isStatic()) {
+        force = calcForce(-posDiff, -velDiff);
+        m_j->getSimulationProperties()->addForce(force);
+    }
 }
 
 glm::vec2 Spring::calcForce(glm::vec2 posDiff, glm::vec2 velDiff) const {
@@ -88,4 +92,32 @@ std::shared_ptr<Point> Spring::getI() const {
 
 std::shared_ptr<Point> Spring::getJ() const {
     return m_j;
+}
+
+float Spring::getStretching() const {
+    return m_ks;
+}
+
+float Spring::getDampingCoefficient() const {
+    return m_kd;
+}
+
+float Spring::getDefaultLength() const {
+    return m_l0;
+}
+
+void Spring::setStretching(float stretching) {
+    m_ks = stretching;
+}
+
+void Spring::setDampingCoefficient(float dampingCoefficient) {
+    m_kd = dampingCoefficient;
+}
+
+void Spring::setDefaultLength(float defaultLength) {
+    m_l0 = defaultLength;
+}
+
+float Spring::getCurrentLength() const {
+    return m_l;
 }

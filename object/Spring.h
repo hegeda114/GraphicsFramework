@@ -26,6 +26,7 @@ private:
     float m_ks; // stretching
     float m_kd; // damping coefficients
     float m_l0; // default length
+    float m_l; // current length
     std::shared_ptr<Point> m_i;
     std::shared_ptr<Point> m_j;
 
@@ -60,6 +61,15 @@ public:
     std::shared_ptr<Point> getJ() const;
 
     static std::shared_ptr<Spring> createSpringFromSavedData(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j, const std::string& serializedData);
+
+    float getStretching() const;
+    float getDampingCoefficient() const;
+    float getDefaultLength() const;
+    void setStretching(float stretching);
+    void setDampingCoefficient(float dampingCoefficient);
+    void setDefaultLength(float defaultLength);
+
+    float getCurrentLength() const;
 };
 
 

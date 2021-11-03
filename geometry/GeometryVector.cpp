@@ -11,19 +11,11 @@ Geometry(), m_startPoint(start), m_endPoint(end) {
     m_color = m_defaultColor;
 }
 
-void GeometryVector::setStartPoint(const glm::vec2& start) {
-    m_startPoint = start;
-}
-
-void GeometryVector::setEndPoint(const glm::vec2& end) {
-    m_endPoint = end;
-}
-
 void GeometryVector::setLineWidth(float width) {
     m_lineWidth = width;
 }
 
-void GeometryVector::create() {
+void GeometryVector::create() const {
     float h = 0.015f;
     float w = 0.02f;
     glm::vec2 dir = normalize(m_startPoint - m_endPoint);
@@ -43,4 +35,31 @@ void GeometryVector::draw() const {
     glLineWidth(m_lineWidth);
     glBindVertexArray(vao);
     glDrawArrays(GL_LINES, 0, 6);
+}
+
+float GeometryVector::getLengthMultiplier() const {
+    return m_lengthMultiplier;
+}
+
+void GeometryVector::setLengthMultiplier(float multiplier) {
+    m_lengthMultiplier = multiplier;
+}
+
+void GeometryVector::calculateVector(const glm::vec2 &pivot, const glm::vec2 &referenceVector) {
+    m_startPoint = pivot;
+    m_endPoint = pivot + m_lengthMultiplier * referenceVector;
+}
+
+void GeometryVector::renderHelper(const Shader* shader) const {
+    update(shader);
+    create();
+    draw();
+}
+
+void GeometryVector::setVisibility(bool isVisible) {
+    m_visibility = isVisible;
+}
+
+bool GeometryVector::getVisibility() const {
+    return m_visibility;
 }

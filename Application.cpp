@@ -73,6 +73,10 @@ void Application::loop() {
 }
 
 void Application::handleInput() {
+    if(m_guiState->blockViewportActions) {
+        return;
+    }
+
     auto *winPtr = m_mainWindow->getGLFWWindow();
 
     double x, y;

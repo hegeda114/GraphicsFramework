@@ -17,7 +17,7 @@ private:
 public:
     GeometrySpring(const glm::vec2& start, const glm::vec2& end);
 
-    void create() override;
+    void create() const override;
     void draw() const override;
 
     void setStartPoint(const glm::vec2& start);

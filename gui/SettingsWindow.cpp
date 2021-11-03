@@ -12,8 +12,6 @@ ViewportMode SettingsWindow::viewportMode = ViewportMode::Selection;
 std::string SettingsWindow::selectedFile = "";
 
 void SettingsWindow::create(Scene *scene, GuiState *guiState) {
-    static bool saveFileDialog = false;
-    static bool openFileDialog = false;
     if(ImGui::Begin("Settings")) {
         if (ImGui::CollapsingHeader("Viewport Mode", ImGuiTreeNodeFlags_DefaultOpen)) {
             if(ImGui::Button("Point Creation Mode")) {
@@ -32,15 +30,24 @@ void SettingsWindow::create(Scene *scene, GuiState *guiState) {
             }
         }
         if (ImGui::CollapsingHeader("Save/Load", ImGuiTreeNodeFlags_DefaultOpen)) {
+            ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+            ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
             if(ImGui::Button("New Empty Scene")) {
                 scene->clearAllObject();
             }
             if(ImGui::Button("Save Scene")) {
-                saveFileDialog = true;
+                guiState->renderStop = true;
+                ImGui::OpenPopup("Save File Dialog");
             }
+            bool savePopupVisible = !savePopup(scene);
+
             if(ImGui::Button("Load Scene")) {
-                openFileDialog = true;
+                guiState->renderStop = true;
+                ImGui::OpenPopup("Open File Dialog");
             }
+            bool loadPopupVisible = !loadPopup(scene);
+            guiState->blockViewportActions = savePopupVisible || loadPopupVisible;
         }
         if (ImGui::CollapsingHeader("Simulation", ImGuiTreeNodeFlags_DefaultOpen)) {
             std::string start_stop_label = guiState->renderStop ? "Start" : "Stop";
@@ -59,18 +66,12 @@ void SettingsWindow::create(Scene *scene, GuiState *guiState) {
 
         ImGui::End();
     }
-    if(saveFileDialog) {
-        saveFileDialog = savePopup(scene);
-    }
-    if(openFileDialog) {
-        openFileDialog = loadPopup(scene);
-    }
 }
 
 bool SettingsWindow::loadPopup(Scene *scene) {
     bool res = true;
-    ImGui::OpenPopup("Open File Dialog");
-    if (ImGui::BeginPopup("Open File Dialog")) {
+    if (ImGui::BeginPopupModal("Open File Dialog", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        res = false;
         struct dirent *d;
         DIR *dr;
         dr = opendir("../saved_scenes");
@@ -91,7 +92,7 @@ bool SettingsWindow::loadPopup(Scene *scene) {
                     ImGui::TableSetColumnIndex(0);
 
                     ImGuiSelectableFlags selectable_flags =
-                            ImGuiSelectableFlags_SpanAllColumns;
+                            ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_DontClosePopups;
                     if (ImGui::Selectable(label, item_is_selected, selectable_flags)) {
                         if (!item_is_selected) {
                             selectedFile = d->d_name;
@@ -106,13 +107,22 @@ bool SettingsWindow::loadPopup(Scene *scene) {
 
         ImGui::Spacing();
 
+        static bool dont_ask_me_next_time = false;
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+        ImGui::Checkbox("Don't ask me next time", &dont_ask_me_next_time);
+        ImGui::PopStyleVar();
+
+        ImGui::Spacing();
+
         if (ImGui::Button("Open File")) {
             IO::open_scene("../saved_scenes/" + selectedFile, scene);
-            res = false;
+            ImGui::CloseCurrentPopup();
+            res = true;
         }
         ImGui::SameLine();
         if (ImGui::Button("Cancel")) {
-            res = false;
+            ImGui::CloseCurrentPopup();
+            res = true;
         }
         ImGui::EndPopup();
     }
@@ -121,8 +131,8 @@ bool SettingsWindow::loadPopup(Scene *scene) {
 
 bool SettingsWindow::savePopup(Scene *scene) {
     bool res = true;
-    ImGui::OpenPopup("Save File Dialog");
-    if (ImGui::BeginPopup("Save File Dialog")) {
+    if (ImGui::BeginPopupModal("Save File Dialog", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        res = false;
         static char buf[30] = { 0 };
         ImGui::InputText("File path", buf, IM_ARRAYSIZE(buf));
 
@@ -134,11 +144,13 @@ bool SettingsWindow::savePopup(Scene *scene) {
 
         if (ImGui::Button("Save File") && validFileName ) {
             IO::save_scene(scene, buf);
-            res = false;
+            ImGui::CloseCurrentPopup();
+            res = true;
         }
         ImGui::SameLine();
         if (ImGui::Button("Cancel")) {
-            res = false;
+            ImGui::CloseCurrentPopup();
+            res = true;
         }
         ImGui::EndPopup();
     }

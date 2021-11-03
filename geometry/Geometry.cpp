@@ -19,3 +19,7 @@ void Geometry::setPosition(const glm::vec2 &position) {
 void Geometry::update(const Shader* shader) const {
     shader->setColor(m_color);
 }
+
+void Geometry::setDefaultColor(double red, double green, double blue, double alpha) {
+    m_defaultColor = {red, green, blue, alpha};
+}

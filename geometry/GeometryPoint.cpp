@@ -13,7 +13,7 @@ GeometryPoint::GeometryPoint(const glm::vec2& position, double radius):
     m_color = m_defaultColor;
 }
 
-void GeometryPoint::create() {
+void GeometryPoint::create() const {
     glm::vec2 vertices[m_resolution];
     for(size_t i = 0; i < m_resolution; i++) {
         float fi = (float) i * (float) (2 * M_PI) / (float) m_resolution;

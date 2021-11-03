@@ -41,7 +41,9 @@ void SimulationProperties::explicitEuler(const GlobalSimulationSettings* globalS
     m_velocity.y += resultantForce.y * (float) timestep;
     m_position.x += m_velocity.x * (float) timestep;
     m_position.y += m_velocity.y * (float) timestep;
-    m_forces.clear();
+
+    m_resultantForcesForHelper = resultantForce;
+    clearForces();
 }
 
 const glm::vec2 &SimulationProperties::getVelocity() const {
@@ -62,4 +64,8 @@ void SimulationProperties::setPosition(const glm::vec2 &position) {
 
 void SimulationProperties::clearForces() {
     m_forces.clear();
+}
+
+glm::vec2 SimulationProperties::getResultantForcesForHelpers() const {
+    return m_resultantForcesForHelper;
 }

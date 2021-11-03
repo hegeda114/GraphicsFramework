@@ -8,7 +8,7 @@
 #include "IO.h"
 
 void IO::save_scene(const Scene *scene, const std::string &filePath) {
-    std::ofstream sceneFile(filePath + ".txt");
+    std::ofstream sceneFile("../saved_scenes/" + filePath + ".txt");
 
     if (!sceneFile.is_open()) {
         std::cerr << "Unable to open file" << std::endl;

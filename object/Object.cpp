@@ -11,11 +11,14 @@ int Object::nextId() {
 }
 
 Object::Object(std::unique_ptr<Geometry> geometry, std::unique_ptr<SimulationProperties> physicalProperties) :
-        m_velocityVector({m_pivot, m_pivot}), m_forceVector({m_pivot, m_pivot}){
+        m_velocityVector(std::make_unique<GeometryVector>(m_pivot, m_pivot)),
+        m_forceVector(std::make_unique<GeometryVector>(m_pivot, m_pivot)){
     m_geometry = std::move(geometry);
     m_simulationProperties = std::move(physicalProperties);
     m_id = nextId();
     m_name = "object";
+    m_velocityVector->setColor(0.3, 0.6, 0.7, 1.0);
+    m_forceVector->setColor(0.7, 0.6, 0.3, 1.0);
 }
 
 bool Object::isInside(const glm::vec2 &position) const {
@@ -29,6 +32,7 @@ bool Object::isStatic() const {
 void Object::setStatic(bool isStatic) {
     m_static = isStatic;
     if(m_static) {
+        m_geometry->setDefaultColor(0.4f, 0.7f, 0.96f, 1.0f);
         m_geometry->setColor(0.4f, 0.7f, 0.96f, 1.0f);
     } else {
         m_geometry->setColorToDefault();
@@ -101,31 +105,14 @@ void Object::renderHelpers(const Shader *shader) {
     if (m_fix) {
         return;
     }
-    if(m_showVelocity) {
-        m_velocityVector.setStartPoint(m_pivot);
-        m_velocityVector.setEndPoint(m_pivot + 0.05f * m_simulationProperties->getVelocity());
-        m_velocityVector.update(shader);
-        m_velocityVector.create();
-
-        m_velocityVector.draw();
+    if(m_velocityVector->getVisibility()) {
+        m_velocityVector->calculateVector(m_pivot, m_simulationProperties->getVelocity());
+        m_velocityVector->renderHelper(shader);
     }
-    if(m_showForces) {
-        m_forceVector.setStartPoint(m_pivot);
-        glm::vec2 forcesSum = m_simulationProperties->getResultantForces();
-        m_forceVector.setEndPoint(m_pivot - 0.5f*forcesSum);
-        m_forceVector.update(shader);
-        m_forceVector.create();
-
-        m_forceVector.draw();
+    if(m_forceVector->getVisibility()) {
+        m_forceVector->calculateVector(m_pivot, m_simulationProperties->getResultantForcesForHelpers());
+        m_forceVector->renderHelper(shader);
     }
-}
-
-void Object::setShowVelocity(bool showVelocity) {
-    this->m_showVelocity = showVelocity;
-}
-
-void Object::setShowForces(bool showForces) {
-    this->m_showForces = showForces;
 }
 
 void Object::render(const Shader* shader) const {
@@ -141,4 +128,12 @@ void Object::addConnection(const std::shared_ptr<Object>& object) {
 void Object::setPosition(const glm::vec2& position) {
     m_pivot = position;
     m_simulationProperties->setPosition(position);
+}
+
+const std::unique_ptr<GeometryVector>& Object::getVelocityHelper() const {
+    return m_velocityVector;
+}
+
+const std::unique_ptr<GeometryVector>& Object::getForceHelper() const {
+    return m_forceVector;
 }

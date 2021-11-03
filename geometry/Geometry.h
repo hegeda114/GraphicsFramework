@@ -44,12 +44,13 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
     }
     virtual void update(const Shader* shader) const;
-    virtual void create() = 0;
+    virtual void create() const = 0;
     virtual void draw() const = 0;
 
     void setPosition(const glm::vec2& position);
 
     void setColor(double red, double green, double blue, double alpha);
+    void setDefaultColor(double red, double green, double blue, double alpha);
     void setColorToDefault();
 
     virtual ~Geometry() {

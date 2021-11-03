@@ -14,6 +14,7 @@ protected:
     glm::vec2 m_velocity = {0.0, 0.0};
     glm::vec2 m_position = {0.0, 0.0};
     std::vector<glm::vec2> m_forces;
+    glm::vec2 m_resultantForcesForHelper = {0.0, 0.0};
     double m_mass = 1;
 
 public:
@@ -23,6 +24,7 @@ public:
     void addForce(const glm::vec2& force);
     void clearForces();
     glm::vec2 getResultantForces() const;
+    glm::vec2 getResultantForcesForHelpers() const;
 
     void setPosition(double x, double y);
     void setPosition(const glm::vec2& position);

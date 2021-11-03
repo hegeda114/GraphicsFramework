@@ -22,7 +22,7 @@ void GeometrySpring::setLineWidth(float width) {
     m_lineWidth = width;
 }
 
-void GeometrySpring::create() {
+void GeometrySpring::create() const {
     glm::vec2 step = (m_endPoint - m_startPoint) / (float) m_count;
     glm::vec2 prepend = glm::normalize(glm::vec2(-step.y, step.x)) * 0.01f;
     glm::vec2 vertices[m_count];

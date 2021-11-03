@@ -51,16 +51,10 @@ protected:
     int m_id;
 
     // The velocity vector object of the current object.
-    GeometryVector m_velocityVector;
+    std::unique_ptr<GeometryVector> m_velocityVector;
 
     // The force vector object of the current object.
-    GeometryVector m_forceVector;
-
-    // If true, the velocity vector is visible, otherwise it is hidden.
-    bool m_showVelocity = true;
-
-    // If true, the force vector is visible, otherwise it is hidden.
-    bool m_showForces = true;
+    std::unique_ptr<GeometryVector> m_forceVector;
 
 public:
     /**
@@ -164,18 +158,6 @@ public:
     void renderHelpers(const Shader* shader);
 
     /**
-     * Sets the show velocity flag to the given value.
-     * @param showVelocity True or false.
-     */
-    void setShowVelocity(bool showVelocity);
-
-    /**
-     * Sets the show forces flag to the given value.
-     * @param showVelocity True or false.
-     */
-    void setShowForces(bool showForces);
-
-    /**
      * Creates and draws the geometry of the object.
      */
     void render(const Shader* shader) const;
@@ -197,6 +179,10 @@ public:
     void setPosition(const glm::vec2& position);
 
     virtual std::string getSerializedData() const = 0;
+
+    const std::unique_ptr<GeometryVector>& getVelocityHelper() const;
+
+    const std::unique_ptr<GeometryVector>& getForceHelper() const;
 
     virtual ~Object() = default;
 };

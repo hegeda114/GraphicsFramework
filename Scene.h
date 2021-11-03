@@ -51,6 +51,10 @@ public:
 
     void updateCamera(float width, float height) const;
 
+    void setHideHelperVectors(bool hideHelperVectors);
+
+    bool getHideHelperVectors() const;
+
 private:
     std::map<size_t, std::shared_ptr<Object>> m_objects;
     std::vector<std::shared_ptr<Point>> m_points;
@@ -61,6 +65,7 @@ private:
     std::unique_ptr<FrameBuffer> m_frameBuffer;
     int m_activeObjectId = -1;
 
+    bool m_hideHelperVectors = true;
     glm::vec2 m_mouseLastPosition = {0, 0};
     bool m_mouseLeftPressActive = false;
 };

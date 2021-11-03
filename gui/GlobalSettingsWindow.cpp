@@ -10,9 +10,11 @@ void GlobalSettingsWindow::create(Scene *scene) {
         static float timestep = 1.0/60.0;
         ImGui::Text("Stepsize: ");
         ImGui::SameLine();
-        ImGui::DragFloat("##timestep", &timestep, 0.00001f, 0.0f, 1.0f, "%.05f");
+        ImGui::InputFloat("##timestep", &timestep, 0.0001f, 0.001f, "%.06f", ImGuiInputTextFlags_AutoSelectAll);
+        if(timestep < 0.0f) {
+            timestep = 0.000001f;
+        }
         scene->getGlobalSimulationSettings()->setTimestep(timestep);
-
         ImGui::Spacing();
 
         glm::vec2 glmGravity = scene->getGlobalSimulationSettings()->getGravity();
@@ -25,15 +27,21 @@ void GlobalSettingsWindow::create(Scene *scene) {
         ImGui::DragFloat2("##gravity", gravity, 0.005f);
         scene->getGlobalSimulationSettings()->setGravityEnabled(gravityEnabled);
         scene->getGlobalSimulationSettings()->setGravity({gravity[0], gravity[1]});
-
         ImGui::Spacing();
 
-        ImGui::Text("Simulation mode:");
-        ImGui::SameLine();
         const char* items[] = {"Explicit Euler", "Implicit Euler" };
         static int item_current = 0;
+        ImGui::Text("Simulation mode: ");
+        ImGui::SameLine();
         ImGui::Combo("combo", &item_current, items, IM_ARRAYSIZE(items));
         scene->getGlobalSimulationSettings()->setSimMode(static_cast<SimulationMode>(item_current));
+        ImGui::Spacing();
+
+        static bool hideHelpers = scene->getHideHelperVectors();
+        ImGui::Text("Hide all helper: ");
+        ImGui::SameLine();
+        ImGui::Checkbox("##hidehelperschb", &hideHelpers);
+        scene->setHideHelperVectors(hideHelpers);
 
         ImGui::End();
     }

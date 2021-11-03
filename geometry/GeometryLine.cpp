@@ -22,7 +22,7 @@ void GeometryLine::setLineWidth(float width) {
     m_lineWidth = width;
 }
 
-void GeometryLine::create() {
+void GeometryLine::create() const {
     glm::vec2 vertices[2] = {m_startPoint, m_endPoint};
 
     glBufferData(GL_ARRAY_BUFFER, 2 * sizeof(glm::vec2), vertices, GL_STATIC_DRAW);

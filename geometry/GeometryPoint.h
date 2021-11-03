@@ -16,7 +16,7 @@ private:
 public:
     explicit GeometryPoint(const glm::vec2& position, double radius);
 
-    void create() final;
+    void create() const final;
     void draw() const final;
 };
 

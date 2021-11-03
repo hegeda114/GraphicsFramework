@@ -22,15 +22,14 @@ void Scene::init() {
     auto point1 = this->addPoint(glm::vec2(0, 0));
     point1->setStatic(true);
     auto point2 = this->addPoint({0.2, 0.0});
-    point2->setShowForces(true);
     this->addSpring(point1, point2, 10, 0, 0.2);
     point2->getSimulationProperties()->setVelocity(0.01, 0.0);
     auto point3 = this->addPoint({0.4, 0.0});
     point3->setStatic(true);
     this->addSpring(point2, point3, 10, 0, 0.2);
 
-//    int maxNum = 10;
-//    float length = 0.05;
+//    int maxNum = 4;
+//    float length = 0.2;
 //
 //    std::vector<std::shared_ptr<Point>> springs;
 //    std::shared_ptr<Point> prevCol;
@@ -80,7 +79,9 @@ void Scene::simulate() {
         }
         // calculate other forces for each points
         for(const auto& point : m_points) {
-            point->getSimulationProperties()->addForce(m_globalSimulationSettings->getGravity()); // add gravity
+            if(m_globalSimulationSettings->isGravityEnabled() && !point->isStatic()) {
+                point->getSimulationProperties()->addForce(m_globalSimulationSettings->getGravity()); // add gravity
+            }
         }
         //calculate new position and velocity
         for(const auto& point : m_points) {
@@ -94,10 +95,15 @@ void Scene::render() {
 
     m_frameBuffer->bind();
 
-    for(const auto &objectPair : m_objects) {
-        const auto &object = objectPair.second;
-        object->render(m_shader.get());
-        object->renderHelpers(m_shader.get());
+    for(const auto &spring : m_springs) {
+        spring->render(m_shader.get());
+    }
+
+    for(const auto &point : m_points) {
+        point->render(m_shader.get());
+        if(!m_hideHelperVectors) {
+            point->renderHelpers(m_shader.get());
+        }
     }
 
     m_frameBuffer->unbind();
@@ -264,6 +270,14 @@ void Scene::updateCamera(float width, float height) const {
     m_shader->use();
     m_camera->setAspectRation(width / height);
     m_camera->update(m_shader.get());
+}
+
+void Scene::setHideHelperVectors(bool hideHelperVectors) {
+    m_hideHelperVectors = hideHelperVectors;
+}
+
+bool Scene::getHideHelperVectors() const {
+    return m_hideHelperVectors;
 }
 
 
