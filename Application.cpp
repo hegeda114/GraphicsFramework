@@ -84,8 +84,8 @@ void Application::handleInput() {
     glfwGetCursorPos(winPtr, &x, &y);
 
     glfwGetWindowPos(winPtr, &pos_x, &pos_y);
-    glm::vec2 sceneWindowSize = {SceneWindow::sceneWindowCurrentSize.x, SceneWindow::sceneWindowCurrentSize.y};
-    glm::vec2 sceneWindowPos = {SceneWindow::sceneWindowCurrentPos.x, SceneWindow::sceneWindowCurrentPos.y};
+    glm::vec2 sceneWindowSize = m_guiState->sceneWindowCurrentSize;
+    glm::vec2 sceneWindowPos = m_guiState->sceneWindowCurrentPos;
 
     float leftBorder = sceneWindowPos.x - (float)pos_x;
     float rightBorder = (sceneWindowPos.x - (float)pos_x) + sceneWindowSize.x;

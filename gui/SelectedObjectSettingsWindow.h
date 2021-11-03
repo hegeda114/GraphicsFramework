@@ -5,18 +5,23 @@
 #ifndef GRAPHICSFRAMEWORK_SELECTEDOBJECTSETTINGSWINDOW_H
 #define GRAPHICSFRAMEWORK_SELECTEDOBJECTSETTINGSWINDOW_H
 
+#include "GuiWindow.h"
 
-#include "../Scene.h"
-
-class SelectedObjectSettingsWindow {
+class SelectedObjectSettingsWindow : public GuiWindow {
 private:
-    static void createPointSettings(Point* activePoint, bool editMode);
-    static void createSpringSettings(Spring* activeSpring, bool editMode);
+    void createPointSettings(Point* activePoint) const;
+    void createSpringSettings(Spring* activeSpring) const;
 
     static void coordOutput(const std::string& title, float x, float y);
     static glm::vec2 coordInput(const std::string& title, float x, float y);
+    static void floatOutput(const std::string& title, float value);
+    static float floatInput(const std::string& title, float value);
+
+    int m_lastActiveObjectId = -1;
+    bool m_editMode = false;
 public:
-    static void create(Scene* scene);
+    SelectedObjectSettingsWindow(std::shared_ptr<Scene> scene, std::shared_ptr<GuiState> guiState);
+    virtual void create();
 };
 
 

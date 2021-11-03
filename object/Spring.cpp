@@ -28,16 +28,12 @@ void Spring::calculateSpringForces() {
     m_l = glm::length(posDiff);
 
     // calculate force for i:
-    if(m_j->isStatic()) {
-        force = calcForce(posDiff, velDiff);
-        m_i->getSimulationProperties()->addForce(force);
-    }
+    force = calcForce(posDiff, velDiff);
+    m_i->getSimulationProperties()->addForce(force);
 
     // calculate force for j:
-    if(m_i->isStatic()) {
-        force = calcForce(-posDiff, -velDiff);
-        m_j->getSimulationProperties()->addForce(force);
-    }
+    force = calcForce(-posDiff, -velDiff);
+    m_j->getSimulationProperties()->addForce(force);
 }
 
 glm::vec2 Spring::calcForce(glm::vec2 posDiff, glm::vec2 velDiff) const {

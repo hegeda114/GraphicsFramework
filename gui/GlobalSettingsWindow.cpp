@@ -3,46 +3,53 @@
 //
 
 #include <imgui.h>
+
+#include <utility>
 #include "GlobalSettingsWindow.h"
 
-void GlobalSettingsWindow::create(Scene *scene) {
+void GlobalSettingsWindow::create() {
     if(ImGui::Begin("Global Settings")) {
-        static float timestep = 1.0/60.0;
+        auto timestep = (float) m_scene->getGlobalSimulationSettings()->getTimestep();
         ImGui::Text("Stepsize: ");
         ImGui::SameLine();
         ImGui::InputFloat("##timestep", &timestep, 0.0001f, 0.001f, "%.06f", ImGuiInputTextFlags_AutoSelectAll);
         if(timestep < 0.0f) {
             timestep = 0.000001f;
         }
-        scene->getGlobalSimulationSettings()->setTimestep(timestep);
+        m_scene->getGlobalSimulationSettings()->setTimestep(timestep);
         ImGui::Spacing();
 
-        glm::vec2 glmGravity = scene->getGlobalSimulationSettings()->getGravity();
-        static float gravity[2] = {glmGravity.x, glmGravity.y};
-        static bool gravityEnabled = scene->getGlobalSimulationSettings()->isGravityEnabled();
+        glm::vec2 glmGravity = m_scene->getGlobalSimulationSettings()->getGravity();
+        float gravity[2] = {glmGravity.x, glmGravity.y};
+        bool gravityEnabled = m_scene->getGlobalSimulationSettings()->isGravityEnabled();
         ImGui::Text("Gravity: ");
         ImGui::SameLine();
         ImGui::Checkbox("##gravityChb", &gravityEnabled);
         ImGui::SameLine();
         ImGui::DragFloat2("##gravity", gravity, 0.005f);
-        scene->getGlobalSimulationSettings()->setGravityEnabled(gravityEnabled);
-        scene->getGlobalSimulationSettings()->setGravity({gravity[0], gravity[1]});
+        m_scene->getGlobalSimulationSettings()->setGravityEnabled(gravityEnabled);
+        m_scene->getGlobalSimulationSettings()->setGravity({gravity[0], gravity[1]});
         ImGui::Spacing();
 
         const char* items[] = {"Explicit Euler", "Implicit Euler" };
-        static int item_current = 0;
+        static int item_current = m_scene->getGlobalSimulationSettings()->getSimMode();
         ImGui::Text("Simulation mode: ");
         ImGui::SameLine();
         ImGui::Combo("combo", &item_current, items, IM_ARRAYSIZE(items));
-        scene->getGlobalSimulationSettings()->setSimMode(static_cast<SimulationMode>(item_current));
+        m_scene->getGlobalSimulationSettings()->setSimMode(static_cast<SimulationMode>(item_current));
         ImGui::Spacing();
 
-        static bool hideHelpers = scene->getHideHelperVectors();
+        static bool hideHelpers = m_scene->getHideHelperVectors();
         ImGui::Text("Hide all helper: ");
         ImGui::SameLine();
         ImGui::Checkbox("##hidehelperschb", &hideHelpers);
-        scene->setHideHelperVectors(hideHelpers);
+        m_scene->setHideHelperVectors(hideHelpers);
 
         ImGui::End();
     }
+}
+
+GlobalSettingsWindow::GlobalSettingsWindow(std::shared_ptr<Scene> scene, std::shared_ptr<GuiState> guiState)
+        : GuiWindow(std::move(scene), std::move(guiState)) {
+
 }

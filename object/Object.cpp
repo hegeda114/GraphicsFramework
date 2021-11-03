@@ -35,6 +35,7 @@ void Object::setStatic(bool isStatic) {
         m_geometry->setDefaultColor(0.4f, 0.7f, 0.96f, 1.0f);
         m_geometry->setColor(0.4f, 0.7f, 0.96f, 1.0f);
     } else {
+        m_geometry->setDefaultColor(0.87f, 0.9f, 0.4f, 1.0f);
         m_geometry->setColorToDefault();
     }
 }

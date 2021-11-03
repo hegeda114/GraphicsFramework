@@ -6,10 +6,12 @@
 #define GRAPHICSFRAMEWORK_GLOBALSETTINGSWINDOW_H
 
 
-#include "../Scene.h"
+#include "GuiWindow.h"
 
-struct GlobalSettingsWindow {
-    static void create(Scene* scene);
+class GlobalSettingsWindow : public GuiWindow{
+public:
+    GlobalSettingsWindow(std::shared_ptr<Scene> scene, std::shared_ptr<GuiState> guiState);
+    virtual void create();
 };
 
 

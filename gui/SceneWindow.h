@@ -5,13 +5,12 @@
 #ifndef GRAPHICSFRAMEWORK_SCENEWINDOW_H
 #define GRAPHICSFRAMEWORK_SCENEWINDOW_H
 
+#include "GuiWindow.h"
 
-#include "../Scene.h"
-
-struct SceneWindow {
-    static void create(const Scene& scene);
-    static ImVec2 sceneWindowCurrentPos;
-    static ImVec2 sceneWindowCurrentSize;
+class SceneWindow : public GuiWindow {
+public:
+    SceneWindow(std::shared_ptr<Scene> scene, std::shared_ptr<GuiState> guiState);
+    virtual void create();
 };
 
 

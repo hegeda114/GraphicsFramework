@@ -2,6 +2,7 @@
 // Created by hegeda on 2021-10-03.
 //
 
+#include <sstream>
 #include "GlobalSimulationSettings.h"
 
 SimulationMode GlobalSimulationSettings::getSimMode() const {
@@ -80,4 +81,46 @@ void GlobalSimulationSettings::setBordersEnabled(bool bordersEnabled) {
 
 void GlobalSimulationSettings::setGravityEnabled(bool gravityEnabled) {
     m_gravityEnabled = gravityEnabled;
+}
+
+std::string GlobalSimulationSettings::getSerializedData() const {
+    char buffer [200];
+    std::string gravityEnabled = "true";
+    if(!m_gravityEnabled) gravityEnabled = "false";
+
+    std::string simulationMode;
+    switch (m_simMode) {
+        case ExplicitEuler: simulationMode = "explicit_euler";
+            break;
+        case ImplicitEuler: simulationMode = "implicit_euler";
+            break;
+    }
+
+    sprintf(buffer, "%f;%s;%f;%f;%s", m_timestep, gravityEnabled.c_str(), m_gravity.x, m_gravity.y, simulationMode.c_str());
+    return buffer;
+}
+
+std::unique_ptr<GlobalSimulationSettings> GlobalSimulationSettings::createFromSavedData(const std::string &serializedData) {
+    std::stringstream ss(serializedData);
+    std::string val, val1, val2;
+
+    getline(ss, val, ';');
+    float timestep = std::stof(val);
+
+    getline(ss, val, ';');
+    bool gravityEnabled = (val == "true");
+
+    getline(ss, val1, ';');
+    getline(ss, val2, ';');
+    glm::vec2 gravity(std::stof(val1), std::stof(val2));
+
+    SimulationMode simMode;
+    getline(ss, val, ';');
+    if(val == "explicit_euler") simMode = SimulationMode::ExplicitEuler;
+    if(val == "implicit_euler") simMode = SimulationMode::ImplicitEuler;
+
+    std::unique_ptr<GlobalSimulationSettings> globSimSet = std::make_unique<GlobalSimulationSettings>(simMode, timestep);
+    globSimSet->setGravityEnabled(gravityEnabled);
+    globSimSet->setGravity(gravity);
+    return globSimSet;
 }

@@ -5,21 +5,26 @@
 #include "Gui.h"
 #include "OutlinerWindow.h"
 #include "SceneWindow.h"
-#include "SelectedObjectSettingsWindow.h"
 #include "SettingsWindow.h"
 #include "GlobalSettingsWindow.h"
 
 void Gui::init(std::shared_ptr<Scene> scene) {
-    this->m_guiState = std::make_shared<GuiState>();
-    this->m_scene = std::move(scene);
+    m_guiState = std::make_shared<GuiState>();
+    m_scene = std::move(scene);
+
+    m_outlinerWin = std::make_unique<OutlinerWindow>(m_scene, m_guiState);
+    m_sceneWin = std::make_unique<SceneWindow>(m_scene, m_guiState);
+    m_selectedObjectWin = std::make_unique<SelectedObjectSettingsWindow>(m_scene, m_guiState);
+    m_settingsWin = std::make_unique<SettingsWindow>(m_scene, m_guiState);
+    m_globalSettingsWin = std::make_unique<GlobalSettingsWindow>(m_scene, m_guiState);
 }
 
 void Gui::renderGui() {
-    OutlinerWindow::create(m_scene.get());
-    SceneWindow::create(*m_scene);
-    SelectedObjectSettingsWindow::create(m_scene.get());
-    SettingsWindow::create(m_scene.get(), m_guiState.get());
-    GlobalSettingsWindow::create(m_scene.get());
+    m_outlinerWin->create();
+    m_sceneWin->create();
+    m_selectedObjectWin->create();
+    m_settingsWin->create();
+    m_globalSettingsWin->create();
 }
 
 std::shared_ptr<GuiState> Gui::getGuiState() const {

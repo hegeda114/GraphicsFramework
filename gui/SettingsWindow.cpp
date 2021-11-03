@@ -6,12 +6,10 @@
 #include "SettingsWindow.h"
 #include "../IO.h"
 #include <iostream>
+#include <utility>
 #include <dirent.h>
 
-ViewportMode SettingsWindow::viewportMode = ViewportMode::Selection;
-std::string SettingsWindow::selectedFile = "";
-
-void SettingsWindow::create(Scene *scene, GuiState *guiState) {
+void SettingsWindow::create() {
     if(ImGui::Begin("Settings")) {
         if (ImGui::CollapsingHeader("Viewport Mode", ImGuiTreeNodeFlags_DefaultOpen)) {
             if(ImGui::Button("Point Creation Mode")) {
@@ -23,10 +21,10 @@ void SettingsWindow::create(Scene *scene, GuiState *guiState) {
         }
         if (ImGui::CollapsingHeader("Add Elements", ImGuiTreeNodeFlags_DefaultOpen)) {
             if(ImGui::Button("Create Point")) {
-                scene->addPoint(glm::vec2(0, 0));
+                m_scene->addPoint(glm::vec2(0, 0));
             }
             if(ImGui::Button("Create Static Point")) {
-                scene->addStaticPoint({0, 0});
+                m_scene->addStaticPoint({0, 0});
             }
         }
         if (ImGui::CollapsingHeader("Save/Load", ImGuiTreeNodeFlags_DefaultOpen)) {
@@ -34,41 +32,42 @@ void SettingsWindow::create(Scene *scene, GuiState *guiState) {
             ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 
             if(ImGui::Button("New Empty Scene")) {
-                scene->clearAllObject();
+                m_scene->clearAllObject();
+                m_guiState->currentSceneName = "";
             }
             if(ImGui::Button("Save Scene")) {
-                guiState->renderStop = true;
+                m_guiState->renderStop = true;
                 ImGui::OpenPopup("Save File Dialog");
             }
-            bool savePopupVisible = !savePopup(scene);
+            bool savePopupVisible = !savePopup();
 
             if(ImGui::Button("Load Scene")) {
-                guiState->renderStop = true;
+                m_guiState->renderStop = true;
                 ImGui::OpenPopup("Open File Dialog");
             }
-            bool loadPopupVisible = !loadPopup(scene);
-            guiState->blockViewportActions = savePopupVisible || loadPopupVisible;
+            bool loadPopupVisible = !loadPopup();
+            m_guiState->blockViewportActions = savePopupVisible || loadPopupVisible;
         }
         if (ImGui::CollapsingHeader("Simulation", ImGuiTreeNodeFlags_DefaultOpen)) {
-            std::string start_stop_label = guiState->renderStop ? "Start" : "Stop";
+            std::string start_stop_label = m_guiState->renderStop ? "Start" : "Stop";
             if(ImGui::Button(start_stop_label.c_str())) {
-                guiState->renderStop = !guiState->renderStop;
+                m_guiState->renderStop = !m_guiState->renderStop;
             }
 
             ImGui::Spacing();
 
             ImGui::Text("Delay:");
             ImGui::SameLine();
-            ImGui::Checkbox("##delay", &guiState->delayOn);
+            ImGui::Checkbox("##delay", &m_guiState->delayOn);
             ImGui::SameLine();
-            ImGui::SliderInt("##2", &guiState->delay, 1, 1000);
+            ImGui::SliderInt("##2", &m_guiState->delay, 1, 1000);
         }
 
         ImGui::End();
     }
 }
 
-bool SettingsWindow::loadPopup(Scene *scene) {
+bool SettingsWindow::loadPopup() {
     bool res = true;
     if (ImGui::BeginPopupModal("Open File Dialog", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         res = false;
@@ -107,15 +106,9 @@ bool SettingsWindow::loadPopup(Scene *scene) {
 
         ImGui::Spacing();
 
-        static bool dont_ask_me_next_time = false;
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-        ImGui::Checkbox("Don't ask me next time", &dont_ask_me_next_time);
-        ImGui::PopStyleVar();
-
-        ImGui::Spacing();
-
         if (ImGui::Button("Open File")) {
-            IO::open_scene("../saved_scenes/" + selectedFile, scene);
+            m_guiState->currentSceneName = selectedFile;
+            IO::open_scene("../saved_scenes/" + selectedFile, m_scene.get());
             ImGui::CloseCurrentPopup();
             res = true;
         }
@@ -129,11 +122,13 @@ bool SettingsWindow::loadPopup(Scene *scene) {
     return res;
 }
 
-bool SettingsWindow::savePopup(Scene *scene) {
+bool SettingsWindow::savePopup() {
     bool res = true;
     if (ImGui::BeginPopupModal("Save File Dialog", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         res = false;
-        static char buf[30] = { 0 };
+        static char buf[30] = {0};
+        std::string name = m_guiState->currentSceneName;
+        strcpy(buf, name.substr(0, name.length()-4).c_str());
         ImGui::InputText("File path", buf, IM_ARRAYSIZE(buf));
 
         ImGui::Spacing();
@@ -143,7 +138,8 @@ bool SettingsWindow::savePopup(Scene *scene) {
                 std::string(buf).find('/') == std::string::npos;
 
         if (ImGui::Button("Save File") && validFileName ) {
-            IO::save_scene(scene, buf);
+            m_guiState->currentSceneName = buf;
+            IO::save_scene(m_scene.get(), buf);
             ImGui::CloseCurrentPopup();
             res = true;
         }
@@ -155,4 +151,9 @@ bool SettingsWindow::savePopup(Scene *scene) {
         ImGui::EndPopup();
     }
     return res;
+}
+
+SettingsWindow::SettingsWindow(std::shared_ptr<Scene> scene, std::shared_ptr<GuiState> guiState)
+    : GuiWindow(std::move(scene),std::move(guiState)), viewportMode(ViewportMode::Selection) {
+
 }

@@ -9,6 +9,7 @@
 #include <vector>
 #include <vec2.hpp>
 #include <map>
+#include <memory>
 #include "../CommonEnums.h"
 
 class GlobalSimulationSettings {
@@ -49,6 +50,10 @@ public:
     bool isGravityEnabled() const;
     void setBordersEnabled(bool bordersEnabled);
     void setGravityEnabled(bool gravityEnabled);
+
+    std::string getSerializedData() const;
+
+    static std::unique_ptr<GlobalSimulationSettings> createFromSavedData(const std::string& serializedData);
 };
 
 

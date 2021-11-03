@@ -5,18 +5,17 @@
 #ifndef GRAPHICSFRAMEWORK_SETTINGSWINDOW_H
 #define GRAPHICSFRAMEWORK_SETTINGSWINDOW_H
 
+#include "GuiWindow.h"
 
-#include "../Scene.h"
-#include "GuiState.h"
-
-class SettingsWindow {
+class SettingsWindow : public GuiWindow {
 private:
-    static ViewportMode viewportMode;
-    static std::string selectedFile;
-    static bool savePopup(Scene *scene);
-    static bool loadPopup(Scene *scene);
+    ViewportMode viewportMode;
+    std::string selectedFile;
+    bool savePopup();
+    bool loadPopup();
 public:
-    static void create(Scene *scene, GuiState *guiState);
+    SettingsWindow(std::shared_ptr<Scene> scene, std::shared_ptr<GuiState> guiState);
+    virtual void create();
 };
 
 

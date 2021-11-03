@@ -5,10 +5,12 @@
 #ifndef GRAPHICSFRAMEWORK_OUTLINERWINDOW_H
 #define GRAPHICSFRAMEWORK_OUTLINERWINDOW_H
 
-#include "../Scene.h"
+#include "GuiWindow.h"
 
-struct OutlinerWindow {
-    static void create(Scene* scene);
+class OutlinerWindow : public GuiWindow {
+public:
+    OutlinerWindow(std::shared_ptr<Scene> scene, std::shared_ptr<GuiState> guiState);
+    virtual void create();
 };
 
 

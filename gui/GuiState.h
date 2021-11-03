@@ -14,6 +14,9 @@ struct GuiState {
     bool delayOn = false;
     bool blockViewportActions = false;
     int delay = 100;
+    glm::vec2 sceneWindowCurrentPos = {0, 0};
+    glm::vec2 sceneWindowCurrentSize = {0, 0};
+    std::string currentSceneName = "";
 };
 
 #endif //GRAPHICSFRAMEWORK_GUISTATE_H

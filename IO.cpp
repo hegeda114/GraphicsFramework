@@ -21,6 +21,7 @@ void IO::save_scene(const Scene *scene, const std::string &filePath) {
     sceneFile << "Timestamp: " << std::ctime(&time);
     auto points = scene->getPoints();
     auto springs = scene->getSprings();
+    const auto& globalSimSettings = scene->getGlobalSimulationSettings();
     sceneFile << points.size() << std::endl;
     sceneFile << springs.size() << std::endl;
     for(const auto& point : points) {
@@ -29,6 +30,7 @@ void IO::save_scene(const Scene *scene, const std::string &filePath) {
     for(const auto& spring : springs) {
         sceneFile << spring->getSerializedData() << std::endl;
     }
+    sceneFile << globalSimSettings->getSerializedData() << std::endl;
 
     // Close the file
     sceneFile.close();
@@ -66,6 +68,8 @@ void IO::open_scene(const std::string &filePath, Scene *scene) {
         double radius = std::stod(val);
         scene->addSpring(Spring::createSpringFromSavedData(p_i, p_j, line));
     }
+    getline(sceneFile, line);
+    scene->setGlobalSimulationSettings(GlobalSimulationSettings::createFromSavedData(line));
 
 
     sceneFile.close();
