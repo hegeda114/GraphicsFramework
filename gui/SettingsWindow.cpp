@@ -11,14 +11,20 @@
 
 void SettingsWindow::create() {
     if(ImGui::Begin("Settings")) {
-        if (ImGui::CollapsingHeader("Viewport Mode", ImGuiTreeNodeFlags_DefaultOpen)) {
-            if(ImGui::Button("Point Creation Mode")) {
-
-            }
-            if(ImGui::Button("Spring Creation Mode")) {
-
-            }
+        std::string modeName;
+        switch (m_scene->getMode()) {
+            case Default: modeName = "Selection Mode";
+                break;
+            case Grab: modeName = "Grab Mode";
+                break;
+            case PointCreation: modeName = "Point Creation Mode";
+                break;
+            case SpringCreation: modeName = "Spring Creation Mode";
+                break;
+            case ViewPan: modeName = "Viewport Pan Mode";
+                break;
         }
+        ImGui::Text("%s", modeName.c_str());
         if (ImGui::CollapsingHeader("Add Elements", ImGuiTreeNodeFlags_DefaultOpen)) {
             if(ImGui::Button("Create Point")) {
                 m_scene->addPoint(glm::vec2(0, 0));
@@ -154,6 +160,6 @@ bool SettingsWindow::savePopup() {
 }
 
 SettingsWindow::SettingsWindow(std::shared_ptr<Scene> scene, std::shared_ptr<GuiState> guiState)
-    : GuiWindow(std::move(scene),std::move(guiState)), viewportMode(ViewportMode::Selection) {
+    : GuiWindow(std::move(scene),std::move(guiState)), viewportMode(ViewportMode::Default) {
 
 }

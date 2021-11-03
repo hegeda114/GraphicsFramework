@@ -106,61 +106,31 @@ void Scene::render() {
         }
     }
 
+    if(m_mode == ViewportMode::SpringCreation) {
+        springCreationLine.update(m_shader.get());
+        springCreationLine.create();
+        springCreationLine.draw();
+    }
+
     m_frameBuffer->unbind();
 }
 
-void Scene::inputEvent(double x, double y, MouseButton button, ViewportMode mode) {
-    bool activeObjectExist = false;
-    if(this->m_activeObjectId != -1) {
-        activeObjectExist = true;
+void Scene::inputEvent(double x, double y, const GuiState &guiState) {
+    if(m_activeObjectId == -1 && m_mode == ViewportMode::Grab) {
+        m_mode = ViewportMode::Default;
     }
 
-    bool lastMouseLeftPressActive = m_mouseLeftPressActive;
-    if(button == MouseButton::LeftPress) {
-        m_mouseLeftPressActive = true;
+    switch (m_mode) {
+        case Default: selectionMode(x, y);
+            break;
+        case Grab: grabMode(x, y);
+            break;
+        case PointCreation:
+        case SpringCreation: creationMode(x, y, guiState.referencePoint, guiState.referenceSpring);
+            break;
+        case ViewPan:
+            break;
     }
-    if(button == MouseButton::LeftRelease) {
-        m_mouseLeftPressActive = false;
-    }
-
-
-    if(mode == ViewportMode::Grab && activeObjectExist) {
-        const auto& currentObject = getActiveObject();
-
-        // move start or continue
-        if(m_mouseLeftPressActive && (currentObject->isInside(x, y) || lastMouseLeftPressActive)) {
-            m_mouseLastPosition = {x, y};
-            currentObject->move(x, y);
-            currentObject->setFix(true);
-        }
-
-        // move stop
-        if(!m_mouseLeftPressActive && lastMouseLeftPressActive) {
-            glm::vec2 diff = glm::vec2(x, y) - m_mouseLastPosition;
-            diff *= 15;
-            currentObject->getSimulationProperties()->setVelocity(diff.x, diff.y);
-            currentObject->setFix(false);
-        }
-    }
-
-    if(mode == ViewportMode::Selection) {
-        if(m_mouseLeftPressActive && (lastMouseLeftPressActive != m_mouseLeftPressActive)) {
-            for(const auto& point : m_points) {
-                if(point->isInside(x, y)) {
-                    setActiveObject(point->getId());
-                }
-            }
-        }
-    }
-}
-
-void Scene::move_to_home(double x, double y) {
-    if(this->m_activeObjectId == -1) {
-        return;
-    }
-    const auto& currentObject = m_objects.find(this->m_activeObjectId)->second;
-    currentObject->move(x, y);
-    currentObject->setFix(true);
 }
 
 std::shared_ptr<Point> Scene::addPoint(const glm::vec2& position) {
@@ -206,16 +176,13 @@ std::map<size_t, std::string> Scene::getObjects() const {
 }
 
 void Scene::setActiveObject(int activeObjectId) {
-    if(m_activeObjectId != -1 && m_activeObjectId != activeObjectId) {
+    if(m_activeObjectId != -1) {
         getActiveObject()->getGeometry()->setColorToDefault();
         m_activeObjectId = -1;
     }
-    if(m_activeObjectId != activeObjectId) {
+    if(m_activeObjectId != activeObjectId && activeObjectId > -1) {
         this->m_activeObjectId = activeObjectId;
         getActiveObject()->getGeometry()->setColor(1.0f, 0.4f, 0.4f, 1.0f);
-    } else {
-        getActiveObject()->getGeometry()->setColorToDefault();
-        m_activeObjectId = -1;
     }
 }
 
@@ -278,6 +245,87 @@ void Scene::setHideHelperVectors(bool hideHelperVectors) {
 
 bool Scene::getHideHelperVectors() const {
     return m_hideHelperVectors;
+}
+
+void Scene::refreshButtonStatus(GLFWwindow *window) {
+    m_mouseState.buttonPressed(window);
+}
+
+void Scene::setMode(ViewportMode mode) {
+    m_mode = mode;
+}
+
+void Scene::grabMode(double x, double y) {
+    const auto& currentObject = getActiveObject();
+    ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+
+    if(m_grabObjectLastPos == glm::vec2(0, 0)) {
+        m_grabObjectLastPos = currentObject->getSimulationProperties()->getPosition();
+    }
+
+    currentObject->move(glm::vec2(x, y));
+    currentObject->setFix(true);
+
+    // move stop
+    if(m_mouseState.leftIsActive() || m_mouseState.rightIsActive()) {
+        if(m_mouseState.rightIsActive()) {
+            currentObject->move(m_grabObjectLastPos);
+        }
+        currentObject->setFix(false);
+        m_mode = ViewportMode::Default;
+        m_grabObjectLastPos = glm::vec2(0, 0);
+    }
+}
+
+void Scene::selectionMode(double x, double y) {
+    if(m_mouseState.leftIsActive() && m_mouseState.leftButtonStateChanged()) {
+        for(const auto& point : m_points) {
+            if(point->isInside(x, y)) {
+                setActiveObject(point->getId());
+            }
+        }
+    }
+}
+
+void Scene::creationMode(double x, double y, const Point& refPoint, const Spring& refSpring) {
+    if (m_mode == ViewportMode::PointCreation) {
+        if(m_mouseState.leftIsActive() && m_mouseState.leftButtonStateChanged()) {
+            const auto &point = addPoint({x, y});
+            point->setStatic(refPoint.isStatic());
+        }
+    }
+    if(m_mode == ViewportMode::SpringCreation) {
+        if(!m_mouseState.leftIsActive() && !m_mouseState.leftButtonStateChanged()) {
+            for(const auto& point : m_points) {
+                if(point->isInside(x, y)) {
+                    setActiveObject(point->getId());
+                }
+            }
+        }
+        if(m_mouseState.leftIsActive()) {
+            springCreationLine.setEndPoint({x, y});
+        }
+        if(m_mouseState.leftIsActive() && m_mouseState.leftButtonStateChanged()) {
+            springCreationLine.setStartPoint({x, y});
+        }
+        if(!m_mouseState.leftIsActive() && m_mouseState.leftButtonStateChanged()) {
+            //create spring
+        }
+    }
+    if(m_mouseState.rightIsActive()) {
+        m_mode = ViewportMode::Default;
+        m_grabObjectLastPos = glm::vec2(0, 0);
+        springCreationLine.setStartPoint({0, 0});
+        springCreationLine.setEndPoint({0, 0});
+    }
+}
+
+ViewportMode Scene::getMode() const {
+    return m_mode;
+}
+
+void Scene::deselectAll() {
+    setActiveObject(-1);
 }
 
 

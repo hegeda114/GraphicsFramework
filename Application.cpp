@@ -100,23 +100,24 @@ void Application::handleInput() {
     wxPos = wxPos * as;
     double wyPos = - (((y - topBorder) / sceneWindowSize.y) * 2.0 - 1);
 
-    if (glfwGetKey(winPtr, GLFW_KEY_H) == GLFW_PRESS) {
-        m_sceneView->move_to_home(wxPos, wyPos);
+    if (glfwGetKey(winPtr, GLFW_KEY_A) == GLFW_PRESS) {
+        m_sceneView->deselectAll();
     }
     if (glfwGetKey(winPtr, GLFW_KEY_G) == GLFW_PRESS) {
-        m_mode = ViewportMode::Grab;
+        m_sceneView->setMode(ViewportMode::Grab);
+    }
+    if (glfwGetKey(winPtr, GLFW_KEY_P) == GLFW_PRESS) {
+        m_sceneView->setMode(ViewportMode::PointCreation);
     }
     if (glfwGetKey(winPtr, GLFW_KEY_S) == GLFW_PRESS) {
-        m_mode = ViewportMode::Selection;
-    }
-    if (glfwGetKey(winPtr, GLFW_KEY_C) == GLFW_PRESS) {
-        m_mode = ViewportMode::Creation;
+        m_sceneView->setMode(ViewportMode::SpringCreation);
     }
     if (glfwGetKey(winPtr, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
-        m_sceneView->inputEvent(wxPos, wyPos, Input::GetPressedButton(winPtr), ViewportMode::ViewPan);
+        m_sceneView->setMode(ViewportMode::ViewPan);
     } else {
-        m_sceneView->inputEvent(wxPos, wyPos, Input::GetPressedButton(winPtr), m_mode);
     }
+    m_sceneView->refreshButtonStatus(winPtr);
+    m_sceneView->inputEvent(wxPos, wyPos, *m_guiState);
 
     //TODO m_sceneView->setGlobalSimulationSettings(std::make_unique<GlobalSimulationSettings>(m_guiState->currentSimState));
 }

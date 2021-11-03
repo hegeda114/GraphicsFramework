@@ -7,7 +7,7 @@
 
 enum Direction {Top, Right, Bottom, Left};
 
-enum ViewportMode {Selection, Grab, Creation, ViewPan};
+enum ViewportMode {Default, Grab, PointCreation, SpringCreation, ViewPan};
 
 enum SimulationMode {ExplicitEuler, ImplicitEuler};
 

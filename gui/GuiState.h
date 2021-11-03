@@ -6,6 +6,8 @@
 #define GRAPHICSFRAMEWORK_GUISTATE_H
 
 #include "../simulation/GlobalSimulationSettings.h"
+#include "../object/Point.h"
+#include "../object/Spring.h"
 
 struct GuiState {
     GlobalSimulationSettings currentSimState = GlobalSimulationSettings(SimulationMode::ExplicitEuler, 1.0/60.0);
@@ -16,7 +18,10 @@ struct GuiState {
     int delay = 100;
     glm::vec2 sceneWindowCurrentPos = {0, 0};
     glm::vec2 sceneWindowCurrentSize = {0, 0};
-    std::string currentSceneName = "";
+    std::string currentSceneName;
+
+    Point referencePoint = Point({0, 0});
+    Spring referenceSpring = Spring();
 };
 
 #endif //GRAPHICSFRAMEWORK_GUISTATE_H

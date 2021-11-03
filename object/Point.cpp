@@ -63,3 +63,6 @@ std::shared_ptr<Point> Point::createPointFromSavedData(const std::string& serial
     point->setStatic(isStatic);
     return point;
 }
+
+Point::Point(const Point& point) : Point(point.getSimulationProperties()->getPosition()){
+}

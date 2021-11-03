@@ -22,6 +22,9 @@ public:
     void setStartPoint(const glm::vec2& start);
     void setEndPoint(const glm::vec2& end);
     void setLineWidth(float width);
+
+    glm::vec2 getStartPoint() const;
+    glm::vec2 getEndoint() const;
 };
 
 

@@ -117,3 +117,12 @@ void Spring::setDefaultLength(float defaultLength) {
 float Spring::getCurrentLength() const {
     return m_l;
 }
+
+Spring::Spring() : Spring(std::make_shared<Point>(glm::vec2(0, 0)), std::make_shared<Point>(glm::vec2(0, 0)),
+        10, 10, 0.2){
+
+}
+
+Spring::Spring(const Spring &spring) :
+    Spring(spring.m_i, spring.m_j, spring.m_ks, spring.m_kd, spring.m_l0){
+}

@@ -6,7 +6,7 @@
 
 GeometryLine::GeometryLine(const glm::vec2& start, const glm::vec2& end) :
     Geometry(), m_startPoint(start), m_endPoint(end) {
-    m_defaultColor = {0.3f, 0.8f, 0.3f, 1.0f};
+    m_defaultColor = {0.8f, 0.6f, 0.3f, 1.0f};
     m_color = m_defaultColor;
 }
 
@@ -34,4 +34,12 @@ void GeometryLine::draw() const {
     glLineWidth(m_lineWidth);
     glBindVertexArray(vao);
     glDrawArrays(GL_LINE_STRIP, 0, 2);
+}
+
+glm::vec2 GeometryLine::getStartPoint() const {
+    return m_startPoint;
+}
+
+glm::vec2 GeometryLine::getEndoint() const {
+    return m_endPoint;
 }

@@ -7,41 +7,26 @@
 
 #include <glew.h>
 #include <GLFW/glfw3.h>
+#include <vec2.hpp>
 
-enum class MouseButton
-{
-    LeftPress = 0,
-    RightPress = 1,
-    MiddlePress = 2,
-    LeftRelease = 3,
-    RightRelease = 4,
-    MiddleRelease = 5,
-    None = 9
-};
+class MouseState {
+private:
+    glm::vec2 m_mouseLastPosition = {0, 0};
+    bool m_prevLeftPressActive = false;
+    bool m_prevRightPressActive = false;
+    bool m_prevMiddlePressActive = false;
 
-class Input {
+    bool m_mouseLeftPressActive = false;
+    bool m_mouseRightPressActive = false;
+    bool m_mouseMiddlePressActive = false;
 public:
-    static MouseButton GetPressedButton(GLFWwindow* window) {
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-            return MouseButton::LeftPress;
-        }
-        else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
-            return MouseButton::LeftRelease;
-        }
-        else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-            return MouseButton::RightPress;
-        }
-        else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
-            return MouseButton::RightRelease;
-        }
-        else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS) {
-            return MouseButton::MiddlePress;
-        }
-        else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_RELEASE) {
-            return MouseButton::MiddleRelease;
-        }
-        return MouseButton::None;
-    }
+    void buttonPressed(GLFWwindow* window);
+    bool leftIsActive() const;
+    bool rightIsActive() const;
+    bool middleIsActive() const;
+    bool leftButtonStateChanged() const;
+    bool rightButtonStateChanged() const;
+    bool middleButtonStateChanged() const;
 };
 
 

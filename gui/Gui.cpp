@@ -43,6 +43,13 @@ float Gui::createMenuBar() {
             if (ImGui::MenuItem("Save Scene")) {}
             ImGui::EndMenu();
         }
+        if (ImGui::BeginMenu("Add"))
+        {
+            if (ImGui::MenuItem("Add Point")) {}
+            if (ImGui::MenuItem("Add Static Point")) {}
+            if (ImGui::MenuItem("Add Spring")) {}
+            ImGui::EndMenu();
+        }
         ImGui::EndMainMenuBar();
     }
     return size.y;

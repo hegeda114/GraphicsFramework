@@ -28,6 +28,8 @@ public:
      */
     explicit Point(glm::vec2 pivotPoint, double radius = 0.01);
 
+    Point(const Point& point);
+
     /**
      * Returns true if the given position is inside of the point, otherwise false.
      * @param x The x coordinate of the tested position.

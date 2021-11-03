@@ -14,6 +14,8 @@
 #include "object/Spring.h"
 #include "FrameBuffer.h"
 #include "camera/OrthogonalCamera.h"
+#include "gui/GuiState.h"
+#include "geometry/GeometryLine.h"
 
 class Scene {
 public:
@@ -26,9 +28,8 @@ public:
     unsigned int getRenderTextureId() const;
 
     const std::shared_ptr<Object>& getObjectByName(const std::string& objectName) const;
-    void inputEvent(double x, double y, MouseButton button, ViewportMode mode);
+    void inputEvent(double x, double y, const GuiState &guiState);
 
-    void move_to_home(double x, double y);
     const std::unique_ptr<GlobalSimulationSettings>& getGlobalSimulationSettings() const;
 
     void setGlobalSimulationSettings(std::unique_ptr<GlobalSimulationSettings> globalSimulationSettings);
@@ -39,6 +40,7 @@ public:
     void setActiveObject(int activeObjectId);
     const std::shared_ptr<Object>& getActiveObject() const;
     int getActiveObjectId() const;
+    void deselectAll();
 
     // Add functions:
     std::shared_ptr<Point> addPoint(const glm::vec2& position);
@@ -49,11 +51,25 @@ public:
 
     void clearAllObject();
 
+
+
     void updateCamera(float width, float height) const;
 
     void setHideHelperVectors(bool hideHelperVectors);
 
     bool getHideHelperVectors() const;
+
+    void refreshButtonStatus(GLFWwindow* window);
+
+    void setMode(ViewportMode mode);
+
+    ViewportMode getMode() const;
+
+    void grabMode(double x, double y);
+
+    void selectionMode(double x, double y);
+
+    void creationMode(double x, double y, const Point& refPoint, const Spring& refSpring);
 
 private:
     std::map<size_t, std::shared_ptr<Object>> m_objects;
@@ -66,8 +82,10 @@ private:
     int m_activeObjectId = -1;
 
     bool m_hideHelperVectors = true;
-    glm::vec2 m_mouseLastPosition = {0, 0};
-    bool m_mouseLeftPressActive = false;
+    ViewportMode m_mode = ViewportMode::Default;
+    MouseState m_mouseState;
+    glm::vec2 m_grabObjectLastPos = {0, 0};
+    GeometryLine springCreationLine = GeometryLine({0, 0}, {0, 0});
 };
 
 

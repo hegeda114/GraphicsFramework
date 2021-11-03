@@ -43,6 +43,10 @@ public:
      */
     Spring(const std::shared_ptr<Point>& m_i, const std::shared_ptr<Point>& m_j, float stretching, float dampingCoefficient, float defaultLength);
 
+    Spring();
+
+    Spring(const Spring& spring);
+
     /**
      * Calculates and sets the spring forces for both points.
      */
