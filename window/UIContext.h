@@ -30,11 +30,7 @@ private:
     ImGuiViewport* m_viewport{};
     std::shared_ptr<GuiState> m_guiState;
 
-    void guiAddElements();
-    void guiGlobalSettings();
     void guiOutput();
-    void guiGeometriesList();
-    void guiCurrentGeomSettings();
 };
 
 

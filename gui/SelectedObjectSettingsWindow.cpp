@@ -3,7 +3,6 @@
 //
 
 #include <imgui.h>
-
 #include <utility>
 #include "SelectedObjectSettingsWindow.h"
 
@@ -44,8 +43,8 @@ void SelectedObjectSettingsWindow::create() {
 
 void SelectedObjectSettingsWindow::createPointSettings(Point* activePoint) const {
     const auto& simProp = activePoint->getSimulationProperties();
-    static bool velocityShow = activePoint->getVelocityHelper()->getVisibility();
-    static bool forceShow = activePoint->getForceHelper()->getVisibility();
+    bool velocityShow = activePoint->getVelocityHelper()->getVisibility();
+    bool forceShow = activePoint->getForceHelper()->getVisibility();
 
     ImGui::Separator();
     if(!m_editMode) {
@@ -58,7 +57,7 @@ void SelectedObjectSettingsWindow::createPointSettings(Point* activePoint) const
             ImGui::Text("Non Static Point");
         }
     } else {
-        static bool is_static = activePoint->isStatic();
+        bool is_static = activePoint->isStatic();
         glm::vec2 new_pos = coordInput("Position", simProp->getPosition().x, simProp->getPosition().y);
         ImGui::Text("Static");
         ImGui::SameLine();
@@ -91,9 +90,9 @@ void SelectedObjectSettingsWindow::createSpringSettings(Spring* activeSpring) co
         floatOutput("Default Length: ", defaultLength);
         floatOutput("Current Length: ", currentLength);
     } else {
-        stretching = floatInput("Stretching: ", stretching);
-        damping = floatInput("Damping Coefficient: ", damping);
-        defaultLength = floatInput("Default Length: ", defaultLength);
+        stretching = floatInput("Stretching: ", stretching, 1, 10, "%.2f");
+        damping = floatInput("Damping Coefficient: ", damping, 1, 10, "%.2f");
+        defaultLength = floatInput("Default Length: ", defaultLength, 0.00001f, 0.001f);
         activeSpring->setStretching(stretching);
         activeSpring->setDampingCoefficient(damping);
         activeSpring->setDefaultLength(defaultLength);
@@ -119,13 +118,13 @@ glm::vec2 SelectedObjectSettingsWindow::coordInput(const std::string &title, flo
     ImGui::Text("X: "); ImGui::SameLine();
     std::string label = "##x" + title;
     ImGui::PushItemWidth(100);
-    ImGui::InputFloat(label.c_str(), &input_x, 0.0001f, 0.001f, "%.5f", ImGuiInputTextFlags_AutoSelectAll);
+    ImGui::InputFloat(label.c_str(), &input_x, 0.0001f, 0.001f, "%.4f", ImGuiInputTextFlags_AutoSelectAll);
     ImGui::PopItemWidth();
     ImGui::SameLine();
     ImGui::Text("Y: "); ImGui::SameLine();
     label = "##y" + title;
     ImGui::PushItemWidth(100);
-    ImGui::InputFloat(label.c_str(), &input_y, 0.0001f, 0.001f, "%.5f", ImGuiInputTextFlags_AutoSelectAll);
+    ImGui::InputFloat(label.c_str(), &input_y, 0.0001f, 0.001f, "%.4f", ImGuiInputTextFlags_AutoSelectAll);
     ImGui::PopItemWidth();
     return {input_x, input_y};
 }
@@ -138,12 +137,12 @@ void SelectedObjectSettingsWindow::floatOutput(const std::string &title, float v
     ImGui::Text("%s", title.c_str()); ImGui::SameLine(); ImGui::Text("%.4f", value);
 }
 
-float SelectedObjectSettingsWindow::floatInput(const std::string &title, float value) {
+float SelectedObjectSettingsWindow::floatInput(const std::string &title, float value, float step, float step_fast, const char* format) {
     float input_value = value;
     ImGui::Text("%s", title.c_str()); ImGui::SameLine();
     std::string label = "##value" + title;
     ImGui::PushItemWidth(100);
-    ImGui::InputFloat(label.c_str(), &input_value, 0.0001f, 0.001f, "%.5f", ImGuiInputTextFlags_AutoSelectAll);
+    ImGui::InputFloat(label.c_str(), &input_value, step, step_fast, format, ImGuiInputTextFlags_AutoSelectAll);
     ImGui::PopItemWidth();
     return input_value;
 }

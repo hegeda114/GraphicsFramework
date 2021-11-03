@@ -12,7 +12,9 @@ void GlobalSettingsWindow::create() {
         auto timestep = (float) m_scene->getGlobalSimulationSettings()->getTimestep();
         ImGui::Text("Stepsize: ");
         ImGui::SameLine();
+        ImGui::PushItemWidth(130);
         ImGui::InputFloat("##timestep", &timestep, 0.0001f, 0.001f, "%.06f", ImGuiInputTextFlags_AutoSelectAll);
+        ImGui::PopItemWidth();
         if(timestep < 0.0f) {
             timestep = 0.000001f;
         }
@@ -26,7 +28,9 @@ void GlobalSettingsWindow::create() {
         ImGui::SameLine();
         ImGui::Checkbox("##gravityChb", &gravityEnabled);
         ImGui::SameLine();
+        ImGui::PushItemWidth(130);
         ImGui::DragFloat2("##gravity", gravity, 0.005f);
+        ImGui::PopItemWidth();
         m_scene->getGlobalSimulationSettings()->setGravityEnabled(gravityEnabled);
         m_scene->getGlobalSimulationSettings()->setGravity({gravity[0], gravity[1]});
         ImGui::Spacing();
@@ -35,7 +39,9 @@ void GlobalSettingsWindow::create() {
         static int item_current = m_scene->getGlobalSimulationSettings()->getSimMode();
         ImGui::Text("Simulation mode: ");
         ImGui::SameLine();
-        ImGui::Combo("combo", &item_current, items, IM_ARRAYSIZE(items));
+        ImGui::PushItemWidth(120);
+        ImGui::Combo("##combo", &item_current, items, IM_ARRAYSIZE(items));
+        ImGui::PopItemWidth();
         m_scene->getGlobalSimulationSettings()->setSimMode(static_cast<SimulationMode>(item_current));
         ImGui::Spacing();
 

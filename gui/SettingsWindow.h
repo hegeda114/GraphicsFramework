@@ -10,9 +10,6 @@
 class SettingsWindow : public GuiWindow {
 private:
     ViewportMode viewportMode;
-    std::string selectedFile;
-    bool savePopup();
-    bool loadPopup();
 public:
     SettingsWindow(std::shared_ptr<Scene> scene, std::shared_ptr<GuiState> guiState);
     virtual void create();

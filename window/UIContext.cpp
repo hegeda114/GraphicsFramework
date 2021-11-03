@@ -68,7 +68,7 @@ void UIContext::pre_render() {
                                    ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
                                    ImGuiWindowFlags_NoBackground;
 
-    float menuBarHeight = Gui::createMenuBar();
+    float menuBarHeight = 20;
 
     ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos({viewport->Pos.x, viewport->Pos.y + menuBarHeight});
@@ -102,91 +102,8 @@ void UIContext::post_render() {
     }
 }
 
-void UIContext::render() {
-    ImGui::Begin("InvisibleWindow", nullptr, m_windowFlags);
-        ImGui::AlignTextToFramePadding();
-        ImGui::SetWindowSize({300, m_viewport->Size.y});
-        ImGui::PopStyleVar(3);
-
-        ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
-        if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags))
-        {
-            if (ImGui::BeginTabItem("Add"))
-            {
-                guiAddElements();
-                ImGui::EndTabItem();
-            }
-            if (ImGui::BeginTabItem("Settings"))
-            {
-                guiGlobalSettings();
-                ImGui::EndTabItem();
-            }
-            if (ImGui::BeginTabItem("Output"))
-            {
-                guiOutput();
-                guiCurrentGeomSettings();
-                ImGui::EndTabItem();
-            }
-            ImGui::EndTabBar();
-        }
-        ImGui::Separator();
-        guiGeometriesList();
-
-    ImGui::End();
-}
-
 std::shared_ptr<GuiState> UIContext::getGuiState() const {
     return m_guiState;
-}
-
-void UIContext::guiAddElements() {
-
-}
-
-void UIContext::guiGlobalSettings() {
-    if (ImGui::CollapsingHeader("Global Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
-        static float timestep = 1.0/60.0;
-        ImGui::Text("Stepsize: ");
-        ImGui::SameLine();
-        ImGui::DragFloat("##3", &timestep, 0.00001f, 0.0f, 1.0f, "%.05f");
-
-        ImGui::Spacing();
-
-        static float gravity[2] = {0.0, -9.8};
-        ImGui::Text("Gravity: ");
-        ImGui::SameLine();
-        ImGui::DragFloat2("##1", gravity, 0.005f);
-
-        ImGui::Spacing();
-
-        ImGui::Text("Simulation mode:");
-        ImGui::SameLine();
-        const char* items[] = {"Explicit Euler", "Implicit Euler" };
-        static int item_current = 0;
-        ImGui::Combo("combo", &item_current, items, IM_ARRAYSIZE(items));
-
-        ImGui::Spacing();
-
-        if(ImGui::Button("Save changes")) {
-            m_guiState->currentSimState.setGravity({gravity[0], gravity[1]});
-            m_guiState->currentSimState.setTimestep(timestep);
-            m_guiState->currentSimState.setSimMode(static_cast<SimulationMode>(item_current));
-        }
-
-        ImGui::Spacing();
-
-        std::string start_stop_label = m_guiState->renderStop ? "Start" : "Stop";
-        if(ImGui::Button(start_stop_label.c_str())) {
-            m_guiState->renderStop = !m_guiState->renderStop;
-        }
-
-        ImGui::Spacing();
-
-        ImGui::Checkbox("Delay", &m_guiState->delayOn);
-        ImGui::SameLine();
-        ImGui::SliderInt("##2", &m_guiState->delay, 1, 1000);
-
-    }
 }
 
 void UIContext::guiOutput() {
@@ -219,103 +136,5 @@ void UIContext::guiOutput() {
 //            sprintf(overlay, "avg %f", average);
 //            ImGui::PlotLines("Lines", values, IM_ARRAYSIZE(values), values_offset, overlay, -1.0f, 1.0f, ImVec2(0,80));
 //        }
-    }
-}
-
-void UIContext::guiGeometriesList() {
-    auto geomMap = m_scene->getObjects();
-//    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4{ 0.4f, 0.15f, 0.15f, 1.0f });
-//    ImGui::PushStyleColor(ImGuiCol_Header, ImVec4{  0.7f, 0.15f, 0.15f, 1.0f });
-    if (ImGui::CollapsingHeader("Geometries", ImGuiTreeNodeFlags_DefaultOpen)) {
-        if (ImGui::BeginTable("geom_table", 1))
-        {
-            int i = 0;
-            for (const auto& geom: geomMap)
-            {
-                char label[32];
-                sprintf(label, "%s##%d", geom.second.c_str(), i);
-                const bool item_is_selected = (m_selectedObjectId == (int) geom.first);
-
-                ImGui::TableNextRow();
-                ImGui::TableSetColumnIndex(0);
-
-                ImGuiSelectableFlags selectable_flags = ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap;
-                if (ImGui::Selectable(label, item_is_selected, selectable_flags))
-                {
-                    m_selectedObjectId = -1;
-                    if(!item_is_selected) {
-                        m_scene->setActiveObject(geom.first);
-                        m_selectedObjectId = geom.first;
-                    }
-                    //scene->setActiveObject(geom.first);
-//                    if(selection[0] != item_is_selected) {
-//                        selection.push_back(geom.first);
-//                        scene->setActiveObject(geom.first);
-//                    }
-                }
-                i++;
-            }
-            ImGui::EndTable();
-        }
-    }
-}
-
-void UIContext::guiCurrentGeomSettings() {
-    if (m_selectedObjectId == -1) {
-        return;
-    }
-    if (ImGui::CollapsingHeader("Active Geometry Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
-        const auto& currentGeom = m_scene->getActiveObject();
-        ImGui::Text("Name: %s", currentGeom->getName().c_str());
-
-
-        if(currentGeom->getType() == ObjectType::PointObject) {
-            const auto& geom = std::dynamic_pointer_cast<Point>(currentGeom);
-            auto pos = geom->getSimulationProperties()->getPosition();
-
-            ImGui::Text("Position: %.4f %.4f", pos.x, pos.y);
-
-            ImGui::Spacing();
-
-            static bool overridePointEditorOpened = false;
-            if(m_guiState->renderStop && ImGui::Button("Override parameters")) {
-                overridePointEditorOpened = true;
-            }
-            if(overridePointEditorOpened) {
-                ImGui::OpenPopup("OverridePointSettings");
-                if (ImGui::BeginPopup("OverridePointSettings"))
-                {
-                    ImGui::Text("Modify %s settings", currentGeom->getName().c_str());
-
-                    ImGui::Spacing();
-
-                    static float position[2] = {pos.x, pos.y};
-                    ImGui::Text("Position: ");
-                    ImGui::SameLine();
-                    ImGui::DragFloat2("##point_position", position, 0.005f);
-
-                    ImGui::Spacing();
-
-                    static bool isStatic = false;
-                    ImGui::Checkbox("Static", &isStatic);
-
-                    ImGui::Spacing();
-
-                    if(ImGui::Button("Apply")) {
-                        overridePointEditorOpened = false;
-                        geom->setPosition({pos.x, pos.y});
-                        geom->setStatic(isStatic);
-                    }
-                    ImGui::SameLine();
-                    if(ImGui::Button("Cancel")) {
-                        overridePointEditorOpened = false;
-                    }
-                    ImGui::EndPopup();
-                }
-            }
-        }
-        if(currentGeom->getType() == ObjectType::SpringObject) {
-
-        }
     }
 }

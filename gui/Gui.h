@@ -28,8 +28,11 @@ private:
     std::unique_ptr<SettingsWindow> m_settingsWin;
     std::unique_ptr<GlobalSettingsWindow> m_globalSettingsWin;
 
+    std::string selectedFile;
+    bool savePopup();
+    bool openPopup();
 public:
-    static float createMenuBar();
+    void createMenuBar();
     void init(std::shared_ptr<Scene> scene);
     void renderGui();
     std::shared_ptr<GuiState> getGuiState() const;
