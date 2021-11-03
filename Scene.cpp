@@ -296,25 +296,37 @@ void Scene::creationMode(double x, double y, const Point& refPoint, const Spring
     }
     if(m_mode == ViewportMode::SpringCreation) {
         if(!m_mouseState.leftIsActive() && !m_mouseState.leftButtonStateChanged()) {
+            deselectAll();
             for(const auto& point : m_points) {
                 if(point->isInside(x, y)) {
                     setActiveObject(point->getId());
+                    springCreationFirstPoint = point;
                 }
             }
         }
         if(m_mouseState.leftIsActive()) {
             springCreationLine.setEndPoint({x, y});
+            deselectAll();
+            for(const auto& point : m_points) {
+                if(point->isInside(x, y)) {
+                    setActiveObject(point->getId());
+                    springCreationLastPoint = point;
+                }
+            }
         }
         if(m_mouseState.leftIsActive() && m_mouseState.leftButtonStateChanged()) {
-            springCreationLine.setStartPoint({x, y});
+            glm::vec2 startPos = springCreationFirstPoint->getSimulationProperties()->getPosition();
+            springCreationLine.setStartPoint(startPos);
         }
         if(!m_mouseState.leftIsActive() && m_mouseState.leftButtonStateChanged()) {
-            //create spring
+            springCreationLine.setStartPoint({0, 0});
+            springCreationLine.setEndPoint({0, 0});
+            addSpring(springCreationFirstPoint, springCreationLastPoint, refSpring.getStretching(),
+                      refSpring.getDampingCoefficient(), refSpring.getDefaultLength());
         }
     }
     if(m_mouseState.rightIsActive()) {
         m_mode = ViewportMode::Default;
-        m_grabObjectLastPos = glm::vec2(0, 0);
         springCreationLine.setStartPoint({0, 0});
         springCreationLine.setEndPoint({0, 0});
     }

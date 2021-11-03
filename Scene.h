@@ -86,6 +86,8 @@ private:
     MouseState m_mouseState;
     glm::vec2 m_grabObjectLastPos = {0, 0};
     GeometryLine springCreationLine = GeometryLine({0, 0}, {0, 0});
+    std::shared_ptr<Point> springCreationFirstPoint;
+    std::shared_ptr<Point> springCreationLastPoint;
 };
 
 
