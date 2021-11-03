@@ -38,7 +38,7 @@ void Spring::calculateSpringForces() {
 
 glm::vec2 Spring::calcForce(glm::vec2 posDiff, glm::vec2 velDiff) const {
     float lenposdiff = glm::length(posDiff);
-    return (posDiff / lenposdiff) * m_ks * (lenposdiff - m_l0); //TODO ezt pontosítani!
+    return (posDiff / lenposdiff) * (m_ks * (lenposdiff - m_l0) + m_kd * velDiff);
 }
 
 void Spring::connectionChangedEvent() const {

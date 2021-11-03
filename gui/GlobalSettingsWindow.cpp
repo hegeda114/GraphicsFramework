@@ -36,7 +36,7 @@ void GlobalSettingsWindow::create() {
         ImGui::Spacing();
 
         const char* items[] = {"Explicit Euler", "Implicit Euler" };
-        static int item_current = m_scene->getGlobalSimulationSettings()->getSimMode();
+        int item_current = m_scene->getGlobalSimulationSettings()->getSimMode();
         ImGui::Text("Simulation mode: ");
         ImGui::SameLine();
         ImGui::PushItemWidth(120);
@@ -45,7 +45,7 @@ void GlobalSettingsWindow::create() {
         m_scene->getGlobalSimulationSettings()->setSimMode(static_cast<SimulationMode>(item_current));
         ImGui::Spacing();
 
-        static bool hideHelpers = m_scene->getHideHelperVectors();
+        bool hideHelpers = m_scene->getHideHelperVectors();
         ImGui::Text("Hide all helper: ");
         ImGui::SameLine();
         ImGui::Checkbox("##hidehelperschb", &hideHelpers);
