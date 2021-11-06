@@ -22,23 +22,25 @@ Spring::Spring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j,
 }
 
 void Spring::calculateSpringForces() {
-    glm::vec2 posDiff, velDiff, force;
+    glm::vec2 posDiff, velDiff;
     posDiff = (m_j->getSimulationProperties()->getPosition() - m_i->getSimulationProperties()->getPosition());
     velDiff = (m_j->getSimulationProperties()->getVelocity() - m_i->getSimulationProperties()->getVelocity());
     m_l = glm::length(posDiff);
 
     // calculate force for i:
-    force = calcForce(posDiff, velDiff);
-    m_i->getSimulationProperties()->addForce(force);
+    glm::vec2 m_i_force = calcForce(m_i->getSimulationProperties()->getVelocity(), posDiff, velDiff);
+    m_i->getSimulationProperties()->addForce(m_i_force);
 
     // calculate force for j:
-    force = calcForce(-posDiff, -velDiff);
-    m_j->getSimulationProperties()->addForce(force);
+    glm::vec2 m_j_force = calcForce(m_j->getSimulationProperties()->getVelocity(), -posDiff, -velDiff);
+    m_j->getSimulationProperties()->addForce(m_j_force);
 }
 
-glm::vec2 Spring::calcForce(glm::vec2 posDiff, glm::vec2 velDiff) const {
-    float lenposdiff = glm::length(posDiff);
-    return (posDiff / lenposdiff) * (m_ks * (lenposdiff - m_l0) + m_kd * velDiff);
+glm::vec2 Spring::calcForce(glm::vec2 point_velocity, glm::vec2 posDiff, glm::vec2 velDiff) const {
+//    if(glm::abs(point_velocity.x) < 0.01 && glm::abs(point_velocity.y) < 0.01) {
+//        return (m_ks * (posDiff / m_l) * (m_l - m_l0));
+//    }
+    return (m_ks * (posDiff / m_l) * (m_l - m_l0)) + (m_kd * orthoProjection(velDiff, posDiff));
 }
 
 void Spring::connectionChangedEvent() const {
@@ -125,4 +127,9 @@ Spring::Spring() : Spring(std::make_shared<Point>(glm::vec2(0, 0)), std::make_sh
 
 Spring::Spring(const Spring &spring) :
     Spring(spring.m_i, spring.m_j, spring.m_ks, spring.m_kd, spring.m_l0){
+}
+
+glm::vec2 Spring::orthoProjection(glm::vec2 a, glm::vec2 b) {
+    glm::vec2 b_norm = glm::normalize(b);
+    return (glm::dot(a, b_norm) / glm::dot(b_norm, b_norm)) * b_norm;
 }

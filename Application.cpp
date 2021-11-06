@@ -100,6 +100,9 @@ void Application::handleInput() {
     wxPos = wxPos * as;
     double wyPos = - (((y - topBorder) / sceneWindowSize.y) * 2.0 - 1);
 
+    if (glfwGetKey(winPtr, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        m_guiState->renderStop = !m_guiState->renderStop;
+    }
     if (glfwGetKey(winPtr, GLFW_KEY_A) == GLFW_PRESS) {
         m_sceneView->deselectAll();
     }

@@ -67,14 +67,18 @@ void SelectedObjectSettingsWindow::createPointSettings(Point* activePoint) const
     }
     ImGui::Separator();
 
-    ImGui::Text("Show Velocity Vector");
-    ImGui::SameLine();
-    ImGui::Checkbox("##velchbox", &velocityShow);
-    ImGui::Text("Show Force Vector");
-    ImGui::SameLine();
-    ImGui::Checkbox("##forcechbox", &forceShow);
-
+    float velocityLength = activePoint->getVelocityHelper()->getLengthMultiplier();
+    ImGui::Text("Show Velocity Vector"); ImGui::SameLine();
+    ImGui::Checkbox("##velchbox", &velocityShow); ImGui::SameLine();
+    ImGui::SliderFloat("##velocityvector", &velocityLength, 0, 10);
+    activePoint->getVelocityHelper()->setLengthMultiplier(velocityLength);
     activePoint->getVelocityHelper()->setVisibility(velocityShow);
+
+    float forceLength = activePoint->getForceHelper()->getLengthMultiplier();
+    ImGui::Text("Show Force Vector"); ImGui::SameLine();
+    ImGui::Checkbox("##forcechbox", &forceShow); ImGui::SameLine();
+    ImGui::SliderFloat("##forcevector", &forceLength, 0, 10);
+    activePoint->getForceHelper()->setLengthMultiplier(forceLength);
     activePoint->getForceHelper()->setVisibility(forceShow);
 }
 

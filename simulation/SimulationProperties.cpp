@@ -8,16 +8,16 @@ SimulationProperties::SimulationProperties(glm::vec2 position) {
     m_position = position;
 }
 
-void SimulationProperties::setVelocity(double x, double y) {
-    m_velocity.x = (float) x;
-    m_velocity.y = (float) y;
+void SimulationProperties::setVelocity(float x, float y) {
+    m_velocity.x = x;
+    m_velocity.y = y;
 }
 
 void SimulationProperties::setVelocity(const glm::vec2 &velocity) {
     setVelocity(velocity.x, velocity.y);
 }
 
-void SimulationProperties::addForce(double x, double y) {
+void SimulationProperties::addForce(float x, float y) {
     m_forces.emplace_back(glm::vec2(x, y));
 }
 
@@ -54,7 +54,7 @@ const glm::vec2& SimulationProperties::getPosition() const {
     return m_position;
 }
 
-void SimulationProperties::setPosition(double x, double y) {
+void SimulationProperties::setPosition(float x, float y) {
     setPosition({x, y});
 }
 

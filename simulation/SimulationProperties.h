@@ -20,17 +20,17 @@ protected:
 public:
     explicit SimulationProperties(glm::vec2 position);
 
-    void addForce(double x, double y);
+    void addForce(float x, float y);
     void addForce(const glm::vec2& force);
     void clearForces();
     glm::vec2 getResultantForces() const;
     glm::vec2 getResultantForcesForHelpers() const;
 
-    void setPosition(double x, double y);
+    void setPosition(float x, float y);
     void setPosition(const glm::vec2& position);
     const glm::vec2& getPosition() const;
 
-    void setVelocity(double x, double y);
+    void setVelocity(float x, float y);
     void setVelocity(const glm::vec2& velocity);
     const glm::vec2& getVelocity() const;
 

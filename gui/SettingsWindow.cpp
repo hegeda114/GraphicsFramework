@@ -33,7 +33,7 @@ void SettingsWindow::create() {
         ImGui::SameLine();
         ImGui::Checkbox("##delay", &m_guiState->delayOn);
         ImGui::SameLine();
-        ImGui::SliderInt("##2", &m_guiState->delay, 1, 1000);
+        ImGui::SliderInt("##2", &m_guiState->delay, 1, 4000);
 
         ImGui::Spacing();
 

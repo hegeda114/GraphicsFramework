@@ -19,14 +19,19 @@ void Scene::init() {
     m_frameBuffer = std::make_unique<FrameBuffer>();
     m_frameBuffer->createBuffer(800, 800);
 
-    auto point1 = this->addPoint(glm::vec2(0, 0));
+    auto point1 = this->addPoint(glm::vec2(0.1, 0.2));
     point1->setStatic(true);
-    auto point2 = this->addPoint({0.2, 0.0});
-    this->addSpring(point1, point2, 10, 0, 0.2);
-    point2->getSimulationProperties()->setVelocity(0.01, 0.0);
-    auto point3 = this->addPoint({0.4, 0.0});
-    point3->setStatic(true);
-    this->addSpring(point2, point3, 10, 0, 0.2);
+    auto point2 = this->addPoint({0.0, 0.0});
+    this->addSpring(point1, point2, 10, 2, 0.2);
+
+//    auto point1 = this->addPoint(glm::vec2(0, 0));
+//    point1->setStatic(true);
+//    auto point2 = this->addPoint({0.2, 0.0});
+//    this->addSpring(point1, point2, 10, 0, 0.2);
+//    point2->getSimulationProperties()->setVelocity(0.01, 0.0);
+//    auto point3 = this->addPoint({0.4, 0.0});
+//    point3->setStatic(true);
+//    this->addSpring(point2, point3, 10, 0, 0.2);
 
 //    int maxNum = 4;
 //    float length = 0.2;
