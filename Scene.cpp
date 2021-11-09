@@ -78,22 +78,60 @@ void Scene::simulate() {
     double frame_rate = 1.0/60.0;
     int iteration = ceil(frame_rate / m_globalSimulationSettings->getTimestep());
     for(int i = 0; i < iteration; i++) {
-        // calculate spring forces for each springs
-        for(const auto& spring : m_springs) {
-            spring->calculateSpringForces();
-        }
-        // calculate other forces for each points
-        for(const auto& point : m_points) {
-            if(m_globalSimulationSettings->isGravityEnabled() && !point->isStatic()) {
-                point->getSimulationProperties()->addForce(m_globalSimulationSettings->getGravity()); // add gravity
-            }
-        }
-        //calculate new position and velocity
-        for(const auto& point : m_points) {
-            point->simulate(m_globalSimulationSettings.get());
+        switch (m_globalSimulationSettings->getSimMode()) {
+            case ExplicitEuler: eulerIntegration();
+                break;
+            case ImplicitEuler: rungeKuttaSecondOrderIntegration();
+                break;
         }
     }
 }
+
+void Scene::eulerIntegration() {
+    // calculate spring forces for each springs
+    for(const auto& spring : m_springs) {
+        auto point_i = spring->getI();
+        auto point_j = spring->getJ();
+        auto force_i = spring->calculateSpringForce(
+                point_i->getSimulationProperties()->getPosition(), point_j->getSimulationProperties()->getPosition(),
+                point_i->getSimulationProperties()->getVelocity(), point_j->getSimulationProperties()->getVelocity());
+        auto force_j = spring->calculateSpringForce(
+                point_j->getSimulationProperties()->getPosition(), point_i->getSimulationProperties()->getPosition(),
+                point_j->getSimulationProperties()->getVelocity(), point_i->getSimulationProperties()->getVelocity());
+        point_i->getSimulationProperties()->addForce(force_i);
+        point_j->getSimulationProperties()->addForce(force_j);
+    }
+    // calculate other forces for each points
+    for(const auto& point : m_points) {
+        if(m_globalSimulationSettings->isGravityEnabled() && !point->isStatic()) {
+            point->getSimulationProperties()->addForce(m_globalSimulationSettings->getGravity()); // add gravity
+        }
+    }
+    //calculate new position and velocity
+    for(const auto& point : m_points) {
+        point->simulate(m_globalSimulationSettings.get());
+    }
+}
+
+void Scene::rungeKuttaSecondOrderIntegration() {
+    for(const auto& point : m_points) {
+        point->getSimulationProperties()->setA1(point->getSimulationProperties()->getVelocity());
+        
+    }
+    for(const auto& spring : m_springs) {
+        auto point_i = spring->getI();
+        auto point_j = spring->getJ();
+        auto force_i = spring->calculateSpringForce(
+                point_i->getSimulationProperties()->getPosition(), point_j->getSimulationProperties()->getPosition(),
+                point_i->getSimulationProperties()->getVelocity(), point_j->getSimulationProperties()->getVelocity());
+        auto force_j = spring->calculateSpringForce(
+                point_j->getSimulationProperties()->getPosition(), point_i->getSimulationProperties()->getPosition(),
+                point_j->getSimulationProperties()->getVelocity(), point_i->getSimulationProperties()->getVelocity());
+        point_i->getSimulationProperties()->setA1(force_i);
+        point_j->getSimulationProperties()->addForce(force_j);
+    }
+}
+
 
 void Scene::render(bool recordOn) {
     m_shader->use();

@@ -46,6 +46,19 @@ void SimulationProperties::explicitEuler(const GlobalSimulationSettings* globalS
     clearForces();
 }
 
+void SimulationProperties::rungeKuttaSecondOrder(const GlobalSimulationSettings* globalSimulationSettings) {
+    double timestep = globalSimulationSettings->getTimestep();
+//    glm::vec2 resultantForce = getResultantForces();
+
+    m_velocity.x += m_b1.x * (float) timestep;
+    m_velocity.y += m_b1.y * (float) timestep;
+    m_position.x += m_b2.x * (float) timestep;
+    m_position.y += m_b2.y * (float) timestep;
+
+//    m_resultantForcesForHelper = resultantForce;
+    clearForces();
+}
+
 const glm::vec2 &SimulationProperties::getVelocity() const {
     return m_velocity;
 }
@@ -68,4 +81,20 @@ void SimulationProperties::clearForces() {
 
 glm::vec2 SimulationProperties::getResultantForcesForHelpers() const {
     return m_resultantForcesForHelper;
+}
+
+void SimulationProperties::setA1(const glm::vec2 &value) {
+    m_a1 = value;
+}
+
+void SimulationProperties::setA2(const glm::vec2 &value) {
+    m_a2 = value;
+}
+
+void SimulationProperties::setB1(const glm::vec2 &value) {
+    m_b1 = value;
+}
+
+void SimulationProperties::setB2(const glm::vec2 &value) {
+    m_b2 = value;
 }

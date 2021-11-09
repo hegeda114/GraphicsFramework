@@ -48,10 +48,7 @@ public:
 
     Spring(const Spring& spring);
 
-    /**
-     * Calculates and sets the spring forces for both points.
-     */
-    void calculateSpringForces();
+    glm::vec2 calculateSpringForce(const glm::vec2& firstPos, const glm::vec2& secondPos, const glm::vec2& firstVel, const glm::vec2& secondVel);
 
     /**
      * Refreshes the start and end position of the spring, based on the spring's points position.

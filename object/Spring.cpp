@@ -1,7 +1,3 @@
-//
-// Created by hegeda on 2021-10-13.
-//
-
 #include <sstream>
 #include "Spring.h"
 #include "../geometry/GeometrySpring.h"
@@ -21,19 +17,13 @@ Spring::Spring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j,
     m_l0 = defaultLength;
 }
 
-void Spring::calculateSpringForces() {
+glm::vec2 Spring::calculateSpringForce(const glm::vec2 &firstPos, const glm::vec2 &secondPos,
+                                       const glm::vec2 &firstVel, const glm::vec2 &secondVel) {
     glm::vec2 posDiff, velDiff;
-    posDiff = (m_j->getSimulationProperties()->getPosition() - m_i->getSimulationProperties()->getPosition());
-    velDiff = (m_j->getSimulationProperties()->getVelocity() - m_i->getSimulationProperties()->getVelocity());
+    posDiff = (secondPos - firstPos);
+    velDiff = (secondVel - firstVel);
     m_l = glm::length(posDiff);
-
-    // calculate force for i:
-    glm::vec2 m_i_force = calcForce(m_i->getSimulationProperties()->getVelocity(), posDiff, velDiff);
-    m_i->getSimulationProperties()->addForce(m_i_force);
-
-    // calculate force for j:
-    glm::vec2 m_j_force = calcForce(m_j->getSimulationProperties()->getVelocity(), -posDiff, -velDiff);
-    m_j->getSimulationProperties()->addForce(m_j_force);
+    return calcForce(firstVel, posDiff, velDiff);
 }
 
 glm::vec2 Spring::calcForce(glm::vec2 point_velocity, glm::vec2 posDiff, glm::vec2 velDiff) const {
