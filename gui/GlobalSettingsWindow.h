@@ -11,7 +11,7 @@
 class GlobalSettingsWindow : public GuiWindow{
 public:
     GlobalSettingsWindow(std::shared_ptr<Scene> scene, std::shared_ptr<GuiState> guiState);
-    virtual void create();
+    void create() override;
 };
 
 

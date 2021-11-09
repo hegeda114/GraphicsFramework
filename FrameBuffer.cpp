@@ -3,6 +3,7 @@
 //
 
 #include <glew.h>
+#include <cstring>
 #include "FrameBuffer.h"
 
 void FrameBuffer::createBuffer(unsigned int width, unsigned int height) {
@@ -24,20 +25,35 @@ void FrameBuffer::createBuffer(unsigned int width, unsigned int height) {
     unbind();
 }
 
-void FrameBuffer::unbind() {
+void FrameBuffer::recordToData() {
+    GLint currentBuff;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentBuff);
+    if(currentBuff == (GLint) m_fbo) {
+        glPixelStorei(GL_PACK_ALIGNMENT, 1);
+        glReadPixels(0, 0, m_width, m_height, GL_RGB, GL_UNSIGNED_BYTE, m_data);
+    }
+}
+
+void FrameBuffer::unbind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 FrameBuffer::~FrameBuffer() {
+    delete[](m_data);
     glDeleteFramebuffers(GL_FRAMEBUFFER, &m_fbo);
 }
 
-void FrameBuffer::bind() {
+void FrameBuffer::bind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
     glViewport(0, 0, m_width, m_height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    memset(m_data, 0, 3 * m_width * m_height);
 }
 
 unsigned int FrameBuffer::getRenderedTexture() const {
     return m_texture;
+}
+
+const GLubyte *FrameBuffer::getData() const {
+    return m_data;
 }

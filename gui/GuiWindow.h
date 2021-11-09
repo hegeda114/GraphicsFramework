@@ -12,8 +12,11 @@ class GuiWindow {
 protected:
     std::shared_ptr<Scene> m_scene;
     std::shared_ptr<GuiState> m_guiState;
+    static void floatOutput(const std::string& title, float value);
+    static float floatInput(const std::string& title, float value, float step, float step_fast, const char* format = "%.4f");
 public:
     GuiWindow(std::shared_ptr<Scene> scene, std::shared_ptr<GuiState> guiState);
+    virtual void create() = 0;
 };
 
 

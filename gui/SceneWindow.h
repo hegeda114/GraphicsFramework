@@ -10,7 +10,7 @@
 class SceneWindow : public GuiWindow {
 public:
     SceneWindow(std::shared_ptr<Scene> scene, std::shared_ptr<GuiState> guiState);
-    virtual void create();
+    void create() override;
 };
 
 

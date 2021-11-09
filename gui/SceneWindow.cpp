@@ -5,11 +5,16 @@
 #include <imgui.h>
 
 #include <utility>
+#include <iomanip>
 #include "SceneWindow.h"
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "../Dependencies/stb_image_write.h"
 
 void SceneWindow::create() {
     unsigned int textureID = m_scene->getRenderTextureId();
     if(ImGui::Begin("Scene")) {
+        m_guiState->viewportIsActive = true;
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 
         m_guiState->sceneWindowCurrentPos = {ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y};
@@ -20,8 +25,27 @@ void SceneWindow::create() {
 
         ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ mSize.x, mSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
-        ImGui::End();
+        if(m_guiState->recordOn) {
+            std::string folder_name = "test";
+            m_guiState->recordFrameCounter++;
+            GLubyte* data = new GLubyte[3 * 800 * 800];
+            memcpy(data, m_scene->getFrameBuffer().getData(), 3 * 800 * 800);
+            stbi_flip_vertically_on_write(true);
+
+            std::stringstream ss;
+            ss << std::setw(4) << std::setfill('0') << std::to_string(m_guiState->recordFrameCounter);
+            std::string number = ss.str();
+            std::string file_name = "E:/Programming/Projects/GraphicsFramework_Simulation/saved_videos/" + folder_name + "/" + folder_name + "_" + number + ".png";
+            stbi_write_png(file_name.c_str(), 800, 800, 3, data, 800 * 3);
+        }
+        if(m_guiState->recordFrameCounter - 1 > m_guiState->recordLength) {
+            m_guiState->recordOn = false;
+            m_guiState->renderStop = true;
+            m_guiState->recordFrameCounter = 0;
+        }
+
     }
+    ImGui::End();
 }
 
 SceneWindow::SceneWindow(std::shared_ptr<Scene> scene, std::shared_ptr<GuiState> guiState) :

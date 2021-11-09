@@ -13,6 +13,7 @@
 #include "SceneWindow.h"
 #include "GlobalSettingsWindow.h"
 #include "SettingsWindow.h"
+#include "ImageViewer.h"
 #include <memory>
 #include <imgui.h>
 
@@ -27,6 +28,7 @@ private:
     std::unique_ptr<SelectedObjectSettingsWindow> m_selectedObjectWin;
     std::unique_ptr<SettingsWindow> m_settingsWin;
     std::unique_ptr<GlobalSettingsWindow> m_globalSettingsWin;
+    std::unique_ptr<ImageViewer> m_imageViewer;
 
     std::string selectedFile;
     bool savePopup();

@@ -37,9 +37,6 @@ void Spring::calculateSpringForces() {
 }
 
 glm::vec2 Spring::calcForce(glm::vec2 point_velocity, glm::vec2 posDiff, glm::vec2 velDiff) const {
-//    if(glm::abs(point_velocity.x) < 0.01 && glm::abs(point_velocity.y) < 0.01) {
-//        return (m_ks * (posDiff / m_l) * (m_l - m_l0));
-//    }
     return (m_ks * (posDiff / m_l) * (m_l - m_l0)) + (m_kd * orthoProjection(velDiff, posDiff));
 }
 

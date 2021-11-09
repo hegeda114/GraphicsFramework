@@ -16,11 +16,13 @@ void Gui::init(std::shared_ptr<Scene> scene) {
     m_selectedObjectWin = std::make_unique<SelectedObjectSettingsWindow>(m_scene, m_guiState);
     m_settingsWin = std::make_unique<SettingsWindow>(m_scene, m_guiState);
     m_globalSettingsWin = std::make_unique<GlobalSettingsWindow>(m_scene, m_guiState);
+    m_imageViewer = std::make_unique<ImageViewer>(m_scene, m_guiState);
 }
 
 void Gui::renderGui() {
     createMenuBar();
     m_outlinerWin->create();
+    m_imageViewer->create();
     m_sceneWin->create();
     m_selectedObjectWin->create();
     m_settingsWin->create();

@@ -3,8 +3,6 @@
 //
 
 #include "Application.h"
-#include "gui/SceneWindow.h"
-#include "gui/SettingsWindow.h"
 
 using namespace std::chrono;
 
@@ -42,11 +40,10 @@ void Application::loop() {
         m_uiContext->pre_render();
 
         // simulation and render
-        //TODO mSceneView->render();
         if(!m_guiState->renderStop && (!m_guiState->delayOn || (m_guiState->delayOn && past_time < 0))) {
             m_sceneView->simulate();
         }
-        m_sceneView->render();
+        m_sceneView->render(m_guiState->recordOn);
 
         m_gui->renderGui();
 
@@ -73,7 +70,7 @@ void Application::loop() {
 }
 
 void Application::handleInput() {
-    if(m_guiState->blockViewportActions) {
+    if(m_guiState->blockViewportActions || !m_guiState->viewportIsActive) {
         return;
     }
 

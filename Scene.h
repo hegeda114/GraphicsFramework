@@ -23,7 +23,7 @@ public:
 
     void init();
     void simulate();
-    void render();
+    void render(bool recordOn);
 
     unsigned int getRenderTextureId() const;
 
@@ -49,9 +49,11 @@ public:
     void addSpring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j, float stretchnig, float dampingCoeffitient, float defaultLengeth);
     void addSpring(const std::shared_ptr<Spring>& object);
 
+    void modifyAllSpring(float stretching, float damping, float defaultLength);
+
     void clearAllObject();
 
-
+    const FrameBuffer& getFrameBuffer() const;
 
     void updateCamera(float width, float height) const;
 

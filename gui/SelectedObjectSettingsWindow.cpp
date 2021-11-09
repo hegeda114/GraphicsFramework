@@ -37,8 +37,8 @@ void SelectedObjectSettingsWindow::create() {
                 createSpringSettings(std::dynamic_pointer_cast<Spring>(activeObject).get());
             }
         }
-        ImGui::End();
     }
+    ImGui::End();
 }
 
 void SelectedObjectSettingsWindow::createPointSettings(Point* activePoint) const {
@@ -70,14 +70,18 @@ void SelectedObjectSettingsWindow::createPointSettings(Point* activePoint) const
     float velocityLength = activePoint->getVelocityHelper()->getLengthMultiplier();
     ImGui::Text("Show Velocity Vector"); ImGui::SameLine();
     ImGui::Checkbox("##velchbox", &velocityShow); ImGui::SameLine();
+    ImGui::PushItemWidth(100);
     ImGui::SliderFloat("##velocityvector", &velocityLength, 0, 10);
+    ImGui::PopItemWidth();
     activePoint->getVelocityHelper()->setLengthMultiplier(velocityLength);
     activePoint->getVelocityHelper()->setVisibility(velocityShow);
 
     float forceLength = activePoint->getForceHelper()->getLengthMultiplier();
     ImGui::Text("Show Force Vector"); ImGui::SameLine();
     ImGui::Checkbox("##forcechbox", &forceShow); ImGui::SameLine();
+    ImGui::PushItemWidth(100);
     ImGui::SliderFloat("##forcevector", &forceLength, 0, 10);
+    ImGui::PopItemWidth();
     activePoint->getForceHelper()->setLengthMultiplier(forceLength);
     activePoint->getForceHelper()->setVisibility(forceShow);
 }
@@ -94,12 +98,14 @@ void SelectedObjectSettingsWindow::createSpringSettings(Spring* activeSpring) co
         floatOutput("Default Length: ", defaultLength);
         floatOutput("Current Length: ", currentLength);
     } else {
+        ImGui::PushItemWidth(100);
         stretching = floatInput("Stretching: ", stretching, 1, 10, "%.2f");
         damping = floatInput("Damping Coefficient: ", damping, 1, 10, "%.2f");
-        defaultLength = floatInput("Default Length: ", defaultLength, 0.00001f, 0.001f);
+        defaultLength = floatInput("Default Length: ", defaultLength, 0.001f, 0.01f);
         activeSpring->setStretching(stretching);
         activeSpring->setDampingCoefficient(damping);
         activeSpring->setDefaultLength(defaultLength);
+        ImGui::PopItemWidth();
     }
 }
 
@@ -135,18 +141,4 @@ glm::vec2 SelectedObjectSettingsWindow::coordInput(const std::string &title, flo
 
 SelectedObjectSettingsWindow::SelectedObjectSettingsWindow(std::shared_ptr<Scene> scene, std::shared_ptr<GuiState> guiState)
     : GuiWindow(std::move(scene), std::move(guiState)) {
-}
-
-void SelectedObjectSettingsWindow::floatOutput(const std::string &title, float value) {
-    ImGui::Text("%s", title.c_str()); ImGui::SameLine(); ImGui::Text("%.4f", value);
-}
-
-float SelectedObjectSettingsWindow::floatInput(const std::string &title, float value, float step, float step_fast, const char* format) {
-    float input_value = value;
-    ImGui::Text("%s", title.c_str()); ImGui::SameLine();
-    std::string label = "##value" + title;
-    ImGui::PushItemWidth(100);
-    ImGui::InputFloat(label.c_str(), &input_value, step, step_fast, format, ImGuiInputTextFlags_AutoSelectAll);
-    ImGui::PopItemWidth();
-    return input_value;
 }

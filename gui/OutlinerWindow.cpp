@@ -30,8 +30,8 @@ void OutlinerWindow::create() {
                     }
                     i++;
                 }
-                ImGui::EndTable();
             }
+            ImGui::EndTable();
         }
 
         if (ImGui::CollapsingHeader("Springs")) {
@@ -54,11 +54,11 @@ void OutlinerWindow::create() {
                     }
                     i++;
                 }
-                ImGui::EndTable();
             }
+            ImGui::EndTable();
         }
-        ImGui::End();
     }
+    ImGui::End();
 }
 
 OutlinerWindow::OutlinerWindow(std::shared_ptr<Scene> scene, std::shared_ptr<GuiState> guiState) :
