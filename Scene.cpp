@@ -98,7 +98,6 @@ void Scene::simulate() {
 }
 
 void Scene::eulerIntegration() {
-    printf("euler integration\n");
     // calculate spring forces for each springs
     for(const auto& spring : m_springs) {
         auto point_i = spring->getI();
@@ -111,10 +110,6 @@ void Scene::eulerIntegration() {
                 point_j->getSimProp()->getVelocity(), point_i->getSimProp()->getVelocity());
         point_i->getSimProp()->addForce(force_i);
         point_j->getSimProp()->addForce(force_j);
-        printf("%f %f  %f %f\n", point_i->getSimProp()->getResultantForces().x,
-               point_i->getSimProp()->getResultantForces().y,
-               point_j->getSimProp()->getResultantForces().x,
-               point_j->getSimProp()->getResultantForces().y);
     }
     // calculate other forces for each points
     for(const auto& point : m_points) {
@@ -129,7 +124,6 @@ void Scene::eulerIntegration() {
 }
 
 void Scene::rungeKuttaSecondOrderIntegration() {
-    printf("runge2 integration\n");
     float timestep = m_globalSimulationSettings->getTimestep();
     // calc a
     for(const auto& point : m_points) {
@@ -181,7 +175,6 @@ void Scene::rungeKuttaSecondOrderIntegration() {
 }
 
 void Scene::rungeKuttaFourthOrderIntegration() {
-    printf("runge4 integration\n");
     float timestep = m_globalSimulationSettings->getTimestep();
     // calc a
     for(const auto& point : m_points) {

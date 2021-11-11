@@ -34,7 +34,6 @@ glm::vec2 SimulationProperties::getResultantForces() const {
 }
 
 void SimulationProperties::explicitEuler(const GlobalSimulationSettings* globalSimulationSettings) {
-    printf("euler\n");
     double timestep = globalSimulationSettings->getTimestep();
     glm::vec2 resultantForce = getResultantForces();
 
@@ -48,7 +47,6 @@ void SimulationProperties::explicitEuler(const GlobalSimulationSettings* globalS
 }
 
 void SimulationProperties::rungeKuttaSecondOrder(const GlobalSimulationSettings* globalSimulationSettings) {
-    printf("runge2\n");
     double timestep = globalSimulationSettings->getTimestep();
 //    glm::vec2 resultantForce = getResultantForces();
 
@@ -63,7 +61,6 @@ void SimulationProperties::rungeKuttaSecondOrder(const GlobalSimulationSettings*
 
 
 void SimulationProperties::rungeKuttaFourthOrder(const GlobalSimulationSettings *globalSimulationSettings) {
-    printf("runge4\n");
     double timestep = globalSimulationSettings->getTimestep();
 //    glm::vec2 resultantForce = getResultantForces();
 
