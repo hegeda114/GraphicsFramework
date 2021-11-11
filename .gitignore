@@ -1,6 +1,6 @@
 .idea
 cmake-build-debug
 cmake-build-debug-mingw
-saved_videos
+saved_videos/.
 #Dependencies
 #imgui
