@@ -9,7 +9,7 @@ enum Direction {Top, Right, Bottom, Left};
 
 enum ViewportMode {Default, Grab, PointCreation, SpringCreation, ViewPan};
 
-enum SimulationMode {ExplicitEuler, ImplicitEuler};
+enum SimulationMode {ExplicitEuler, RungeKuttaSecondOrder, RungeKuttaFourthOrder};
 
 enum MenuCommand { OpenScene, SaveScene, AddPoint, AddStaticPoint, AddSpring, None};
 

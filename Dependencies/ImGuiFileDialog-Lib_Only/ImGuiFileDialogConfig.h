@@ -5,10 +5,10 @@
 //this options need c++17
 //#define USE_STD_FILESYSTEM
 
-#define MAX_FILE_DIALOG_NAME_BUFFER 1024
-#define MAX_PATH_BUFFER_SIZE 1024
+//#define MAX_FILE_DIALOG_NAME_BUFFER 1024
+//#define MAX_PATH_BUFFER_SIZE 1024
 
-#define USE_THUMBNAILS
+//#define USE_THUMBNAILS
 //the thumbnail generation use the stb_image and stb_resize lib who need to define the implementation
 //btw if you already use them in your app, you can have compiler error due to "implemntation found in double"
 //so uncomment these line for prevent the creation of implementation of these libs again

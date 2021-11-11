@@ -5,7 +5,7 @@
 #include "Gui.h"
 #include "../IO.h"
 #include <iostream>
-#include <dirent.h>
+#include "../Dependencies/ImGuiFileDialog-Lib_Only/dirent/dirent.h"
 #include "../Dependencies/ImGuiFileDialog-Lib_Only/ImGuiFileDialog.h"
 
 void Gui::init(std::shared_ptr<Scene> scene) {

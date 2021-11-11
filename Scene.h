@@ -25,6 +25,7 @@ public:
     void simulate();
     void eulerIntegration();
     void rungeKuttaSecondOrderIntegration();
+    void rungeKuttaFourthOrderIntegration();
     void render(bool recordOn);
 
     unsigned int getRenderTextureId() const;

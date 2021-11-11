@@ -9,7 +9,7 @@ int Spring::nextSpringId() {
 }
 
 Spring::Spring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j, float stretching, float dampingCoefficient, float defaultLength) :
-   Object(std::make_unique<GeometrySpring>(i->getSimulationProperties()->getPosition(), j->getSimulationProperties()->getPosition()),
+   Object(std::make_unique<GeometrySpring>(i->getSimProp()->getPosition(), j->getSimProp()->getPosition()),
    std::make_unique<SimulationProperties>(glm::vec2(0, 0))), m_i(i), m_j(j) {
     m_name = std::string("Spring_") + std::to_string(nextSpringId());
     m_ks = stretching;
@@ -23,16 +23,16 @@ glm::vec2 Spring::calculateSpringForce(const glm::vec2 &firstPos, const glm::vec
     posDiff = (secondPos - firstPos);
     velDiff = (secondVel - firstVel);
     m_l = glm::length(posDiff);
-    return calcForce(firstVel, posDiff, velDiff);
+    return calcForce(posDiff, velDiff);
 }
 
-glm::vec2 Spring::calcForce(glm::vec2 point_velocity, glm::vec2 posDiff, glm::vec2 velDiff) const {
+glm::vec2 Spring::calcForce(glm::vec2 posDiff, glm::vec2 velDiff) const {
     return (m_ks * (posDiff / m_l) * (m_l - m_l0)) + (m_kd * orthoProjection(velDiff, posDiff));
 }
 
 void Spring::connectionChangedEvent() const {
-    dynamic_cast<GeometrySpring&>(*m_geometry).setStartPoint(m_i->getSimulationProperties()->getPosition());
-    dynamic_cast<GeometrySpring&>(*m_geometry).setEndPoint(m_j->getSimulationProperties()->getPosition());
+    dynamic_cast<GeometrySpring&>(*m_geometry).setStartPoint(m_i->getSimProp()->getPosition());
+    dynamic_cast<GeometrySpring&>(*m_geometry).setEndPoint(m_j->getSimProp()->getPosition());
 }
 
 ObjectType Spring::getType() const {

@@ -67,7 +67,7 @@ const std::unique_ptr<Geometry> &Object::getGeometry() const {
     return m_geometry;
 }
 
-const std::unique_ptr<SimulationProperties> &Object::getSimulationProperties() const {
+const std::unique_ptr<SimulationProperties> &Object::getSimProp() const {
     return m_simulationProperties;
 }
 
@@ -93,6 +93,12 @@ void Object::simulate(const GlobalSimulationSettings* globalSimulationSettings) 
     }
     if(globalSimulationSettings->getSimMode() == SimulationMode::ExplicitEuler) {
         m_simulationProperties->explicitEuler(globalSimulationSettings);
+    }
+    if(globalSimulationSettings->getSimMode() == SimulationMode::RungeKuttaSecondOrder) {
+        m_simulationProperties->rungeKuttaSecondOrder(globalSimulationSettings);
+    }
+    if(globalSimulationSettings->getSimMode() == SimulationMode::RungeKuttaFourthOrder) {
+        m_simulationProperties->rungeKuttaFourthOrder(globalSimulationSettings);
     }
 
     m_pivot = m_simulationProperties->getPosition();

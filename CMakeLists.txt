@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 set(IMGUI_SOURCES imgui/imgui.cpp imgui/imgui_demo.cpp imgui/imgui_draw.cpp imgui/imgui_widgets.cpp imgui/imgui_tables.cpp imgui/backends/imgui_impl_opengl3.cpp imgui/backends/imgui_impl_glfw.cpp)
 
-set(SOURCE_FILES Dependencies/stb_image.h Dependencies/stb_image_write.h Dependencies/dirent.h Shader.h Shader.cpp geometry/Geometry.h geometry/GeometryPoint.cpp geometry/GeometryPoint.h Application.cpp Application.h main.cpp window/Window.cpp window/Window.h window/UIContext.cpp window/UIContext.h window/MouseButton.h Scene.cpp Scene.h geometry/Geometry.cpp simulation/GlobalSimulationSettings.cpp simulation/GlobalSimulationSettings.h CommonEnums.h gui/GuiState.h object/Object.cpp object/Object.h simulation/SimulationProperties.cpp simulation/SimulationProperties.h object/Point.cpp object/Point.h object/Spring.cpp object/Spring.h geometry/GeometryLine.cpp geometry/GeometryLine.h geometry/GeometryVector.cpp geometry/GeometryVector.h IO.cpp IO.h FrameBuffer.cpp FrameBuffer.h geometry/GeometrySpring.cpp geometry/GeometrySpring.h gui/Gui.cpp gui/Gui.h gui/OutlinerWindow.cpp gui/OutlinerWindow.h gui/GlobalSettingsWindow.cpp gui/GlobalSettingsWindow.h gui/SettingsWindow.cpp gui/SettingsWindow.h gui/SelectedObjectSettingsWindow.cpp gui/SelectedObjectSettingsWindow.h gui/SceneWindow.cpp gui/SceneWindow.h camera/OrthogonalCamera.cpp camera/OrthogonalCamera.h gui/GuiWindow.cpp gui/GuiWindow.h window/MouseButton.cpp gui/ImageViewer.cpp gui/ImageViewer.h)
+set(SOURCE_FILES  Dependencies/ImGuiFileDialog-Lib_Only/ImGuiFileDialog.cpp Dependencies/stb_image.h Dependencies/stb_image_write.h Shader.h Shader.cpp geometry/Geometry.h geometry/GeometryPoint.cpp geometry/GeometryPoint.h Application.cpp Application.h main.cpp window/Window.cpp window/Window.h window/UIContext.cpp window/UIContext.h window/MouseButton.h Scene.cpp Scene.h geometry/Geometry.cpp simulation/GlobalSimulationSettings.cpp simulation/GlobalSimulationSettings.h CommonEnums.h gui/GuiState.h object/Object.cpp object/Object.h simulation/SimulationProperties.cpp simulation/SimulationProperties.h object/Point.cpp object/Point.h object/Spring.cpp object/Spring.h geometry/GeometryLine.cpp geometry/GeometryLine.h geometry/GeometryVector.cpp geometry/GeometryVector.h IO.cpp IO.h FrameBuffer.cpp FrameBuffer.h geometry/GeometrySpring.cpp geometry/GeometrySpring.h gui/Gui.cpp gui/Gui.h gui/OutlinerWindow.cpp gui/OutlinerWindow.h gui/GlobalSettingsWindow.cpp gui/GlobalSettingsWindow.h gui/SettingsWindow.cpp gui/SettingsWindow.h gui/SelectedObjectSettingsWindow.cpp gui/SelectedObjectSettingsWindow.h gui/SceneWindow.cpp gui/SceneWindow.h camera/OrthogonalCamera.cpp camera/OrthogonalCamera.h gui/GuiWindow.cpp gui/GuiWindow.h window/MouseButton.cpp gui/ImageViewer.cpp gui/ImageViewer.h)
 
 include_directories(${PROJECT_SOURCE_DIR}/Dependencies/GLEW/include)
 include_directories(${PROJECT_SOURCE_DIR}/Dependencies/GLFW/include)
@@ -24,7 +24,7 @@ find_package(OpenGL REQUIRED)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${IMGUI_SOURCES})
 
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic -Wno-unused-variable -Wno-missing-field-initializers -Wno-unused-parameter -Werror) #-Werror
+target_compile_options(${PROJECT_NAME} PRIVATE -Wextra -pedantic -Wno-unused-variable -Wno-missing-field-initializers -Wno-unused-parameter -Werror) #-Werror -Wall
 
 if (${WIN32})
     target_link_libraries(${PROJECT_NAME} glew32 glfw3 imm32 OpenGL::GL)

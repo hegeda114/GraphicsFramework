@@ -64,5 +64,5 @@ std::shared_ptr<Point> Point::createPointFromSavedData(const std::string& serial
     return point;
 }
 
-Point::Point(const Point& point) : Point(point.getSimulationProperties()->getPosition()){
+Point::Point(const Point& point) : Point(point.getSimProp()->getPosition()){
 }

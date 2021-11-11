@@ -92,7 +92,9 @@ std::string GlobalSimulationSettings::getSerializedData() const {
     switch (m_simMode) {
         case ExplicitEuler: simulationMode = "explicit_euler";
             break;
-        case ImplicitEuler: simulationMode = "implicit_euler";
+        case RungeKuttaSecondOrder: simulationMode = "rungekutta_second_order";
+            break;
+        case RungeKuttaFourthOrder: simulationMode = "rungekutta_fourth_order";
             break;
     }
 
@@ -117,7 +119,8 @@ std::unique_ptr<GlobalSimulationSettings> GlobalSimulationSettings::createFromSa
     SimulationMode simMode;
     getline(ss, val, ';');
     if(val == "explicit_euler") simMode = SimulationMode::ExplicitEuler;
-    if(val == "implicit_euler") simMode = SimulationMode::ImplicitEuler;
+    if(val == "rungekutta_second_order") simMode = SimulationMode::RungeKuttaSecondOrder;
+    if(val == "rungekutta_fourth_order") simMode = SimulationMode::RungeKuttaFourthOrder;
 
     std::unique_ptr<GlobalSimulationSettings> globSimSet = std::make_unique<GlobalSimulationSettings>(simMode, timestep);
     globSimSet->setGravityEnabled(gravityEnabled);

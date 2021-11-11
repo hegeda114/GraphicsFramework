@@ -30,7 +30,7 @@ private:
     std::shared_ptr<Point> m_i;
     std::shared_ptr<Point> m_j;
 
-    glm::vec2 calcForce(glm::vec2 point_velocity, glm::vec2 posDiff, glm::vec2 velDiff) const;
+    glm::vec2 calcForce(glm::vec2 posDiff, glm::vec2 velDiff) const;
     static glm::vec2 orthoProjection(glm::vec2 a, glm::vec2 b);
     bool isInside(double x, double y) const override { return false; };
 public:

@@ -19,58 +19,66 @@ void Scene::init() {
     m_frameBuffer = std::make_unique<FrameBuffer>();
     m_frameBuffer->createBuffer(800, 800);
 
-//    auto point1 = this->addPoint(glm::vec2(0.1, 0.2));
-//    point1->setStatic(true);
-//    auto point2 = this->addPoint({0.0, 0.0});
-//    this->addSpring(point1, point2, 10, 2, 0.2);
+    int start_scene = 2;
 
-//    auto point1 = this->addPoint(glm::vec2(0, 0));
-//    point1->setStatic(true);
-//    auto point2 = this->addPoint({0.2, 0.0});
-//    this->addSpring(point1, point2, 10, 0, 0.2);
-//    point2->getSimulationProperties()->setVelocity(0.01, 0.0);
-//    auto point3 = this->addPoint({0.4, 0.0});
-//    point3->setStatic(true);
-//    this->addSpring(point2, point3, 10, 0, 0.2);
+    if(start_scene == 0) {
+        auto point1 = this->addPoint(glm::vec2(0.1, 0.2));
+        point1->setStatic(true);
+        auto point2 = this->addPoint({0.0, 0.0});
+        this->addSpring(point1, point2, 10, 2, 0.2);
+    }
 
-    int maxNum = 4;
-    float length = 0.2;
+    if(start_scene == 1) {
+        auto point1 = this->addPoint(glm::vec2(0, 0));
+        point1->setStatic(true);
+        auto point2 = this->addPoint({0.2, 0.0});
+        this->addSpring(point1, point2, 10, 0, 0.2);
+        point2->getSimProp()->setVelocity(0.01, 0.0);
+        auto point3 = this->addPoint({0.4, 0.0});
+        point3->setStatic(true);
+        this->addSpring(point2, point3, 10, 0, 0.2);
+    }
 
-    std::vector<std::shared_ptr<Point>> springs;
-    std::shared_ptr<Point> prevCol;
-    for(int i = 0; i < maxNum; i++) {
-        for(int j = 0; j < maxNum; j++) {
-            auto point = this->addPoint(glm::vec2(length*i, length*j));
-            springs.push_back(point);
-            if(i == 0) {
-                point->setStatic(true);
+    if(start_scene == 2) {
+        int maxNum = 4;
+        float length = 0.2;
+
+        std::vector<std::shared_ptr<Point>> springs;
+        std::shared_ptr<Point> prevCol;
+        for (int i = 0; i < maxNum; i++) {
+            for (int j = 0; j < maxNum; j++) {
+                auto point = this->addPoint(glm::vec2(length * i, length * j));
+                springs.push_back(point);
+                if (i == 0) {
+                    point->setStatic(true);
+                }
+                if (j == 0) {
+                    prevCol = point;
+                }
+                if (j > 0) {
+                    this->addSpring(prevCol, point, 1000, 3, glm::length(prevCol->getSimProp()->getPosition() -
+                                                                         point->getSimProp()->getPosition()));
+                    prevCol = point;
+                }
+                if (i > 0) {
+                    int own_idx = i * maxNum + j;
+                    this->addSpring(springs[own_idx - maxNum], point, 1000, 3, glm::length(
+                            springs[own_idx - maxNum]->getSimProp()->getPosition() -
+                            point->getSimProp()->getPosition()));
+                }
+                if (i * 3 + j >= maxNum - 1 && j < maxNum - 1 && i < maxNum) {
+                    int own_idx = i * maxNum + j;
+                    this->addSpring(springs[own_idx - maxNum + 1], point, 1000, 3, glm::length(
+                            springs[own_idx - maxNum + 1]->getSimProp()->getPosition() -
+                            point->getSimProp()->getPosition()));
+                }
+                //if(i*3+j > maxNum-1 && j < maxNum-1 && i < maxNum) {
+                //    int own_idx = i*maxNum+j;
+                //    this->addSpring(springs[own_idx-maxNum+1], point, 10, 0, std::sqrt(length*length));
+                //}
             }
-            if(j == 0) {
-                prevCol = point;
-            }
-            if(j > 0) {
-                this->addSpring(prevCol, point, 1000, 3, glm::length(prevCol->getSimulationProperties()->getPosition() -
-                                                                      point->getSimulationProperties()->getPosition()));
-                prevCol = point;
-            }
-            if(i > 0) {
-                int own_idx = i*maxNum+j;
-                this->addSpring(springs[own_idx-maxNum], point, 1000, 3, glm::length(
-                        springs[own_idx - maxNum]->getSimulationProperties()->getPosition() -
-                                                                                      point->getSimulationProperties()->getPosition()));
-            }
-            if(i*3+j >= maxNum-1 && j < maxNum-1 && i < maxNum) {
-                int own_idx = i * maxNum + j;
-                this->addSpring(springs[own_idx - maxNum + 1], point, 1000, 3, glm::length(
-                        springs[own_idx - maxNum + 1]->getSimulationProperties()->getPosition() -
-                                                                                            point->getSimulationProperties()->getPosition()));
-            }
-            //if(i*3+j > maxNum-1 && j < maxNum-1 && i < maxNum) {
-            //    int own_idx = i*maxNum+j;
-            //    this->addSpring(springs[own_idx-maxNum+1], point, 10, 0, std::sqrt(length*length));
-            //}
+            //prevRow.clear();
         }
-        //prevRow.clear();
     }
 }
 
@@ -81,30 +89,37 @@ void Scene::simulate() {
         switch (m_globalSimulationSettings->getSimMode()) {
             case ExplicitEuler: eulerIntegration();
                 break;
-            case ImplicitEuler: rungeKuttaSecondOrderIntegration();
+            case RungeKuttaSecondOrder: rungeKuttaSecondOrderIntegration();
+                break;
+            case RungeKuttaFourthOrder: rungeKuttaFourthOrderIntegration();
                 break;
         }
     }
 }
 
 void Scene::eulerIntegration() {
+    printf("euler integration\n");
     // calculate spring forces for each springs
     for(const auto& spring : m_springs) {
         auto point_i = spring->getI();
         auto point_j = spring->getJ();
         auto force_i = spring->calculateSpringForce(
-                point_i->getSimulationProperties()->getPosition(), point_j->getSimulationProperties()->getPosition(),
-                point_i->getSimulationProperties()->getVelocity(), point_j->getSimulationProperties()->getVelocity());
+                point_i->getSimProp()->getPosition(), point_j->getSimProp()->getPosition(),
+                point_i->getSimProp()->getVelocity(), point_j->getSimProp()->getVelocity());
         auto force_j = spring->calculateSpringForce(
-                point_j->getSimulationProperties()->getPosition(), point_i->getSimulationProperties()->getPosition(),
-                point_j->getSimulationProperties()->getVelocity(), point_i->getSimulationProperties()->getVelocity());
-        point_i->getSimulationProperties()->addForce(force_i);
-        point_j->getSimulationProperties()->addForce(force_j);
+                point_j->getSimProp()->getPosition(), point_i->getSimProp()->getPosition(),
+                point_j->getSimProp()->getVelocity(), point_i->getSimProp()->getVelocity());
+        point_i->getSimProp()->addForce(force_i);
+        point_j->getSimProp()->addForce(force_j);
+        printf("%f %f  %f %f\n", point_i->getSimProp()->getResultantForces().x,
+               point_i->getSimProp()->getResultantForces().y,
+               point_j->getSimProp()->getResultantForces().x,
+               point_j->getSimProp()->getResultantForces().y);
     }
     // calculate other forces for each points
     for(const auto& point : m_points) {
         if(m_globalSimulationSettings->isGravityEnabled() && !point->isStatic()) {
-            point->getSimulationProperties()->addForce(m_globalSimulationSettings->getGravity()); // add gravity
+            point->getSimProp()->addForce(m_globalSimulationSettings->getGravity()); // add gravity
         }
     }
     //calculate new position and velocity
@@ -114,24 +129,151 @@ void Scene::eulerIntegration() {
 }
 
 void Scene::rungeKuttaSecondOrderIntegration() {
+    printf("runge2 integration\n");
+    float timestep = m_globalSimulationSettings->getTimestep();
+    // calc a
     for(const auto& point : m_points) {
-        point->getSimulationProperties()->setA1(point->getSimulationProperties()->getVelocity());
-        
+        glm::vec2 v = point->getSimProp()->getVelocity();
+        glm::vec2 fg = glm::vec2(0, 0);
+        if(m_globalSimulationSettings->isGravityEnabled() && !point->isStatic()) {
+            fg = m_globalSimulationSettings->getGravity(); // add gravity
+        }
+        point->getSimProp()->addToA(v, fg);
     }
     for(const auto& spring : m_springs) {
         auto point_i = spring->getI();
         auto point_j = spring->getJ();
         auto force_i = spring->calculateSpringForce(
-                point_i->getSimulationProperties()->getPosition(), point_j->getSimulationProperties()->getPosition(),
-                point_i->getSimulationProperties()->getVelocity(), point_j->getSimulationProperties()->getVelocity());
+                point_i->getSimProp()->getPosition(), point_j->getSimProp()->getPosition(),
+                point_i->getSimProp()->getVelocity(), point_j->getSimProp()->getVelocity());
         auto force_j = spring->calculateSpringForce(
-                point_j->getSimulationProperties()->getPosition(), point_i->getSimulationProperties()->getPosition(),
-                point_j->getSimulationProperties()->getVelocity(), point_i->getSimulationProperties()->getVelocity());
-        point_i->getSimulationProperties()->setA1(force_i);
-        point_j->getSimulationProperties()->addForce(force_j);
+                point_j->getSimProp()->getPosition(), point_i->getSimProp()->getPosition(),
+                point_j->getSimProp()->getVelocity(), point_i->getSimProp()->getVelocity());
+        point_i->getSimProp()->addToA(glm::vec2(0, 0), force_i);
+        point_j->getSimProp()->addToA(glm::vec2(0, 0), force_j);
+    }
+    // calc b
+    for(const auto& point : m_points) {
+        glm::vec2 v = point->getSimProp()->getVelocity() + (timestep / 2.0f) * point->getSimProp()->getA().second;
+        glm::vec2 fg = glm::vec2(0, 0);
+        if(m_globalSimulationSettings->isGravityEnabled() && !point->isStatic()) {
+            fg = m_globalSimulationSettings->getGravity(); // add gravity
+        }
+        point->getSimProp()->addToB(v, fg);
+    }
+    for(const auto& spring : m_springs) {
+        auto point_i = spring->getI();
+        auto point_j = spring->getJ();
+        glm::vec2 pos_i = point_i->getSimProp()->getPosition() + (timestep / 2.0f) * point_i->getSimProp()->getA().first;
+        glm::vec2 pos_j = point_j->getSimProp()->getPosition() + (timestep / 2.0f) * point_j->getSimProp()->getA().first;
+        glm::vec2 vel_i = point_i->getSimProp()->getVelocity() + (timestep / 2.0f) * point_i->getSimProp()->getA().second;
+        glm::vec2 vel_j = point_j->getSimProp()->getVelocity() + (timestep / 2.0f) * point_j->getSimProp()->getA().second;
+        auto force_i = spring->calculateSpringForce(pos_i, pos_j, vel_i, vel_j);
+        auto force_j = spring->calculateSpringForce(pos_j, pos_i, vel_j, vel_i);
+        point_i->getSimProp()->addToB(glm::vec2(0, 0), force_i);
+        point_j->getSimProp()->addToB(glm::vec2(0, 0), force_j);
+    }
+
+    for(const auto& point : m_points) {
+        point->simulate(m_globalSimulationSettings.get());
+        point->getSimProp()->clearABCD();
     }
 }
 
+void Scene::rungeKuttaFourthOrderIntegration() {
+    printf("runge4 integration\n");
+    float timestep = m_globalSimulationSettings->getTimestep();
+    // calc a
+    for(const auto& point : m_points) {
+        glm::vec2 v = point->getSimProp()->getVelocity();
+        glm::vec2 fg = glm::vec2(0, 0);
+        if(m_globalSimulationSettings->isGravityEnabled() && !point->isStatic()) {
+            fg = m_globalSimulationSettings->getGravity(); // add gravity
+        }
+        point->getSimProp()->addToA(v, fg);
+    }
+    for(const auto& spring : m_springs) {
+        auto point_i = spring->getI();
+        auto point_j = spring->getJ();
+        auto force_i = spring->calculateSpringForce(
+                point_i->getSimProp()->getPosition(), point_j->getSimProp()->getPosition(),
+                point_i->getSimProp()->getVelocity(), point_j->getSimProp()->getVelocity());
+        auto force_j = spring->calculateSpringForce(
+                point_j->getSimProp()->getPosition(), point_i->getSimProp()->getPosition(),
+                point_j->getSimProp()->getVelocity(), point_i->getSimProp()->getVelocity());
+        point_i->getSimProp()->addToA(glm::vec2(0, 0), force_i);
+        point_j->getSimProp()->addToA(glm::vec2(0, 0), force_j);
+    }
+    // calc b
+    for(const auto& point : m_points) {
+        glm::vec2 v = point->getSimProp()->getVelocity() + (timestep / 2) * point->getSimProp()->getA().second;
+        glm::vec2 fg = glm::vec2(0, 0);
+        if(m_globalSimulationSettings->isGravityEnabled() && !point->isStatic()) {
+            fg = m_globalSimulationSettings->getGravity(); // add gravity
+        }
+        point->getSimProp()->addToB(v, fg);
+    }
+    for(const auto& spring : m_springs) {
+        auto point_i = spring->getI();
+        auto point_j = spring->getJ();
+        glm::vec2 pos_i = point_i->getSimProp()->getPosition() + (timestep / 2) * point_i->getSimProp()->getA().first;
+        glm::vec2 pos_j = point_j->getSimProp()->getPosition() + (timestep / 2) * point_j->getSimProp()->getA().first;
+        glm::vec2 vel_i = point_i->getSimProp()->getVelocity() + (timestep / 2) * point_i->getSimProp()->getA().second;
+        glm::vec2 vel_j = point_j->getSimProp()->getVelocity() + (timestep / 2) * point_j->getSimProp()->getA().second;
+        auto force_i = spring->calculateSpringForce(pos_i, pos_j, vel_i, vel_j);
+        auto force_j = spring->calculateSpringForce(pos_j, pos_i, vel_j, vel_i);
+        point_i->getSimProp()->addToB(glm::vec2(0, 0), force_i);
+        point_j->getSimProp()->addToB(glm::vec2(0, 0), force_j);
+    }
+    // calc c
+    for(const auto& point : m_points) {
+        glm::vec2 v = point->getSimProp()->getVelocity() + (timestep / 2) * point->getSimProp()->getB().second;
+        glm::vec2 fg = glm::vec2(0, 0);
+        if(m_globalSimulationSettings->isGravityEnabled() && !point->isStatic()) {
+            fg = m_globalSimulationSettings->getGravity(); // add gravity
+        }
+        point->getSimProp()->addToC(v, fg);
+    }
+    for(const auto& spring : m_springs) {
+        auto point_i = spring->getI();
+        auto point_j = spring->getJ();
+        glm::vec2 pos_i = point_i->getSimProp()->getPosition() + (timestep / 2) * point_i->getSimProp()->getB().first;
+        glm::vec2 pos_j = point_j->getSimProp()->getPosition() + (timestep / 2) * point_j->getSimProp()->getB().first;
+        glm::vec2 vel_i = point_i->getSimProp()->getVelocity() + (timestep / 2) * point_i->getSimProp()->getB().second;
+        glm::vec2 vel_j = point_j->getSimProp()->getVelocity() + (timestep / 2) * point_j->getSimProp()->getB().second;
+        auto force_i = spring->calculateSpringForce(pos_i, pos_j, vel_i, vel_j);
+        auto force_j = spring->calculateSpringForce(pos_j, pos_i, vel_j, vel_i);
+        point_i->getSimProp()->addToC(glm::vec2(0, 0), force_i);
+        point_j->getSimProp()->addToC(glm::vec2(0, 0), force_j);
+    }
+
+    // calc d
+    for(const auto& point : m_points) {
+        glm::vec2 v = point->getSimProp()->getVelocity() + (timestep / 2) * point->getSimProp()->getB().second;
+        glm::vec2 fg = glm::vec2(0, 0);
+        if(m_globalSimulationSettings->isGravityEnabled() && !point->isStatic()) {
+            fg = m_globalSimulationSettings->getGravity(); // add gravity
+        }
+        point->getSimProp()->addToD(v, fg);
+    }
+    for(const auto& spring : m_springs) {
+        auto point_i = spring->getI();
+        auto point_j = spring->getJ();
+        glm::vec2 pos_i = point_i->getSimProp()->getPosition() + (timestep / 2) * point_i->getSimProp()->getC().first;
+        glm::vec2 pos_j = point_j->getSimProp()->getPosition() + (timestep / 2) * point_j->getSimProp()->getC().first;
+        glm::vec2 vel_i = point_i->getSimProp()->getVelocity() + (timestep / 2) * point_i->getSimProp()->getC().second;
+        glm::vec2 vel_j = point_j->getSimProp()->getVelocity() + (timestep / 2) * point_j->getSimProp()->getC().second;
+        auto force_i = spring->calculateSpringForce(pos_i, pos_j, vel_i, vel_j);
+        auto force_j = spring->calculateSpringForce(pos_j, pos_i, vel_j, vel_i);
+        point_i->getSimProp()->addToD(glm::vec2(0, 0), force_i);
+        point_j->getSimProp()->addToD(glm::vec2(0, 0), force_j);
+    }
+
+    for(const auto& point : m_points) {
+        point->simulate(m_globalSimulationSettings.get());
+        point->getSimProp()->clearABCD();
+    }
+}
 
 void Scene::render(bool recordOn) {
     m_shader->use();
@@ -307,7 +449,7 @@ void Scene::grabMode(double x, double y) {
     ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 
     if(m_grabObjectLastPos == glm::vec2(0, 0)) {
-        m_grabObjectLastPos = currentObject->getSimulationProperties()->getPosition();
+        m_grabObjectLastPos = currentObject->getSimProp()->getPosition();
     }
 
     currentObject->move(glm::vec2(x, y));
@@ -362,7 +504,7 @@ void Scene::creationMode(double x, double y, const Point& refPoint, const Spring
             }
         }
         if(m_mouseState.leftIsActive() && m_mouseState.leftButtonStateChanged()) {
-            glm::vec2 startPos = springCreationFirstPoint->getSimulationProperties()->getPosition();
+            glm::vec2 startPos = springCreationFirstPoint->getSimProp()->getPosition();
             springCreationLine.setStartPoint(startPos);
         }
         if(!m_mouseState.leftIsActive() && m_mouseState.leftButtonStateChanged()) {
@@ -398,5 +540,4 @@ void Scene::modifyAllSpring(float stretching, float damping, float defaultLength
         spring->setDefaultLength(defaultLength);
     }
 }
-
 

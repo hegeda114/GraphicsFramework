@@ -16,10 +16,10 @@ protected:
     std::vector<glm::vec2> m_forces;
     glm::vec2 m_resultantForcesForHelper = {0.0, 0.0};
     double m_mass = 1;
-    glm::vec2 m_a1 = {0.0, 0.0};
-    glm::vec2 m_a2 = {0.0, 0.0};
-    glm::vec2 m_b1 = {0.0, 0.0};
-    glm::vec2 m_b2 = {0.0, 0.0};
+    std::pair<glm::vec2, glm::vec2> m_a = std::pair<glm::vec2, glm::vec2>(glm::vec2(0, 0), glm::vec2(0, 0));
+    std::pair<glm::vec2, glm::vec2> m_b = std::pair<glm::vec2, glm::vec2>(glm::vec2(0, 0), glm::vec2(0, 0));
+    std::pair<glm::vec2, glm::vec2> m_c = std::pair<glm::vec2, glm::vec2>(glm::vec2(0, 0), glm::vec2(0, 0));
+    std::pair<glm::vec2, glm::vec2> m_d = std::pair<glm::vec2, glm::vec2>(glm::vec2(0, 0), glm::vec2(0, 0));
 
 public:
     explicit SimulationProperties(glm::vec2 position);
@@ -38,13 +38,20 @@ public:
     void setVelocity(const glm::vec2& velocity);
     const glm::vec2& getVelocity() const;
 
-    void setA1(const glm::vec2& value);
-    void setA2(const glm::vec2& value);
-    void setB1(const glm::vec2& value);
-    void setB2(const glm::vec2& value);
+    void addToA(const glm::vec2& a1, const glm::vec2& a2);
+    void addToB(const glm::vec2& a1, const glm::vec2& a2);
+    void addToC(const glm::vec2& a1, const glm::vec2& a2);
+    void addToD(const glm::vec2& a1, const glm::vec2& a2);
+    void clearABCD();
+
+    std::pair<glm::vec2, glm::vec2> getA() const;
+    std::pair<glm::vec2, glm::vec2> getB() const;
+    std::pair<glm::vec2, glm::vec2> getC() const;
+    std::pair<glm::vec2, glm::vec2> getD() const;
 
     void explicitEuler(const GlobalSimulationSettings* globalSimulationSettings);
     void rungeKuttaSecondOrder(const GlobalSimulationSettings* globalSimulationSettings);
+    void rungeKuttaFourthOrder(const GlobalSimulationSettings* globalSimulationSettings);
 };
 
 

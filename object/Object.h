@@ -74,7 +74,7 @@ public:
      * Returns a reference to the simulation properties of the object.
      * @return Reference to the simulation properties of the object.
      */
-    const std::unique_ptr<SimulationProperties>& getSimulationProperties() const;
+    const std::unique_ptr<SimulationProperties>& getSimProp() const;
 
     /**
      * Returns true if the given position is inside of the object, otherwise false.

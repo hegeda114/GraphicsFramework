@@ -35,7 +35,7 @@ void GlobalSettingsWindow::create() {
         m_scene->getGlobalSimulationSettings()->setGravity({gravity[0], gravity[1]});
         ImGui::Spacing();
 
-        const char* items[] = {"Explicit Euler", "Implicit Euler" };
+        const char* items[] = {"Explicit Euler", "Runge Kutta Second Order", "Runge Kutta Fourth Order" };
         int item_current = m_scene->getGlobalSimulationSettings()->getSimMode();
         ImGui::Text("Simulation mode: ");
         ImGui::SameLine();

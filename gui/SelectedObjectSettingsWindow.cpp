@@ -42,7 +42,7 @@ void SelectedObjectSettingsWindow::create() {
 }
 
 void SelectedObjectSettingsWindow::createPointSettings(Point* activePoint) const {
-    const auto& simProp = activePoint->getSimulationProperties();
+    const auto& simProp = activePoint->getSimProp();
     bool velocityShow = activePoint->getVelocityHelper()->getVisibility();
     bool forceShow = activePoint->getForceHelper()->getVisibility();
 

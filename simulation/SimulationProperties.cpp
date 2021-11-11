@@ -34,6 +34,7 @@ glm::vec2 SimulationProperties::getResultantForces() const {
 }
 
 void SimulationProperties::explicitEuler(const GlobalSimulationSettings* globalSimulationSettings) {
+    printf("euler\n");
     double timestep = globalSimulationSettings->getTimestep();
     glm::vec2 resultantForce = getResultantForces();
 
@@ -47,16 +48,32 @@ void SimulationProperties::explicitEuler(const GlobalSimulationSettings* globalS
 }
 
 void SimulationProperties::rungeKuttaSecondOrder(const GlobalSimulationSettings* globalSimulationSettings) {
+    printf("runge2\n");
     double timestep = globalSimulationSettings->getTimestep();
 //    glm::vec2 resultantForce = getResultantForces();
 
-    m_velocity.x += m_b1.x * (float) timestep;
-    m_velocity.y += m_b1.y * (float) timestep;
-    m_position.x += m_b2.x * (float) timestep;
-    m_position.y += m_b2.y * (float) timestep;
+    m_position.x += m_b.first.x * (float) timestep;
+    m_position.y += m_b.first.y * (float) timestep;
+    m_velocity.x += m_b.second.x * (float) timestep;
+    m_velocity.y += m_b.second.y * (float) timestep;
 
 //    m_resultantForcesForHelper = resultantForce;
-    clearForces();
+//    clearForces();
+}
+
+
+void SimulationProperties::rungeKuttaFourthOrder(const GlobalSimulationSettings *globalSimulationSettings) {
+    printf("runge4\n");
+    double timestep = globalSimulationSettings->getTimestep();
+//    glm::vec2 resultantForce = getResultantForces();
+
+    m_position.x +=  (m_a.first.x + 2.0f * m_b.first.x + 2.0f * m_c.first.x + m_d.first.x) * (float) timestep / 6.0f;
+    m_position.y += (m_a.first.y + 2.0f * m_b.first.y + 2.0f * m_c.first.y + m_d.first.y) * (float) timestep / 6.0f;
+    m_velocity.x += (m_a.second.x + 2.0f * m_b.second.x + 2.0f * m_c.second.x + m_d.second.x) * (float) timestep / 6.0f;
+    m_velocity.y += (m_a.second.y + 2.0f * m_b.second.y + 2.0f * m_c.second.y + m_d.second.y) * (float) timestep / 6.0f;
+
+//    m_resultantForcesForHelper = resultantForce;
+//    clearForces();
 }
 
 const glm::vec2 &SimulationProperties::getVelocity() const {
@@ -83,18 +100,46 @@ glm::vec2 SimulationProperties::getResultantForcesForHelpers() const {
     return m_resultantForcesForHelper;
 }
 
-void SimulationProperties::setA1(const glm::vec2 &value) {
-    m_a1 = value;
+void SimulationProperties::addToA(const glm::vec2 &a1, const glm::vec2 &a2) {
+    m_a.first += a1;
+    m_a.second += a2;
 }
 
-void SimulationProperties::setA2(const glm::vec2 &value) {
-    m_a2 = value;
+void SimulationProperties::addToB(const glm::vec2 &b1, const glm::vec2 &b2) {
+    m_b.first += b1;
+    m_b.second += b2;
 }
 
-void SimulationProperties::setB1(const glm::vec2 &value) {
-    m_b1 = value;
+void SimulationProperties::addToC(const glm::vec2 &c1, const glm::vec2 &c2) {
+    m_c.first += c1;
+    m_c.second += c2;
 }
 
-void SimulationProperties::setB2(const glm::vec2 &value) {
-    m_b2 = value;
+void SimulationProperties::addToD(const glm::vec2 &d1, const glm::vec2 &d2) {
+    m_d.first += d1;
+    m_d.second += d2;
 }
+
+void SimulationProperties::clearABCD() {
+    m_a = std::pair<glm::vec2, glm::vec2>(glm::vec2(0, 0), glm::vec2(0, 0));
+    m_b = std::pair<glm::vec2, glm::vec2>(glm::vec2(0, 0), glm::vec2(0, 0));
+    m_c = std::pair<glm::vec2, glm::vec2>(glm::vec2(0, 0), glm::vec2(0, 0));
+    m_d = std::pair<glm::vec2, glm::vec2>(glm::vec2(0, 0), glm::vec2(0, 0));
+}
+
+std::pair<glm::vec2, glm::vec2> SimulationProperties::getA() const {
+    return m_a;
+}
+
+std::pair<glm::vec2, glm::vec2> SimulationProperties::getB() const {
+    return m_b;
+}
+
+std::pair<glm::vec2, glm::vec2> SimulationProperties::getC() const {
+    return m_c;
+}
+
+std::pair<glm::vec2, glm::vec2> SimulationProperties::getD() const {
+    return m_d;
+}
+
