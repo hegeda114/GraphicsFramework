@@ -140,3 +140,27 @@ std::pair<glm::vec2, glm::vec2> SimulationProperties::getD() const {
     return m_d;
 }
 
+float SimulationProperties::getInvMass() const {
+    return m_inverse_mass;
+}
+
+void SimulationProperties::multiplyA(float multiplierA1, float multiplierA2) {
+    m_a.first *= multiplierA1;
+    m_a.second *= multiplierA2;
+}
+
+void SimulationProperties::multiplyB(float multiplierB1, float multiplierB2) {
+    m_b.first *= multiplierB1;
+    m_b.second *= multiplierB2;
+}
+
+void SimulationProperties::multiplyC(float multiplierC1, float multiplierC2) {
+    m_c.first *= multiplierC1;
+    m_c.second *= multiplierC2;
+}
+
+void SimulationProperties::multiplyD(float multiplierD1, float multiplierD2) {
+    m_d.first *= multiplierD1;
+    m_d.second *= multiplierD2;
+}
+

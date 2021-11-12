@@ -15,7 +15,7 @@ protected:
     glm::vec2 m_position = {0.0, 0.0};
     std::vector<glm::vec2> m_forces;
     glm::vec2 m_resultantForcesForHelper = {0.0, 0.0};
-    double m_mass = 1;
+    float m_inverse_mass = 1;
     std::pair<glm::vec2, glm::vec2> m_a = std::pair<glm::vec2, glm::vec2>(glm::vec2(0, 0), glm::vec2(0, 0));
     std::pair<glm::vec2, glm::vec2> m_b = std::pair<glm::vec2, glm::vec2>(glm::vec2(0, 0), glm::vec2(0, 0));
     std::pair<glm::vec2, glm::vec2> m_c = std::pair<glm::vec2, glm::vec2>(glm::vec2(0, 0), glm::vec2(0, 0));
@@ -38,10 +38,16 @@ public:
     void setVelocity(const glm::vec2& velocity);
     const glm::vec2& getVelocity() const;
 
+    float getInvMass() const;
+
     void addToA(const glm::vec2& a1, const glm::vec2& a2);
     void addToB(const glm::vec2& a1, const glm::vec2& a2);
     void addToC(const glm::vec2& a1, const glm::vec2& a2);
     void addToD(const glm::vec2& a1, const glm::vec2& a2);
+    void multiplyA(float multiplierA1, float multiplierA2);
+    void multiplyB(float multiplierB1, float multiplierB2);
+    void multiplyC(float multiplierC1, float multiplierC2);
+    void multiplyD(float multiplierD1, float multiplierD2);
     void clearABCD();
 
     std::pair<glm::vec2, glm::vec2> getA() const;

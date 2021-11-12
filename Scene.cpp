@@ -125,7 +125,8 @@ void Scene::eulerIntegration() {
 
 void Scene::rungeKuttaSecondOrderIntegration() {
     float timestep = m_globalSimulationSettings->getTimestep();
-    // calc a
+
+    // calc A
     for(const auto& point : m_points) {
         glm::vec2 v = point->getSimProp()->getVelocity();
         glm::vec2 fg = glm::vec2(0, 0);
@@ -146,7 +147,11 @@ void Scene::rungeKuttaSecondOrderIntegration() {
         point_i->getSimProp()->addToA(glm::vec2(0, 0), force_i);
         point_j->getSimProp()->addToA(glm::vec2(0, 0), force_j);
     }
-    // calc b
+    for(const auto& point : m_points) {
+        point->getSimProp()->multiplyA(1, point->getSimProp()->getInvMass());
+    }
+
+    // calc B
     for(const auto& point : m_points) {
         glm::vec2 v = point->getSimProp()->getVelocity() + (timestep / 2.0f) * point->getSimProp()->getA().second;
         glm::vec2 fg = glm::vec2(0, 0);
@@ -166,6 +171,9 @@ void Scene::rungeKuttaSecondOrderIntegration() {
         auto force_j = spring->calculateSpringForce(pos_j, pos_i, vel_j, vel_i);
         point_i->getSimProp()->addToB(glm::vec2(0, 0), force_i);
         point_j->getSimProp()->addToB(glm::vec2(0, 0), force_j);
+    }
+    for(const auto& point : m_points) {
+        point->getSimProp()->multiplyB(1, point->getSimProp()->getInvMass());
     }
 
     for(const auto& point : m_points) {
@@ -242,7 +250,7 @@ void Scene::rungeKuttaFourthOrderIntegration() {
 
     // calc d
     for(const auto& point : m_points) {
-        glm::vec2 v = point->getSimProp()->getVelocity() + (timestep / 2) * point->getSimProp()->getB().second;
+        glm::vec2 v = point->getSimProp()->getVelocity() + timestep * point->getSimProp()->getB().second;
         glm::vec2 fg = glm::vec2(0, 0);
         if(m_globalSimulationSettings->isGravityEnabled() && !point->isStatic()) {
             fg = m_globalSimulationSettings->getGravity(); // add gravity
@@ -252,10 +260,10 @@ void Scene::rungeKuttaFourthOrderIntegration() {
     for(const auto& spring : m_springs) {
         auto point_i = spring->getI();
         auto point_j = spring->getJ();
-        glm::vec2 pos_i = point_i->getSimProp()->getPosition() + (timestep / 2) * point_i->getSimProp()->getC().first;
-        glm::vec2 pos_j = point_j->getSimProp()->getPosition() + (timestep / 2) * point_j->getSimProp()->getC().first;
-        glm::vec2 vel_i = point_i->getSimProp()->getVelocity() + (timestep / 2) * point_i->getSimProp()->getC().second;
-        glm::vec2 vel_j = point_j->getSimProp()->getVelocity() + (timestep / 2) * point_j->getSimProp()->getC().second;
+        glm::vec2 pos_i = point_i->getSimProp()->getPosition() + timestep * point_i->getSimProp()->getC().first;
+        glm::vec2 pos_j = point_j->getSimProp()->getPosition() + timestep * point_j->getSimProp()->getC().first;
+        glm::vec2 vel_i = point_i->getSimProp()->getVelocity() + timestep * point_i->getSimProp()->getC().second;
+        glm::vec2 vel_j = point_j->getSimProp()->getVelocity() + timestep * point_j->getSimProp()->getC().second;
         auto force_i = spring->calculateSpringForce(pos_i, pos_j, vel_i, vel_j);
         auto force_j = spring->calculateSpringForce(pos_j, pos_i, vel_j, vel_i);
         point_i->getSimProp()->addToD(glm::vec2(0, 0), force_i);
