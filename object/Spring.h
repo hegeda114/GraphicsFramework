@@ -42,7 +42,8 @@ public:
      * @param dampingCoefficient The damping coefficient as float.
      * @param defaultLength The default length as float.
      */
-    Spring(const std::shared_ptr<Point>& m_i, const std::shared_ptr<Point>& m_j, float stretching, float dampingCoefficient, float defaultLength);
+    Spring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j, float stretching, float dampingCoefficient, float defaultLength);
+    Spring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j, float stretching, float dampingCoefficient);
 
     Spring();
 

@@ -29,6 +29,8 @@ public:
     void positionBasedDynamicsStretching();
     void render(bool recordOn);
 
+    void initStartScene();
+
     unsigned int getRenderTextureId() const;
 
     const std::shared_ptr<Object>& getObjectByName(const std::string& objectName) const;
@@ -50,7 +52,7 @@ public:
     std::shared_ptr<Point> addPoint(const glm::vec2& position);
     std::shared_ptr<Point> addPoint(std::shared_ptr<Point> object);
     void addStaticPoint(glm::vec2 position);
-    void addSpring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j, float stretchnig, float dampingCoeffitient, float defaultLengeth);
+    void addSpring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j, float stretchnig, float dampingCoeffitient);
     void addSpring(const std::shared_ptr<Spring>& object);
 
     void modifyAllSpring(float stretching, float damping, float defaultLength);

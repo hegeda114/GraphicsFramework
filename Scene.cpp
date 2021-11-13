@@ -19,24 +19,33 @@ void Scene::init() {
     m_frameBuffer = std::make_unique<FrameBuffer>();
     m_frameBuffer->createBuffer(800, 800);
 
-    int start_scene = 2;
+    initStartScene();
+}
+
+void Scene::initStartScene() {
+    m_points.clear();
+    m_springs.clear();
+    m_objects.clear();
+    m_activeObjectId = -1;
+
+    int start_scene = 3;
 
     if(start_scene == 0) {
         auto point1 = this->addPoint(glm::vec2(0.1, 0.2));
         point1->setStatic(true);
         auto point2 = this->addPoint({0.0, 0.0});
-        this->addSpring(point1, point2, 10, 2, 0.2);
+        this->addSpring(point1, point2, 10, 2);
     }
 
     if(start_scene == 1) {
         auto point1 = this->addPoint(glm::vec2(0, 0));
         point1->setStatic(true);
         auto point2 = this->addPoint({0.2, 0.0});
-        this->addSpring(point1, point2, 10, 0, 0.2);
+        this->addSpring(point1, point2, 10, 0);
         point2->getSimProp()->setVelocity(0.01, 0.0);
         auto point3 = this->addPoint({0.4, 0.0});
         point3->setStatic(true);
-        this->addSpring(point2, point3, 10, 0, 0.2);
+        this->addSpring(point2, point3, 10, 0);
     }
 
     if(start_scene == 2) {
@@ -56,21 +65,16 @@ void Scene::init() {
                     prevCol = point;
                 }
                 if (j > 0) {
-                    this->addSpring(prevCol, point, 1000, 3, glm::length(prevCol->getSimProp()->getPosition() -
-                                                                         point->getSimProp()->getPosition()));
+                    this->addSpring(prevCol, point, 1000, 3);
                     prevCol = point;
                 }
                 if (i > 0) {
                     int own_idx = i * maxNum + j;
-                    this->addSpring(springs[own_idx - maxNum], point, 1000, 3, glm::length(
-                            springs[own_idx - maxNum]->getSimProp()->getPosition() -
-                            point->getSimProp()->getPosition()));
+                    this->addSpring(springs[own_idx - maxNum], point, 1000, 3);
                 }
                 if (i * 3 + j >= maxNum - 1 && j < maxNum - 1 && i < maxNum) {
                     int own_idx = i * maxNum + j;
-                    this->addSpring(springs[own_idx - maxNum + 1], point, 1000, 3, glm::length(
-                            springs[own_idx - maxNum + 1]->getSimProp()->getPosition() -
-                            point->getSimProp()->getPosition()));
+                    this->addSpring(springs[own_idx - maxNum + 1], point, 1000, 3);
                 }
                 //if(i*3+j > maxNum-1 && j < maxNum-1 && i < maxNum) {
                 //    int own_idx = i*maxNum+j;
@@ -79,6 +83,52 @@ void Scene::init() {
             }
             //prevRow.clear();
         }
+    }
+
+    if(start_scene == 3) {
+//        m_globalSimulationSettings->setTimestep(0.01);
+//        m_globalSimulationSettings->setSimApproach(SimulationApproach::MassSpringSystem);
+//        m_globalSimulationSettings->setSimMode(SimulationMode::ExplicitEuler);
+        float stiffness = 100;
+        float damping = 0.3;
+
+        int count_i = 5;
+        int count_j = 5;
+        float length = 0.2f;
+        float offset = (count_i / 2.0f - 1) * length;
+        std::vector<std::vector<std::shared_ptr<Point>>> grid;
+
+        for(int i = 0; i < count_i; i++) {
+            std::vector<std::shared_ptr<Point>> column;
+            for(int j = 0; j < count_j; j++) {
+                auto point = this->addPoint(glm::vec2(i * length - offset, j * length - offset));
+                column.push_back(point);
+            }
+            grid.push_back(column);
+            column.clear();
+        }
+
+        for(const auto& point : grid[0]) {
+            point->setStatic(true);
+        }
+        for(int i = 1; i < count_i; i++) {
+            for(int j = 0; j < count_j; j++) {
+                addSpring(grid[i][j], grid[i-1][j], stiffness, damping);
+
+                if(j < count_j - 1) {
+                    addSpring(grid[i][j], grid[i-1][j+1], stiffness, damping);
+                }
+                if(j > 0) {
+                    addSpring(grid[i][j], grid[i-1][j-1], stiffness, damping);
+                }
+            }
+        }
+        for(int j = 1; j < count_j; j++) {
+            for (int i = 0; i < count_i; i++) {
+                addSpring(grid[i][j], grid[i][j - 1], stiffness, damping);
+            }
+        }
+        grid[count_i-1][0]->move(0.6, -0.4);
     }
 }
 
@@ -406,8 +456,8 @@ void Scene::addStaticPoint(glm::vec2 position) {
     object->setStatic(true);
 }
 
-void Scene::addSpring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j, float stretchnig, float dampingCoeffitient, float defaultLengeth) {
-    auto object = std::make_shared<Spring>(i, j, stretchnig, dampingCoeffitient, defaultLengeth);
+void Scene::addSpring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j, float stretchnig, float dampingCoeffitient) {
+    auto object = std::make_shared<Spring>(i, j, stretchnig, dampingCoeffitient);
     i->addConnection(object);
     j->addConnection(object);
     m_objects.insert(std::make_pair(object->getId(), object));
@@ -577,7 +627,7 @@ void Scene::creationMode(double x, double y, const Point& refPoint, const Spring
             springCreationLine.setStartPoint({0, 0});
             springCreationLine.setEndPoint({0, 0});
             addSpring(springCreationFirstPoint, springCreationLastPoint, refSpring.getStretching(),
-                      refSpring.getDampingCoefficient(), refSpring.getDefaultLength());
+                      refSpring.getDampingCoefficient());
         }
     }
     if(m_mouseState.rightIsActive()) {

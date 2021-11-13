@@ -50,13 +50,19 @@ void SettingsWindow::create() {
         if(ImGui::Button(start_stop_label.c_str())) {
             m_guiState->renderStop = !m_guiState->renderStop;
         }
-
+        ImGui::Spacing();
         if(ImGui::Button("Reset Scene")) {
             m_guiState->renderStop = true;
             m_guiState->recordOn = false;
             if(!m_guiState->currentSceneName.empty()) {
                 IO::open_scene("../saved_scenes/" + m_guiState->currentSceneName, m_scene.get());
             }
+        }
+        ImGui::Spacing();
+        if(ImGui::Button("Init Default Scene")) {
+            m_guiState->renderStop = true;
+            m_guiState->recordOn = false;
+            m_scene->initStartScene();
         }
 
         ImGui::Spacing();

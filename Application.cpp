@@ -110,10 +110,14 @@ void Application::handleInput() {
         m_sceneView->setMode(ViewportMode::PointCreation);
     }
     if (glfwGetKey(winPtr, GLFW_KEY_S) == GLFW_PRESS) {
-        m_sceneView->setMode(ViewportMode::SpringCreation);
+        if(m_sceneView->getActiveObjectId() > 0) {
+            auto active = m_sceneView->getActiveObject();
+            active->setStatic(!active->isStatic());
+        }
+        //m_sceneView->setMode(ViewportMode::SpringCreation);
     }
     if (glfwGetKey(winPtr, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
-        m_sceneView->setMode(ViewportMode::ViewPan);
+        //m_sceneView->setMode(ViewportMode::ViewPan);
     } else {
     }
     m_sceneView->refreshButtonStatus(winPtr);

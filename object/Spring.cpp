@@ -17,6 +17,15 @@ Spring::Spring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point>& j,
     m_l0 = defaultLength;
 }
 
+Spring::Spring(const std::shared_ptr<Point>& i, const std::shared_ptr<Point> &j, float stretching, float dampingCoefficient) :
+               Object(std::make_unique<GeometrySpring>(i->getSimProp()->getPosition(), j->getSimProp()->getPosition()),
+        std::make_unique<SimulationProperties>(glm::vec2(0, 0))), m_i(i), m_j(j) {
+    m_name = std::string("Spring_") + std::to_string(nextSpringId());
+    m_ks = stretching;
+    m_kd = dampingCoefficient;
+    m_l0 = glm::length(m_i->getSimProp()->getPosition() - m_j->getSimProp()->getPosition());
+}
+
 glm::vec2 Spring::calculateSpringForce(const glm::vec2 &firstPos, const glm::vec2 &secondPos,
                                        const glm::vec2 &firstVel, const glm::vec2 &secondVel) {
     glm::vec2 posDiff, velDiff;
