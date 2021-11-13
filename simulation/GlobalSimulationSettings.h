@@ -15,6 +15,12 @@
 class GlobalSimulationSettings {
 private:
     SimulationMode m_simMode;
+    SimulationApproach m_simApproach;
+    PBDConstraint m_pbsConstraint;
+
+    int m_pbdIterNum = 10;
+    float m_pbdSystemStiffness = 0.01f;
+
     double m_timestep;
     glm::vec2 m_gravity = {0, -9.8};
 
@@ -26,11 +32,23 @@ public:
     SimulationMode getSimMode() const;
     void setSimMode(SimulationMode simulationMode);
 
+    SimulationApproach getSimApproach() const;
+    void setSimApproach(SimulationApproach simApproach);
+
+    PBDConstraint getPBDConstraint() const;
+    void setPBDConstaint(PBDConstraint constraint);
+
     double getTimestep() const;
     void setTimestep(double timestep);
 
     glm::vec2 getGravity() const;
     void setGravity(const glm::vec2& gravity);
+
+    int getPBDIterNum() const;
+    void setPBDIterNum(int iterNum);
+
+    float getPBDSystemStiffness() const;
+    void setPBDSystemStiffness(float systemStiffness);
 
     /**
      * Returns the sum of global forces, e.g. gravity and wind.

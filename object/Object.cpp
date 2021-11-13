@@ -91,14 +91,24 @@ void Object::simulate(const GlobalSimulationSettings* globalSimulationSettings) 
     if(m_fix || m_static) {
         return;
     }
-    if(globalSimulationSettings->getSimMode() == SimulationMode::ExplicitEuler) {
-        m_simulationProperties->explicitEuler(globalSimulationSettings);
+    if(globalSimulationSettings->getSimApproach() == SimulationApproach::MassSpringSystem) {
+        if(globalSimulationSettings->getSimMode() == SimulationMode::ExplicitEuler) {
+            m_simulationProperties->explicitEuler(globalSimulationSettings);
+        }
+        if(globalSimulationSettings->getSimMode() == SimulationMode::SemiImplicitEuler) {
+            m_simulationProperties->semiImplicitEuler(globalSimulationSettings);
+        }
+        if(globalSimulationSettings->getSimMode() == SimulationMode::RungeKuttaSecondOrder) {
+            m_simulationProperties->rungeKuttaSecondOrder(globalSimulationSettings);
+        }
+        if(globalSimulationSettings->getSimMode() == SimulationMode::RungeKuttaFourthOrder) {
+            m_simulationProperties->rungeKuttaFourthOrder(globalSimulationSettings);
+        }
     }
-    if(globalSimulationSettings->getSimMode() == SimulationMode::RungeKuttaSecondOrder) {
-        m_simulationProperties->rungeKuttaSecondOrder(globalSimulationSettings);
-    }
-    if(globalSimulationSettings->getSimMode() == SimulationMode::RungeKuttaFourthOrder) {
-        m_simulationProperties->rungeKuttaFourthOrder(globalSimulationSettings);
+    if(globalSimulationSettings->getSimApproach() == SimulationApproach::PositionBasedDynamics) {
+        if(globalSimulationSettings->getPBDConstraint() == PBDConstraint::Stretching) {
+            m_simulationProperties->pbdConstraint(globalSimulationSettings);
+        }
     }
 
     m_pivot = m_simulationProperties->getPosition();

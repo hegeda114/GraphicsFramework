@@ -9,8 +9,12 @@ enum Direction {Top, Right, Bottom, Left};
 
 enum ViewportMode {Default, Grab, PointCreation, SpringCreation, ViewPan};
 
-enum SimulationMode {ExplicitEuler, RungeKuttaSecondOrder, RungeKuttaFourthOrder};
+enum SimulationApproach { MassSpringSystem, PositionBasedDynamics };
 
-enum MenuCommand { OpenScene, SaveScene, AddPoint, AddStaticPoint, AddSpring, None};
+enum SimulationMode { ExplicitEuler, SemiImplicitEuler, RungeKuttaSecondOrder, RungeKuttaFourthOrder };
+
+enum PBDConstraint { Stretching};
+
+enum MenuCommand { OpenScene, SaveScene, AddPoint, AddStaticPoint, AddSpring, None };
 
 #endif //GRAPHICSFRAMEWORK_COMMONENUMS_H

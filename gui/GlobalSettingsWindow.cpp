@@ -35,15 +35,27 @@ void GlobalSettingsWindow::create() {
         m_scene->getGlobalSimulationSettings()->setGravity({gravity[0], gravity[1]});
         ImGui::Spacing();
 
-        const char* items[] = {"Explicit Euler", "Runge Kutta Second Order", "Runge Kutta Fourth Order" };
-        int item_current = m_scene->getGlobalSimulationSettings()->getSimMode();
-        ImGui::Text("Simulation mode: ");
+        const char* sim_approach[] = {"Mass Spring System", "Position Based Dynamics"};
+        int sim_approach_curr = m_scene->getGlobalSimulationSettings()->getSimApproach();
+        ImGui::Text("Simulation Approach: ");
         ImGui::SameLine();
-        ImGui::PushItemWidth(120);
-        ImGui::Combo("##combo", &item_current, items, IM_ARRAYSIZE(items));
+        ImGui::PushItemWidth(160);
+        ImGui::Combo("##combo_approach", &sim_approach_curr, sim_approach, IM_ARRAYSIZE(sim_approach));
+        ImGui::PopItemWidth();
+        m_scene->getGlobalSimulationSettings()->setSimApproach(static_cast<SimulationApproach>(sim_approach_curr));
+        ImGui::Spacing();
+
+
+        const char* items[] = {"Explicit Euler", "Semi-Implicit Euler", "Runge Kutta Second Order", "Runge Kutta Fourth Order" };
+        int item_current = m_scene->getGlobalSimulationSettings()->getSimMode();
+        ImGui::Text("Integrator: ");
+        ImGui::SameLine();
+        ImGui::PushItemWidth(160);
+        ImGui::Combo("##combo_integr", &item_current, items, IM_ARRAYSIZE(items));
         ImGui::PopItemWidth();
         m_scene->getGlobalSimulationSettings()->setSimMode(static_cast<SimulationMode>(item_current));
         ImGui::Spacing();
+
 
         bool hideHelpers = m_scene->getHideHelperVectors();
         ImGui::Text("Hide all helper: ");
@@ -55,40 +67,70 @@ void GlobalSettingsWindow::create() {
         ImGui::Separator();
         ImGui::Spacing();
 
-        if(m_guiState->renderStop) {
-            if(ImGui::Button("Modify All Spring")) {
-                ImGui::OpenPopup("Modify All Spring");
-            }
+        ImGui::Text("Position Based Dynamics Settings");
+
+        auto iter_num = m_scene->getGlobalSimulationSettings()->getPBDIterNum();
+        ImGui::Text("Iteration Number: ");
+        ImGui::SameLine();
+        ImGui::PushItemWidth(130);
+        ImGui::InputInt("##iter_num", &iter_num, 1, 10, ImGuiInputTextFlags_AutoSelectAll);
+        ImGui::PopItemWidth();
+        if(iter_num < 1) {
+            iter_num = 1;
         }
-
-        if (ImGui::BeginPopupModal("Modify All Spring", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-            m_guiState->blockViewportActions = true;
-            static float stretching = 10;
-            static float damping = 0.2;
-            static float defaultLength = 0.2;
-
-            ImGui::PushItemWidth(100);
-            stretching = floatInput("Stretching: ", stretching, 1, 10, "%.2f");
-            damping = floatInput("Damping Coefficient: ", damping, 1, 10, "%.2f");
-            defaultLength = floatInput("Default Length: ", defaultLength, 0.001f, 0.01f);
-
-//            activeSpring->setStretching(stretching);
-//            activeSpring->setDampingCoefficient(damping);
-//            activeSpring->setDefaultLength(defaultLength);
-            if (ImGui::Button("Apply Settings")) {
-                m_scene->modifyAllSpring(stretching, damping, defaultLength);
-                ImGui::CloseCurrentPopup();
-                m_guiState->blockViewportActions = false;
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Cancel")) {
-                ImGui::CloseCurrentPopup();
-                m_guiState->blockViewportActions = false;
-            }
-
-            ImGui::PopItemWidth();
-            ImGui::EndPopup();
+        if(iter_num > (int)(1.0f / m_scene->getGlobalSimulationSettings()->getPBDSystemStiffness())) {
+            iter_num = (int)(1.0f / m_scene->getGlobalSimulationSettings()->getPBDSystemStiffness());
         }
+        m_scene->getGlobalSimulationSettings()->setPBDIterNum(iter_num);
+
+        ImGui::Spacing();
+
+        auto system_stiffness = m_scene->getGlobalSimulationSettings()->getPBDSystemStiffness();
+        ImGui::Text("System Stiffness: ");
+        ImGui::SameLine();
+        ImGui::PushItemWidth(130);
+        ImGui::InputFloat("##system_stiffness", &system_stiffness, 0.001f, 0.1f, "%.03f", ImGuiInputTextFlags_AutoSelectAll);
+        ImGui::PopItemWidth();
+        if(system_stiffness < 0) {
+            iter_num = 0;
+        }
+        if(system_stiffness > 1.0f) {
+            iter_num = 1.0f;
+        }
+        m_scene->getGlobalSimulationSettings()->setPBDSystemStiffness(system_stiffness);
+
+
+//        if(m_guiState->renderStop) {
+//            if(ImGui::Button("Modify All Spring")) {
+//                ImGui::OpenPopup("Modify All Spring");
+//            }
+//        }
+
+//        if (ImGui::BeginPopupModal("Modify All Spring", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+//            m_guiState->blockViewportActions = true;
+//            static float stretching = 10;
+//            static float damping = 0.2;
+//            static float defaultLength = 0.2;
+//
+//            ImGui::PushItemWidth(100);
+//            stretching = floatInput("Stretching: ", stretching, 1, 10, "%.2f");
+//            damping = floatInput("Damping Coefficient: ", damping, 1, 10, "%.2f");
+//            defaultLength = floatInput("Default Length: ", defaultLength, 0.001f, 0.01f);
+//
+//            if (ImGui::Button("Apply Settings")) {
+//                m_scene->modifyAllSpring(stretching, damping, defaultLength);
+//                ImGui::CloseCurrentPopup();
+//                m_guiState->blockViewportActions = false;
+//            }
+//            ImGui::SameLine();
+//            if (ImGui::Button("Cancel")) {
+//                ImGui::CloseCurrentPopup();
+//                m_guiState->blockViewportActions = false;
+//            }
+//
+//            ImGui::PopItemWidth();
+//            ImGui::EndPopup();
+//        }
 
         ImGui::End();
     }

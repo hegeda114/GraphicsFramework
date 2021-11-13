@@ -26,6 +26,7 @@ public:
     void eulerIntegration();
     void rungeKuttaSecondOrderIntegration();
     void rungeKuttaFourthOrderIntegration();
+    void positionBasedDynamicsStretching();
     void render(bool recordOn);
 
     unsigned int getRenderTextureId() const;

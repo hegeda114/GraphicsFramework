@@ -65,6 +65,8 @@ double GlobalSimulationSettings::getBorderLeft() const {
 GlobalSimulationSettings::GlobalSimulationSettings(SimulationMode simulationMode, double timestep) {
     m_simMode = simulationMode;
     m_timestep = timestep;
+    m_simApproach = SimulationApproach::MassSpringSystem;
+    m_pbsConstraint = PBDConstraint::Stretching;
 }
 
 bool GlobalSimulationSettings::isBordersEnabled() const {
@@ -119,6 +121,7 @@ std::unique_ptr<GlobalSimulationSettings> GlobalSimulationSettings::createFromSa
     SimulationMode simMode;
     getline(ss, val, ';');
     if(val == "explicit_euler") simMode = SimulationMode::ExplicitEuler;
+    if(val == "semi_implicit_euler") simMode = SimulationMode::SemiImplicitEuler;
     if(val == "rungekutta_second_order") simMode = SimulationMode::RungeKuttaSecondOrder;
     if(val == "rungekutta_fourth_order") simMode = SimulationMode::RungeKuttaFourthOrder;
 
@@ -126,4 +129,36 @@ std::unique_ptr<GlobalSimulationSettings> GlobalSimulationSettings::createFromSa
     globSimSet->setGravityEnabled(gravityEnabled);
     globSimSet->setGravity(gravity);
     return globSimSet;
+}
+
+SimulationApproach GlobalSimulationSettings::getSimApproach() const {
+    return m_simApproach;
+}
+
+void GlobalSimulationSettings::setSimApproach(SimulationApproach simApproach) {
+    m_simApproach = simApproach;
+}
+
+PBDConstraint GlobalSimulationSettings::getPBDConstraint() const {
+    return m_pbsConstraint;
+}
+
+void GlobalSimulationSettings::setPBDConstaint(PBDConstraint constraint) {
+    m_pbsConstraint = constraint;
+}
+
+int GlobalSimulationSettings::getPBDIterNum() const {
+    return m_pbdIterNum;
+}
+
+void GlobalSimulationSettings::setPBDIterNum(int iterNum) {
+    m_pbdIterNum = iterNum;
+}
+
+float GlobalSimulationSettings::getPBDSystemStiffness() const {
+    return m_pbdSystemStiffness;
+}
+
+void GlobalSimulationSettings::setPBDSystemStiffness(float systemStiffness) {
+    m_pbdSystemStiffness = systemStiffness;
 }

@@ -86,13 +86,23 @@ void Scene::simulate() {
     double frame_rate = 1.0/60.0;
     int iteration = ceil(frame_rate / m_globalSimulationSettings->getTimestep());
     for(int i = 0; i < iteration; i++) {
-        switch (m_globalSimulationSettings->getSimMode()) {
-            case ExplicitEuler: eulerIntegration();
-                break;
-            case RungeKuttaSecondOrder: rungeKuttaSecondOrderIntegration();
-                break;
-            case RungeKuttaFourthOrder: rungeKuttaFourthOrderIntegration();
-                break;
+        if(m_globalSimulationSettings->getSimApproach() == SimulationApproach::MassSpringSystem) {
+            switch (m_globalSimulationSettings->getSimMode()) {
+                case ExplicitEuler: eulerIntegration();
+                    break;
+                case RungeKuttaSecondOrder: rungeKuttaSecondOrderIntegration();
+                    break;
+                case RungeKuttaFourthOrder: rungeKuttaFourthOrderIntegration();
+                    break;
+                case SemiImplicitEuler: eulerIntegration();
+                    break;
+            }
+        }
+        if(m_globalSimulationSettings->getSimApproach() == SimulationApproach::PositionBasedDynamics) {
+            switch (m_globalSimulationSettings->getPBDConstraint()) {
+                case Stretching: positionBasedDynamicsStretching();
+                    break;
+            }
         }
     }
 }
@@ -273,6 +283,61 @@ void Scene::rungeKuttaFourthOrderIntegration() {
     for(const auto& point : m_points) {
         point->simulate(m_globalSimulationSettings.get());
         point->getSimProp()->clearABCD();
+    }
+}
+
+void Scene::positionBasedDynamicsStretching() {
+    float timestep = m_globalSimulationSettings->getTimestep();
+    // calculate other forces for each points
+    for(const auto& point : m_points) {
+        if(m_globalSimulationSettings->isGravityEnabled() && !point->isStatic()) {
+            glm::vec2 v = point->getSimProp()->getVelocity() + timestep * point->getSimProp()->getInvMass() * m_globalSimulationSettings->getGravity();
+            point->getSimProp()->setVelocity(v); // add gravity
+        }
+    }
+    for(const auto& point : m_points) {
+        glm::vec2 x = point->getSimProp()->getPosition();
+        glm::vec2 v = point->getSimProp()->getVelocity();
+        point->getSimProp()->setPredictedPosition(x + timestep * v);
+
+        point->getSimProp()->setDeltaPredictedPos(glm::vec2(0, 0));
+    }
+    // TODO generateCollisionConstraints(x -> p)
+
+    // project constraints
+    int iterNum = m_globalSimulationSettings->getPBDIterNum();
+    float systemStiffness = m_globalSimulationSettings->getPBDSystemStiffness();
+    for(int i = 0; i < iterNum; i++) {
+        for(const auto& spring : m_springs) {
+            auto point_i = spring->getI();
+            auto point_j = spring->getJ();
+            auto w_i = point_i->getSimProp()->getInvMass();
+            auto w_j = point_i->getSimProp()->getInvMass();
+            auto predPos_i = point_i->getSimProp()->getPredictedPosition();
+            auto predPos_j = point_j->getSimProp()->getPredictedPosition();
+            auto deltaPredPos_i = point_i->getSimProp()->getDeltaPredictedPos();
+            auto deltaPredPos_j = point_j->getSimProp()->getDeltaPredictedPos();
+            auto d = spring->getDefaultLength();
+            auto posDiff = glm::length(predPos_i - predPos_j);
+
+            glm::vec2 plusDeltaPredPos_i = -(w_i / (w_i + w_j)) * (posDiff - d) * ((predPos_i - predPos_j) / posDiff) * systemStiffness;
+            point_i->getSimProp()->setDeltaPredictedPos(deltaPredPos_i + plusDeltaPredPos_i);
+
+            glm::vec2 plusDeltaPredPos_j = (w_j / (w_i + w_j)) * (posDiff - d) * ((predPos_i - predPos_j) / posDiff) * systemStiffness;
+            point_j->getSimProp()->setDeltaPredictedPos(deltaPredPos_j + plusDeltaPredPos_j);
+        }
+    }
+
+    //fix predected positions
+    for(const auto& point : m_points) {
+        glm::vec2 predPos = point->getSimProp()->getPredictedPosition();
+        glm::vec2 deltaPredPos = point->getSimProp()->getDeltaPredictedPos();
+        point->getSimProp()->setPredictedPosition(predPos + deltaPredPos);
+    }
+
+    //calculate new position and velocity
+    for(const auto& point : m_points) {
+        point->simulate(m_globalSimulationSettings.get());
     }
 }
 

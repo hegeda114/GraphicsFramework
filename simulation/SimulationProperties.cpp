@@ -37,10 +37,11 @@ void SimulationProperties::explicitEuler(const GlobalSimulationSettings* globalS
     double timestep = globalSimulationSettings->getTimestep();
     glm::vec2 resultantForce = getResultantForces();
 
-    m_velocity.x += resultantForce.x * (float) timestep;
-    m_velocity.y += resultantForce.y * (float) timestep;
+    // the order is important!
     m_position.x += m_velocity.x * (float) timestep;
     m_position.y += m_velocity.y * (float) timestep;
+    m_velocity.x += resultantForce.x * (float) timestep;
+    m_velocity.y += resultantForce.y * (float) timestep;
 
     m_resultantForcesForHelper = resultantForce;
     clearForces();
@@ -72,6 +73,26 @@ void SimulationProperties::rungeKuttaFourthOrder(const GlobalSimulationSettings 
 //    m_resultantForcesForHelper = resultantForce;
 //    clearForces();
 }
+
+void SimulationProperties::semiImplicitEuler(const GlobalSimulationSettings *globalSimulationSettings) {
+    double timestep = globalSimulationSettings->getTimestep();
+    glm::vec2 resultantForce = getResultantForces();
+
+    m_velocity.x += resultantForce.x * (float) timestep;
+    m_velocity.y += resultantForce.y * (float) timestep;
+    m_position.x += m_velocity.x * (float) timestep;
+    m_position.y += m_velocity.y * (float) timestep;
+
+    m_resultantForcesForHelper = resultantForce;
+    clearForces();
+}
+
+void SimulationProperties::pbdConstraint(const GlobalSimulationSettings *globalSimulationSettings) {
+    float timestep = (float) globalSimulationSettings->getTimestep();
+    m_velocity = (m_predictedPosition - m_position) / timestep;
+    m_position = m_predictedPosition;
+}
+
 
 const glm::vec2 &SimulationProperties::getVelocity() const {
     return m_velocity;
@@ -164,3 +185,22 @@ void SimulationProperties::multiplyD(float multiplierD1, float multiplierD2) {
     m_d.second *= multiplierD2;
 }
 
+void SimulationProperties::setPredictedPosition(float x, float y) {
+    setPredictedPosition(glm::vec2(x, y));
+}
+
+void SimulationProperties::setPredictedPosition(const glm::vec2 &position) {
+    m_predictedPosition = position;
+}
+
+const glm::vec2 &SimulationProperties::getPredictedPosition() const {
+    return m_predictedPosition;
+}
+
+void SimulationProperties::setDeltaPredictedPos(const glm::vec2 &deltaPredPos) {
+    m_deltaPredictedPos = deltaPredPos;
+}
+
+const glm::vec2 &SimulationProperties::getDeltaPredictedPos() const {
+    return m_deltaPredictedPos;
+}

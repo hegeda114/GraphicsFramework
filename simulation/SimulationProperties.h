@@ -11,11 +11,15 @@
 
 class SimulationProperties {
 protected:
-    glm::vec2 m_velocity = {0.0, 0.0};
-    glm::vec2 m_position = {0.0, 0.0};
+    glm::vec2 m_velocity = {0, 0};
+    glm::vec2 m_position = {0, 0};
+    glm::vec2 m_predictedPosition = {0, 0};
+    glm::vec2 m_deltaPredictedPos = {0, 0};
+
     std::vector<glm::vec2> m_forces;
-    glm::vec2 m_resultantForcesForHelper = {0.0, 0.0};
+    glm::vec2 m_resultantForcesForHelper = {0, 0};
     float m_inverse_mass = 1;
+
     std::pair<glm::vec2, glm::vec2> m_a = std::pair<glm::vec2, glm::vec2>(glm::vec2(0, 0), glm::vec2(0, 0));
     std::pair<glm::vec2, glm::vec2> m_b = std::pair<glm::vec2, glm::vec2>(glm::vec2(0, 0), glm::vec2(0, 0));
     std::pair<glm::vec2, glm::vec2> m_c = std::pair<glm::vec2, glm::vec2>(glm::vec2(0, 0), glm::vec2(0, 0));
@@ -34,9 +38,16 @@ public:
     void setPosition(const glm::vec2& position);
     const glm::vec2& getPosition() const;
 
+    void setPredictedPosition(float x, float y);
+    void setPredictedPosition(const glm::vec2& position);
+    const glm::vec2& getPredictedPosition() const;
+
     void setVelocity(float x, float y);
     void setVelocity(const glm::vec2& velocity);
     const glm::vec2& getVelocity() const;
+
+    void setDeltaPredictedPos(const glm::vec2& deltaPredPos);
+    const glm::vec2& getDeltaPredictedPos() const;
 
     float getInvMass() const;
 
@@ -56,8 +67,10 @@ public:
     std::pair<glm::vec2, glm::vec2> getD() const;
 
     void explicitEuler(const GlobalSimulationSettings* globalSimulationSettings);
+    void semiImplicitEuler(const GlobalSimulationSettings* globalSimulationSettings);
     void rungeKuttaSecondOrder(const GlobalSimulationSettings* globalSimulationSettings);
     void rungeKuttaFourthOrder(const GlobalSimulationSettings* globalSimulationSettings);
+    void pbdConstraint(const GlobalSimulationSettings* globalSimulationSettings);
 };
 
 
