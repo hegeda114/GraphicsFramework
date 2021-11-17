@@ -8,6 +8,8 @@
 #include "GuiWindow.h"
 
 class SceneWindow : public GuiWindow {
+private:
+    std::vector<int> m_savedSimTimes;
 public:
     SceneWindow(std::shared_ptr<Scene> scene, std::shared_ptr<GuiState> guiState);
     void create() override;

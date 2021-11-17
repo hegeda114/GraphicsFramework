@@ -15,6 +15,7 @@ struct GuiState {
     bool renderStop = true;
     bool recordOn = false;
     int recordFrameCounter = 0;
+    std::string recordPath;
     bool delayOn = false;
     bool viewportIsActive = false;
     bool blockViewportActions = false;

@@ -98,6 +98,8 @@ std::string GlobalSimulationSettings::getSerializedData() const {
             break;
         case RungeKuttaFourthOrder: simulationMode = "rungekutta_fourth_order";
             break;
+        case SemiImplicitEuler: simulationMode = "semi_implicit_euler";
+            break;
     }
 
     sprintf(buffer, "%f;%s;%f;%f;%s", m_timestep, gravityEnabled.c_str(), m_gravity.x, m_gravity.y, simulationMode.c_str());

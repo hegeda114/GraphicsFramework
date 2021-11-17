@@ -8,6 +8,7 @@ using namespace std::chrono;
 
 
 Application::Application(const std::string& app_name) {
+    fflush(stdout);
     m_width = 1200;
     m_height = 800;
 

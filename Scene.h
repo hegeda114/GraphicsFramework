@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <memory>
+#include <chrono>
 #include "window/MouseButton.h"
 #include "simulation/GlobalSimulationSettings.h"
 #include "object/Object.h"
@@ -79,6 +80,8 @@ public:
 
     void creationMode(double x, double y, const Point& refPoint, const Spring& refSpring);
 
+    float getSimulationTime() const;
+
 private:
     std::map<size_t, std::shared_ptr<Object>> m_objects;
     std::vector<std::shared_ptr<Point>> m_points;
@@ -96,6 +99,10 @@ private:
     GeometryLine springCreationLine = GeometryLine({0, 0}, {0, 0});
     std::shared_ptr<Point> springCreationFirstPoint;
     std::shared_ptr<Point> springCreationLastPoint;
+
+    long long m_simTime = 0;
+
+    static glm::vec2 orthoProjection(glm::vec2 a, glm::vec2 b);
 };
 
 

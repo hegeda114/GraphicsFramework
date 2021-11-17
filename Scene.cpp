@@ -6,6 +6,8 @@
 #include <imgui.h>
 #include "Scene.h"
 
+using namespace std::chrono;
+
 void Scene::init() {
     // Init simulation state
     m_globalSimulationSettings = std::make_unique<GlobalSimulationSettings>(SimulationMode::ExplicitEuler, 1.0/60.0);
@@ -133,6 +135,7 @@ void Scene::initStartScene() {
 }
 
 void Scene::simulate() {
+    auto start = steady_clock::now();
     double frame_rate = 1.0/60.0;
     int iteration = ceil(frame_rate / m_globalSimulationSettings->getTimestep());
     for(int i = 0; i < iteration; i++) {
@@ -155,6 +158,8 @@ void Scene::simulate() {
             }
         }
     }
+    auto stop = steady_clock::now();
+    m_simTime = duration_cast<microseconds>(stop - start).count();
 }
 
 void Scene::eulerIntegration() {
@@ -657,3 +662,11 @@ void Scene::modifyAllSpring(float stretching, float damping, float defaultLength
     }
 }
 
+float Scene::getSimulationTime() const {
+    return m_simTime;
+}
+
+glm::vec2 Scene::orthoProjection(glm::vec2 a, glm::vec2 b) {
+    glm::vec2 b_norm = glm::normalize(b);
+    return (glm::dot(a, b_norm) / glm::dot(b_norm, b_norm)) * b_norm;
+}

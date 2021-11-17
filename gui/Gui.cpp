@@ -6,7 +6,6 @@
 #include "../IO.h"
 #include <iostream>
 #include "../Dependencies/ImGuiFileDialog-Lib_Only/dirent/dirent.h"
-#include "../Dependencies/ImGuiFileDialog-Lib_Only/ImGuiFileDialog.h"
 
 void Gui::init(std::shared_ptr<Scene> scene) {
     m_guiState = std::make_shared<GuiState>();
@@ -28,25 +27,6 @@ void Gui::renderGui() {
     m_selectedObjectWin->create();
     m_settingsWin->create();
     m_globalSettingsWin->create();
-
-//    // open Dialog Simple
-//    if (ImGui::Button("Open File Dialog"))
-//        ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".cpp,.h,.hpp", ".");
-//
-//    // display
-//    if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"))
-//    {
-//        // action if OK
-//        if (ImGuiFileDialog::Instance()->IsOk())
-//        {
-//            std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
-//            std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
-//            // action
-//        }
-//
-//        // close
-//        ImGuiFileDialog::Instance()->Close();
-//    }
 }
 
 std::shared_ptr<GuiState> Gui::getGuiState() const {

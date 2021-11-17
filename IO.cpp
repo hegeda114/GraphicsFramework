@@ -110,3 +110,58 @@ bool IO::loadTextureFromFile(const char* filename, GLuint* out_texture, int* out
 
     return true;
 }
+
+void IO::save_record_info(const std::string &filePath, const GuiState *guiState, const Scene *scene, const std::vector<int> &simTimeList) {
+    std::ofstream infoFile(filePath + "/info.txt");
+
+    if (!infoFile.is_open()) {
+        std::cerr << "Unable to open file" << std::endl;
+        return;
+    }
+
+    std::string simulationApproach;
+    switch (scene->getGlobalSimulationSettings()->getSimApproach()) {
+        case MassSpringSystem: simulationApproach = "Mass Spring System";
+            break;
+        case PositionBasedDynamics: simulationApproach = "Position Based Dynamics";
+            break;
+    }
+
+    infoFile << "Simulation Approach: " << simulationApproach << std::endl;
+
+    std::string simulationMode;
+    switch (scene->getGlobalSimulationSettings()->getSimMode()) {
+        case ExplicitEuler: simulationMode = "Explicit Euler";
+            break;
+        case RungeKuttaSecondOrder: simulationMode = "Second Order Runge-Kutta";
+            break;
+        case RungeKuttaFourthOrder: simulationMode = "Fourth Order Runge-Kutta";
+            break;
+        case SemiImplicitEuler: simulationMode = "Semi-Implicit Euler";
+            break;
+    }
+
+    infoFile << "Simulation Mode: " << simulationMode << std::endl;
+
+    infoFile << "PBD Iter Number: " << guiState->currentSimState.getPBDIterNum() << std::endl;
+
+    infoFile << "PBD System Stiffness: " << guiState->currentSimState.getPBDSystemStiffness() << std::endl;
+
+    infoFile << "Timestep: " << scene->getGlobalSimulationSettings()->getTimestep() << std::endl;
+
+    infoFile << "Gravity: " << scene->getGlobalSimulationSettings()->getGravity().x << " " << scene->getGlobalSimulationSettings()->getGravity().y << std::endl;
+
+    infoFile << "Sting Stiffness: " << scene->getSprings()[0]->getStretching() << std::endl;
+
+    infoFile << "String Damping: " << scene->getSprings()[0]->getDampingCoefficient() << std::endl;
+
+    infoFile << "Average Simulation Time per Frame: " << std::endl;
+
+    for(const auto& item : simTimeList) {
+        infoFile << item << " ";
+    }
+    infoFile << std::endl;
+
+    // Close the file
+    infoFile.close();
+}

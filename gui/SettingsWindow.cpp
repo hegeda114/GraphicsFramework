@@ -5,6 +5,7 @@
 #include <imgui.h>
 #include "SettingsWindow.h"
 #include "../IO.h"
+#include "../Dependencies/ImGuiFileDialog-Lib_Only/ImGuiFileDialog.h"
 
 void SettingsWindow::create() {
     if(ImGui::Begin("Settings")) {
@@ -88,6 +89,25 @@ void SettingsWindow::create() {
         ImGui::InputInt("##3", &m_guiState->recordLength, 10, 100);
         if(m_guiState->recordLength < 0) { m_guiState->recordLength = 0; }
         if(m_guiState->recordLength > 500) { m_guiState->recordLength = 500; }
+
+        // open Dialog Simple
+        if (ImGui::Button("Recording path"))
+            ImGuiFileDialog::Instance()->OpenDialog("ChooseDirDlgKey", "Choose a Directory", nullptr, "../saved_videos/");
+
+        // display
+        if (ImGuiFileDialog::Instance()->Display("ChooseDirDlgKey"))
+        {
+            // action if OK
+            if (ImGuiFileDialog::Instance()->IsOk())
+            {
+//                std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+                std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+                m_guiState->recordPath = filePath;
+            }
+
+            // close
+            ImGuiFileDialog::Instance()->Close();
+        }
 
         ImGui::Spacing();
         ImGui::Separator();
