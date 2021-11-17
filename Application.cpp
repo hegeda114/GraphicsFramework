@@ -72,7 +72,7 @@ void Application::loop() {
 
 void Application::handleInput() {
     if(m_guiState->blockViewportActions || !m_guiState->viewportIsActive) {
-        return;
+        //return;
     }
 
     auto *winPtr = m_mainWindow->getGLFWWindow();
@@ -115,7 +115,9 @@ void Application::handleInput() {
             auto active = m_sceneView->getActiveObject();
             active->setStatic(!active->isStatic());
         }
-        //m_sceneView->setMode(ViewportMode::SpringCreation);
+    }
+    if (glfwGetKey(winPtr, GLFW_KEY_W) == GLFW_PRESS) {
+        m_sceneView->setMode(ViewportMode::SpringCreation);
     }
     if (glfwGetKey(winPtr, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
         //m_sceneView->setMode(ViewportMode::ViewPan);

@@ -1,3 +1,7 @@
+//
+// Created by hegeda on 2021-10-13.
+//
+
 #include <sstream>
 #include "Spring.h"
 #include "../geometry/GeometrySpring.h"

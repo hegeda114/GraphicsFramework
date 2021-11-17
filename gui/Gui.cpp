@@ -5,7 +5,7 @@
 #include "Gui.h"
 #include "../IO.h"
 #include <iostream>
-#include "../Dependencies/ImGuiFileDialog-Lib_Only/dirent/dirent.h"
+//#include "../Dependencies/ImGuiFileDialog-Lib_Only/dirent/dirent.h"
 
 void Gui::init(std::shared_ptr<Scene> scene) {
     m_guiState = std::make_shared<GuiState>();
@@ -95,56 +95,56 @@ void Gui::createMenuBar() {
 
 bool Gui::openPopup() {
     bool res = false;
-    if (ImGui::BeginPopupModal("Open File Dialog", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        res = true;
-        struct dirent *d;
-        DIR *dr;
-        dr = opendir("../saved_scenes");
-        if(dr!=nullptr)
-        {
-            if (ImGui::BeginTable("FileList", 1)) {
-                int i = 0;
-                for (d = readdir(dr); d != nullptr; d = readdir(dr)) {
-                    if(d->d_name[0] == '.') {
-                        continue;
-                    }
-
-                    char label[300];
-                    sprintf(label, "%s##%d", d->d_name, i);
-                    const bool item_is_selected = (selectedFile == d->d_name);
-
-                    ImGui::TableNextRow();
-                    ImGui::TableSetColumnIndex(0);
-
-                    ImGuiSelectableFlags selectable_flags =
-                            ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_DontClosePopups;
-                    if (ImGui::Selectable(label, item_is_selected, selectable_flags)) {
-                        if (!item_is_selected) {
-                            selectedFile = d->d_name;
-                        }
-                    }
-                    i++;
-                }
-                ImGui::EndTable();
-                closedir(dr);
-            }
-        }
-
-        ImGui::Spacing();
-
-        if (ImGui::Button("Open File")) {
-            m_guiState->currentSceneName = selectedFile;
-            IO::open_scene("../saved_scenes/" + selectedFile, m_scene.get());
-            ImGui::CloseCurrentPopup();
-            res = false;
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("Cancel")) {
-            ImGui::CloseCurrentPopup();
-            res = false;
-        }
-        ImGui::EndPopup();
-    }
+//    if (ImGui::BeginPopupModal("Open File Dialog", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+//        res = true;
+//        struct dirent *d;
+//        DIR *dr;
+//        dr = opendir("../saved_scenes");
+//        if(dr!=nullptr)
+//        {
+//            if (ImGui::BeginTable("FileList", 1)) {
+//                int i = 0;
+//                for (d = readdir(dr); d != nullptr; d = readdir(dr)) {
+//                    if(d->d_name[0] == '.') {
+//                        continue;
+//                    }
+//
+//                    char label[300];
+//                    sprintf(label, "%s##%d", d->d_name, i);
+//                    const bool item_is_selected = (selectedFile == d->d_name);
+//
+//                    ImGui::TableNextRow();
+//                    ImGui::TableSetColumnIndex(0);
+//
+//                    ImGuiSelectableFlags selectable_flags =
+//                            ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_DontClosePopups;
+//                    if (ImGui::Selectable(label, item_is_selected, selectable_flags)) {
+//                        if (!item_is_selected) {
+//                            selectedFile = d->d_name;
+//                        }
+//                    }
+//                    i++;
+//                }
+//                ImGui::EndTable();
+//                closedir(dr);
+//            }
+//        }
+//
+//        ImGui::Spacing();
+//
+//        if (ImGui::Button("Open File")) {
+//            m_guiState->currentSceneName = selectedFile;
+//            IO::open_scene("../saved_scenes/" + selectedFile, m_scene.get());
+//            ImGui::CloseCurrentPopup();
+//            res = false;
+//        }
+//        ImGui::SameLine();
+//        if (ImGui::Button("Cancel")) {
+//            ImGui::CloseCurrentPopup();
+//            res = false;
+//        }
+//        ImGui::EndPopup();
+//    }
     return res;
 }
 

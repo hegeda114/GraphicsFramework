@@ -361,7 +361,7 @@ void Scene::positionBasedDynamicsStretching() {
 
     // project constraints
     int iterNum = m_globalSimulationSettings->getPBDIterNum();
-    float systemStiffness = m_globalSimulationSettings->getPBDSystemStiffness();
+    float systemStiffness = 1; //m_globalSimulationSettings->getPBDSystemStiffness();
     for(int i = 0; i < iterNum; i++) {
         for(const auto& spring : m_springs) {
             auto point_i = spring->getI();
@@ -370,25 +370,23 @@ void Scene::positionBasedDynamicsStretching() {
             auto w_j = point_i->getSimProp()->getInvMass();
             auto predPos_i = point_i->getSimProp()->getPredictedPosition();
             auto predPos_j = point_j->getSimProp()->getPredictedPosition();
-            auto deltaPredPos_i = point_i->getSimProp()->getDeltaPredictedPos();
-            auto deltaPredPos_j = point_j->getSimProp()->getDeltaPredictedPos();
             auto d = spring->getDefaultLength();
             auto posDiff = glm::length(predPos_i - predPos_j);
 
-            glm::vec2 plusDeltaPredPos_i = -(w_i / (w_i + w_j)) * (posDiff - d) * ((predPos_i - predPos_j) / posDiff) * systemStiffness;
-            point_i->getSimProp()->setDeltaPredictedPos(deltaPredPos_i + plusDeltaPredPos_i);
+            glm::vec2 plusDeltaPredPos_i = -(w_i / (w_i + w_j)) * (posDiff - d) * ((predPos_i - predPos_j) / posDiff);
+            point_i->getSimProp()->setPredictedPosition(predPos_i + plusDeltaPredPos_i);
 
-            glm::vec2 plusDeltaPredPos_j = (w_j / (w_i + w_j)) * (posDiff - d) * ((predPos_i - predPos_j) / posDiff) * systemStiffness;
-            point_j->getSimProp()->setDeltaPredictedPos(deltaPredPos_j + plusDeltaPredPos_j);
+            glm::vec2 plusDeltaPredPos_j = (w_j / (w_i + w_j)) * (posDiff - d) * ((predPos_i - predPos_j) / posDiff);
+            point_j->getSimProp()->setPredictedPosition(predPos_j + plusDeltaPredPos_j);
         }
     }
 
     //fix predected positions
-    for(const auto& point : m_points) {
-        glm::vec2 predPos = point->getSimProp()->getPredictedPosition();
-        glm::vec2 deltaPredPos = point->getSimProp()->getDeltaPredictedPos();
-        point->getSimProp()->setPredictedPosition(predPos + deltaPredPos);
-    }
+//    for(const auto& point : m_points) {
+//        glm::vec2 predPos = point->getSimProp()->getPredictedPosition();
+//        glm::vec2 deltaPredPos = point->getSimProp()->getDeltaPredictedPos();
+//        point->getSimProp()->setPredictedPosition(predPos + deltaPredPos);
+//    }
 
     //calculate new position and velocity
     for(const auto& point : m_points) {
