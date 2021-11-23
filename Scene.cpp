@@ -368,7 +368,7 @@ void Scene::positionBasedDynamicsStretching() {
             auto point_i = spring->getI();
             auto point_j = spring->getJ();
             auto w_i = point_i->getSimProp()->getInvMass();
-            auto w_j = point_i->getSimProp()->getInvMass();
+            auto w_j = point_j->getSimProp()->getInvMass();
             auto predPos_i = point_i->getSimProp()->getPredictedPosition();
             auto predPos_j = point_j->getSimProp()->getPredictedPosition();
             auto d = spring->getDefaultLength();
