@@ -30,13 +30,14 @@ void Scene::initStartScene() {
     m_objects.clear();
     m_activeObjectId = -1;
 
-    int start_scene = 3;
+    int start_scene = 0;
 
     if(start_scene == 0) {
-        auto point1 = this->addPoint(glm::vec2(0.1, 0.2));
+        auto point1 = this->addPoint(glm::vec2(0.0, 0.0));
         point1->setStatic(true);
-        auto point2 = this->addPoint({0.0, 0.0});
+        auto point2 = this->addPoint({0.0, 0.05});
         this->addSpring(point1, point2, 10, 2);
+        point2->move(glm::vec2(0.0, 0.8));
     }
 
     if(start_scene == 1) {
