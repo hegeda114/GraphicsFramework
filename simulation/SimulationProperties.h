@@ -50,6 +50,7 @@ public:
     const glm::vec2& getDeltaPredictedPos() const;
 
     float getInvMass() const;
+    void setInvMass(float invMass);
 
     void addToA(const glm::vec2& a1, const glm::vec2& a2);
     void addToB(const glm::vec2& a1, const glm::vec2& a2);

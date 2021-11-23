@@ -204,3 +204,7 @@ void SimulationProperties::setDeltaPredictedPos(const glm::vec2 &deltaPredPos) {
 const glm::vec2 &SimulationProperties::getDeltaPredictedPos() const {
     return m_deltaPredictedPos;
 }
+
+void SimulationProperties::setInvMass(float invMass) {
+    m_inverse_mass = invMass;
+}
