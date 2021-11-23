@@ -34,9 +34,11 @@ void Object::setStatic(bool isStatic) {
     if(m_static) {
         m_geometry->setDefaultColor(0.4f, 0.7f, 0.96f, 1.0f);
         m_geometry->setColor(0.4f, 0.7f, 0.96f, 1.0f);
+        m_simulationProperties->setInvMass(0);
     } else {
         m_geometry->setDefaultColor(0.87f, 0.9f, 0.4f, 1.0f);
         m_geometry->setColorToDefault();
+        m_simulationProperties->setInvMass(1);
     }
 }
 
