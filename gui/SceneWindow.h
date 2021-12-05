@@ -9,7 +9,9 @@
 
 class SceneWindow : public GuiWindow {
 private:
-    std::vector<int> m_savedSimTimes;
+    std::vector<long long> m_savedSimTimes;
+    std::vector<glm::vec2> m_savedPosition;
+    std::vector<glm::vec2> m_savedVelocity;
 public:
     SceneWindow(std::shared_ptr<Scene> scene, std::shared_ptr<GuiState> guiState);
     void create() override;

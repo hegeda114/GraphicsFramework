@@ -9,7 +9,7 @@ enum Direction {Top, Right, Bottom, Left};
 
 enum ViewportMode {Default, Grab, PointCreation, SpringCreation, ViewPan};
 
-enum SimulationApproach { MassSpringSystem, PositionBasedDynamics };
+enum SimulationApproach { MassSpringSystem, PositionBasedDynamics, ShapeMatching };
 
 enum SimulationMode { ExplicitEuler, SemiImplicitEuler, RungeKuttaSecondOrder, RungeKuttaFourthOrder };
 

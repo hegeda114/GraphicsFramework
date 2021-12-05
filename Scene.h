@@ -8,6 +8,7 @@
 #include <vector>
 #include <memory>
 #include <chrono>
+#include <Core>
 #include "window/MouseButton.h"
 #include "simulation/GlobalSimulationSettings.h"
 #include "object/Object.h"
@@ -17,6 +18,9 @@
 #include "camera/OrthogonalCamera.h"
 #include "gui/GuiState.h"
 #include "geometry/GeometryLine.h"
+
+#define EIGEN_DONT_VECTORIZE
+#define EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
 
 class Scene {
 public:
@@ -28,6 +32,8 @@ public:
     void rungeKuttaSecondOrderIntegration();
     void rungeKuttaFourthOrderIntegration();
     void positionBasedDynamicsStretching();
+    void initShapeMatching();
+    void shapeMatching();
     void render(bool recordOn);
 
     void initStartScene();
@@ -80,9 +86,16 @@ public:
 
     void creationMode(double x, double y, const Point& refPoint, const Spring& refSpring);
 
-    float getSimulationTime() const;
+    long long getSimulationTime() const;
+
+    void resetShapeMatchingInit();
 
 private:
+    std::vector<std::vector<std::shared_ptr<Point>>> grid;
+    int count_i = 5;
+    int count_j = 5;
+    float value = 0.005;
+
     std::map<size_t, std::shared_ptr<Object>> m_objects;
     std::vector<std::shared_ptr<Point>> m_points;
     std::vector<std::shared_ptr<Spring>> m_springs;
@@ -91,6 +104,11 @@ private:
     std::unique_ptr<OrthogonalCamera> m_camera;
     std::unique_ptr<FrameBuffer> m_frameBuffer;
     int m_activeObjectId = -1;
+    bool m_shapeMatchingInitialized = false;
+
+    glm::vec2 m_original_cm = {};
+    glm::vec2 A_firstrow = {};
+    glm::vec2 A_secondrow = {};
 
     bool m_hideHelperVectors = true;
     ViewportMode m_mode = ViewportMode::Default;

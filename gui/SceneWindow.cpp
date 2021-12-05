@@ -27,27 +27,36 @@ void SceneWindow::create() {
         ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ mSize.x, mSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
         if(m_guiState->recordOn) {
-            std::string folder_name = "image";
             m_guiState->recordFrameCounter++;
-            GLubyte* data = new GLubyte[3 * 800 * 800];
-            memcpy(data, m_scene->getFrameBuffer().getData(), 3 * 800 * 800);
-            stbi_flip_vertically_on_write(true);
-
-            std::stringstream ss;
-            ss << std::setw(4) << std::setfill('0') << std::to_string(m_guiState->recordFrameCounter);
-            std::string number = ss.str();
-            std::string file_name = m_guiState->recordPath + "/image_" + number + ".png";
-            stbi_write_png(file_name.c_str(), 800, 800, 3, data, 800 * 3);
             m_savedSimTimes.push_back(m_scene->getSimulationTime());
+            if(m_scene->getActiveObjectId() != -1) {
+                m_savedPosition.push_back(m_scene->getActiveObject()->getSimProp()->getPosition());
+                m_savedVelocity.push_back(m_scene->getActiveObject()->getSimProp()->getVelocity());
+            }
+            if(!m_guiState->recordOnlyData) {
+                std::string folder_name = "image";
+                GLubyte *data = new GLubyte[3 * 800 * 800];
+                memcpy(data, m_scene->getFrameBuffer().getData(), 3 * 800 * 800);
+                stbi_flip_vertically_on_write(true);
+
+                std::stringstream ss;
+                ss << std::setw(4) << std::setfill('0') << std::to_string(m_guiState->recordFrameCounter);
+                std::string number = ss.str();
+                std::string file_name = m_guiState->recordPath + "/image_" + number + ".png";
+                stbi_write_png(file_name.c_str(), 800, 800, 3, data, 800 * 3);
+            }
         }
         if(m_guiState->recordFrameCounter - 1 > m_guiState->recordLength) {
             m_guiState->recordOn = false;
             m_guiState->renderStop = true;
             m_guiState->recordFrameCounter = 0;
 
-            IO::save_record_info(m_guiState->recordPath, m_guiState.get(), m_scene.get(), m_savedSimTimes);
+            IO::save_record_info(m_guiState->recordPath, m_guiState.get(), m_scene.get(),
+                                 m_savedSimTimes, m_savedPosition, m_savedVelocity);
 
             m_savedSimTimes.clear();
+            m_savedPosition.clear();
+            m_savedVelocity.clear();
         }
 
     }

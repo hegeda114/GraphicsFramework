@@ -112,6 +112,9 @@ void Object::simulate(const GlobalSimulationSettings* globalSimulationSettings) 
             m_simulationProperties->pbdConstraint(globalSimulationSettings);
         }
     }
+    if(globalSimulationSettings->getSimApproach() == SimulationApproach::ShapeMatching) {
+        m_simulationProperties->shapeMatching(globalSimulationSettings);
+    }
 
     m_pivot = m_simulationProperties->getPosition();
     m_geometry->setPosition(m_pivot);

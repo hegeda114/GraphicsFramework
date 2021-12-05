@@ -13,8 +13,8 @@ class SimulationProperties {
 protected:
     glm::vec2 m_velocity = {0, 0};
     glm::vec2 m_position = {0, 0};
+    glm::vec2 m_original_position = {0, 0};
     glm::vec2 m_predictedPosition = {0, 0};
-    glm::vec2 m_deltaPredictedPos = {0, 0};
 
     std::vector<glm::vec2> m_forces;
     glm::vec2 m_resultantForcesForHelper = {0, 0};
@@ -38,6 +38,10 @@ public:
     void setPosition(const glm::vec2& position);
     const glm::vec2& getPosition() const;
 
+    void setOriginalPosition(float x, float y);
+    void setOriginalPosition(const glm::vec2& position);
+    const glm::vec2& getOriginalPosition() const;
+
     void setPredictedPosition(float x, float y);
     void setPredictedPosition(const glm::vec2& position);
     const glm::vec2& getPredictedPosition() const;
@@ -45,9 +49,6 @@ public:
     void setVelocity(float x, float y);
     void setVelocity(const glm::vec2& velocity);
     const glm::vec2& getVelocity() const;
-
-    void setDeltaPredictedPos(const glm::vec2& deltaPredPos);
-    const glm::vec2& getDeltaPredictedPos() const;
 
     float getInvMass() const;
     void setInvMass(float invMass);
@@ -72,6 +73,8 @@ public:
     void rungeKuttaSecondOrder(const GlobalSimulationSettings* globalSimulationSettings);
     void rungeKuttaFourthOrder(const GlobalSimulationSettings* globalSimulationSettings);
     void pbdConstraint(const GlobalSimulationSettings* globalSimulationSettings);
+    void shapeMatching(const GlobalSimulationSettings* globalSimulationSettings);
+
 };
 
 

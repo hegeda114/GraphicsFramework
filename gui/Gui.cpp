@@ -22,7 +22,7 @@ void Gui::init(std::shared_ptr<Scene> scene) {
 void Gui::renderGui() {
     createMenuBar();
     m_outlinerWin->create();
-    m_imageViewer->create();
+//    m_imageViewer->create();
     m_sceneWin->create();
     m_selectedObjectWin->create();
     m_settingsWin->create();

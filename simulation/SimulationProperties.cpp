@@ -93,6 +93,12 @@ void SimulationProperties::pbdConstraint(const GlobalSimulationSettings *globalS
     m_position = m_predictedPosition;
 }
 
+void SimulationProperties::shapeMatching(const GlobalSimulationSettings *globalSimulationSettings) {
+    float timestep = (float) globalSimulationSettings->getTimestep();
+    float alpha = 0.5f;
+    m_velocity = m_velocity + alpha * (m_predictedPosition - m_original_position) / timestep; // + timestep * erők?
+    m_position = m_position + m_velocity * timestep;
+}
 
 const glm::vec2 &SimulationProperties::getVelocity() const {
     return m_velocity;
@@ -197,14 +203,18 @@ const glm::vec2 &SimulationProperties::getPredictedPosition() const {
     return m_predictedPosition;
 }
 
-void SimulationProperties::setDeltaPredictedPos(const glm::vec2 &deltaPredPos) {
-    m_deltaPredictedPos = deltaPredPos;
-}
-
-const glm::vec2 &SimulationProperties::getDeltaPredictedPos() const {
-    return m_deltaPredictedPos;
-}
-
 void SimulationProperties::setInvMass(float invMass) {
     m_inverse_mass = invMass;
+}
+
+void SimulationProperties::setOriginalPosition(float x, float y) {
+    setOriginalPosition(glm::vec2(x, y));
+}
+
+void SimulationProperties::setOriginalPosition(const glm::vec2 &position) {
+    m_original_position = position;
+}
+
+const glm::vec2 &SimulationProperties::getOriginalPosition() const {
+    return m_original_position;
 }

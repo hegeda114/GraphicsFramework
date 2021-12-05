@@ -50,15 +50,18 @@ void SettingsWindow::create() {
         std::string start_stop_label = m_guiState->renderStop ? "Start" : "Stop";
         if(ImGui::Button(start_stop_label.c_str())) {
             m_guiState->renderStop = !m_guiState->renderStop;
+//            if (m_guiState->renderStop) {
+//                m_scene->resetShapeMatchingInit();
+//            }
         }
-        ImGui::Spacing();
-        if(ImGui::Button("Reset Scene")) {
-            m_guiState->renderStop = true;
-            m_guiState->recordOn = false;
-            if(!m_guiState->currentSceneName.empty()) {
-                IO::open_scene("../saved_scenes/" + m_guiState->currentSceneName, m_scene.get());
-            }
-        }
+//        ImGui::Spacing();
+//        if(ImGui::Button("Reset Scene")) {
+//            m_guiState->renderStop = true;
+//            m_guiState->recordOn = false;
+//            if(!m_guiState->currentSceneName.empty()) {
+//                IO::open_scene("../saved_scenes/" + m_guiState->currentSceneName, m_scene.get());
+//            }
+//        }
         ImGui::Spacing();
         if(ImGui::Button("Init Default Scene")) {
             m_guiState->renderStop = true;
@@ -85,14 +88,20 @@ void SettingsWindow::create() {
                 m_guiState->renderStop = false;
             }
         }
+        ImGui::SameLine();
+        // open Dialog Simple
+        if (ImGui::Button("Set folder"))
+            ImGuiFileDialog::Instance()->OpenDialog("ChooseDirDlgKey", "Choose a Directory", nullptr, "../saved_videos/");
+
         ImGui::Text("Frame Number:"); ImGui::SameLine();
         ImGui::InputInt("##3", &m_guiState->recordLength, 10, 100);
         if(m_guiState->recordLength < 0) { m_guiState->recordLength = 0; }
         if(m_guiState->recordLength > 500) { m_guiState->recordLength = 500; }
 
-        // open Dialog Simple
-        if (ImGui::Button("Recording path"))
-            ImGuiFileDialog::Instance()->OpenDialog("ChooseDirDlgKey", "Choose a Directory", nullptr, "../saved_videos/");
+
+        ImGui::Spacing();
+
+        ImGui::Checkbox("Record only data", &m_guiState->recordOnlyData);
 
         // display
         if (ImGuiFileDialog::Instance()->Display("ChooseDirDlgKey"))

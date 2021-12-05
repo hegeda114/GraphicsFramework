@@ -5,6 +5,8 @@
 #include <memory>
 #include <imgui.h>
 #include "Scene.h"
+#include <cmath>
+#include "Eigen"
 
 using namespace std::chrono;
 
@@ -30,25 +32,28 @@ void Scene::initStartScene() {
     m_objects.clear();
     m_activeObjectId = -1;
 
-    int start_scene = 0;
+    grid.clear();
+
+    int start_scene = 3;
+    bool fist_row_static = false;
 
     if(start_scene == 0) {
         auto point1 = this->addPoint(glm::vec2(0.0, 0.0));
         point1->setStatic(true);
-        auto point2 = this->addPoint({0.0, 0.05});
-        this->addSpring(point1, point2, 10, 2);
-        point2->move(glm::vec2(0.0, 0.8));
+        auto point2 = this->addPoint({0.0, -0.2});
+        this->addSpring(point1, point2, 10, 0);
+        auto point3 = this->addPoint({0.0, -0.4});
+        this->addSpring(point2, point3, 10, 0);
+//        point2->move(glm::vec2(0.0, 0.8));
     }
 
     if(start_scene == 1) {
-        auto point1 = this->addPoint(glm::vec2(0, 0));
+        auto point1 = this->addPoint(glm::vec2(-0.2, 0));
         point1->setStatic(true);
-        auto point2 = this->addPoint({0.2, 0.0});
-        this->addSpring(point1, point2, 10, 0);
-        point2->getSimProp()->setVelocity(0.01, 0.0);
-        auto point3 = this->addPoint({0.4, 0.0});
-        point3->setStatic(true);
-        this->addSpring(point2, point3, 10, 0);
+        auto point2 = this->addPoint({0.0, 0.0});
+        this->addSpring(point1, point2, 100, 0);
+//      point2->getSimProp()->setVelocity(0.01, 0.0);
+        point2->move({0.1999, 0.0});
     }
 
     if(start_scene == 2) {
@@ -89,17 +94,123 @@ void Scene::initStartScene() {
     }
 
     if(start_scene == 3) {
-//        m_globalSimulationSettings->setTimestep(0.01);
-//        m_globalSimulationSettings->setSimApproach(SimulationApproach::MassSpringSystem);
-//        m_globalSimulationSettings->setSimMode(SimulationMode::ExplicitEuler);
+        float stiffness = 100;
+        float damping = 10;
+
+        count_i = 10;
+        count_j = 10;
+//        float length = 0.06f;
+        float length = 0.08f;
+        float offset = (count_i / 2.0f - 1) * length;
+        glm::vec2 global_offset = glm::vec2(0.0, 0.0);
+
+        for(int i = 0; i < count_i; i++) {
+            std::vector<std::shared_ptr<Point>> column;
+            for(int j = 0; j < count_j; j++) {
+                auto point = this->addPoint(glm::vec2(i * length - offset, j * length - offset));
+                column.push_back(point);
+            }
+            grid.push_back(column);
+            column.clear();
+        }
+        if(fist_row_static) {
+            for(const auto& point : grid[0]) {
+                point->setStatic(true);
+            }
+        }
+        for(int i = 1; i < count_i; i++) {
+            for(int j = 0; j < count_j; j++) {
+                addSpring(grid[i][j], grid[i-1][j], stiffness, damping);
+
+                if(j < count_j - 1) {
+                    addSpring(grid[i][j], grid[i-1][j+1], stiffness, damping);
+                }
+                if(j > 0) {
+                    addSpring(grid[i][j], grid[i-1][j-1], stiffness, damping);
+                }
+            }
+        }
+        for(int j = 1; j < count_j; j++) {
+            for (int i = 0; i < count_i; i++) {
+                addSpring(grid[i][j], grid[i][j - 1], stiffness, damping);
+            }
+        }
+
+        bool fix_left_side = false;
+        bool fix_right_side = false;
+        bool fix_corners = true;
+        bool fix_right_top_corner = false;
+
+        if(fix_left_side) {
+            for(const auto& point : grid[0]) {
+                point->setStatic(true);
+            }
+        }
+
+        if(fix_right_side) {
+            for (const auto &point: grid[count_i - 1]) {
+                point->setStatic(true);
+            }
+        }
+        if(fix_right_top_corner) {
+            grid[count_i-1][count_j-1]->setStatic(true);
+        }
+        if(fix_corners) {
+            grid[0][0]->setStatic(true);
+            grid[0][count_j-1]->setStatic(true);
+            grid[count_i-1][0]->setStatic(true);
+            grid[count_i-1][count_j-1]->setStatic(true);
+        }
+
+        for(const auto& g : grid) {
+            for(const auto& p : g) {
+                auto pos = p->getSimProp()->getPosition();
+                p->move(pos + global_offset);
+            }
+        }
+
+        initShapeMatching();
+
+
+//        for(const auto& point : grid[count_i-1]) {
+//            auto pos = point->getSimProp()->getPosition();
+//            point->move(pos + glm::vec2(0, -0.3));
+//        }
+//        grid[count_i-1][0]->move(0.5, -0.5);
+    }
+
+    if(start_scene == 4) {
+        int number = 8;
+        float radius = 0.2f;
+        float stiffness = 100;
+        float damping = 0;
+        std::vector<std::shared_ptr<Point>> circle;
+
+        for(float i = 0; i < 2.0f * M_PI; i+= (2.0f * M_PI) / (float) number) {
+            auto point = addPoint(glm::vec2(sin(i) * radius, cos(i) * radius));
+            circle.push_back(point);
+        }
+        for(size_t i = 0; i < circle.size() - 1; i++) {
+            for(size_t j = i+1; j < circle.size(); j++) {
+                if(circle[i] != circle[j]) {
+                    addSpring(circle[i], circle[j], stiffness, damping);
+                }
+            }
+        }
+        for(const auto& point : circle) {
+            point->move(point->getSimProp()->getPosition() * 0.8f);
+        }
+
+    }
+
+    if(start_scene == 5) {
         float stiffness = 100;
         float damping = 0.3;
 
-        int count_i = 5;
-        int count_j = 5;
+        count_i = 5;
+        count_j = 5;
         float length = 0.2f;
         float offset = (count_i / 2.0f - 1) * length;
-        std::vector<std::vector<std::shared_ptr<Point>>> grid;
 
         for(int i = 0; i < count_i; i++) {
             std::vector<std::shared_ptr<Point>> column;
@@ -112,6 +223,9 @@ void Scene::initStartScene() {
         }
 
         for(const auto& point : grid[0]) {
+            point->setStatic(true);
+        }
+        for(const auto& point : grid[count_i-1]) {
             point->setStatic(true);
         }
         for(int i = 1; i < count_i; i++) {
@@ -131,12 +245,42 @@ void Scene::initStartScene() {
                 addSpring(grid[i][j], grid[i][j - 1], stiffness, damping);
             }
         }
-        grid[count_i-1][0]->move(0.6, -0.4);
+        //resetShapeMatchingInit();
+        initShapeMatching();
+        for(const auto& point : grid[count_i-1]) {
+            auto oldPos = point->getSimProp()->getPosition();
+            point->move(oldPos - glm::vec2(0.4, 0));
+        }
+//        grid[count_i-1][0]->move(0.6, -0.4);
     }
 }
 
 void Scene::simulate() {
-    auto start = steady_clock::now();
+//    if(!m_shapeMatchingInitialized) {
+//        initShapeMatching();
+//        m_shapeMatchingInitialized = true;
+//    }
+
+//    for(const auto& point : grid[count_i-1]) {
+//        auto pos = point->getSimProp()->getPosition();
+//        if(pos.x < 0.7) {
+//            point->move(pos + glm::vec2(0.005, 0));
+//        }
+//    }
+
+    if(m_activeObjectId != -1 && false) {
+        auto active = getActiveObject();
+        auto pos = active->getSimProp()->getPosition();
+        if(pos.x > 0.7) {
+            value = -0.005;
+        }
+        if(pos.x < 0.3) {
+            value = 0.005;
+        }
+        active->move(active->getSimProp()->getPosition() + glm::vec2(value, 0));
+    }
+
+    auto start = high_resolution_clock::now();
     double frame_rate = 1.0/60.0;
     int iteration = ceil(frame_rate / m_globalSimulationSettings->getTimestep());
     for(int i = 0; i < iteration; i++) {
@@ -158,9 +302,13 @@ void Scene::simulate() {
                     break;
             }
         }
+        if(m_globalSimulationSettings->getSimApproach() == SimulationApproach::ShapeMatching) {
+            shapeMatching();
+        }
     }
-    auto stop = steady_clock::now();
+    auto stop = high_resolution_clock::now();
     m_simTime = duration_cast<microseconds>(stop - start).count();
+    printf("iter num: %d\t time: %lld\n", iteration, m_simTime);
 }
 
 void Scene::eulerIntegration() {
@@ -355,14 +503,20 @@ void Scene::positionBasedDynamicsStretching() {
         glm::vec2 x = point->getSimProp()->getPosition();
         glm::vec2 v = point->getSimProp()->getVelocity();
         point->getSimProp()->setPredictedPosition(x + timestep * v);
-
-        point->getSimProp()->setDeltaPredictedPos(glm::vec2(0, 0));
     }
     // TODO generateCollisionConstraints(x -> p)
 
+    for(const auto& point: m_points) {
+        auto predPos = point->getSimProp()->getPredictedPosition();
+        if(predPos.y < -0.7) {
+            auto newPredPos = glm::vec2(predPos.x, -0.7);
+            point->getSimProp()->setPredictedPosition(newPredPos);
+        }
+    }
+
     // project constraints
     int iterNum = m_globalSimulationSettings->getPBDIterNum();
-    float systemStiffness = 1; //m_globalSimulationSettings->getPBDSystemStiffness();
+    float stiffness = m_globalSimulationSettings->getPBDSystemStiffness();
     for(int i = 0; i < iterNum; i++) {
         for(const auto& spring : m_springs) {
             auto point_i = spring->getI();
@@ -374,20 +528,120 @@ void Scene::positionBasedDynamicsStretching() {
             auto d = spring->getDefaultLength();
             auto posDiff = glm::length(predPos_i - predPos_j);
 
-            glm::vec2 plusDeltaPredPos_i = -(w_i / (w_i + w_j)) * (posDiff - d) * ((predPos_i - predPos_j) / posDiff);
-            point_i->getSimProp()->setPredictedPosition(predPos_i + plusDeltaPredPos_i);
+            if((w_i > 0 || w_j > 0) && posDiff > 0) {
+                glm::vec2 plusDeltaPredPos_i = -(w_i / (w_i + w_j)) * (posDiff - d) * ((predPos_i - predPos_j) / posDiff);
+                point_i->getSimProp()->setPredictedPosition(predPos_i + plusDeltaPredPos_i * stiffness );
 
-            glm::vec2 plusDeltaPredPos_j = (w_j / (w_i + w_j)) * (posDiff - d) * ((predPos_i - predPos_j) / posDiff);
-            point_j->getSimProp()->setPredictedPosition(predPos_j + plusDeltaPredPos_j);
+                glm::vec2 plusDeltaPredPos_j = (w_j / (w_i + w_j)) * (posDiff - d) * ((predPos_i - predPos_j) / posDiff);
+                point_j->getSimProp()->setPredictedPosition(predPos_j + plusDeltaPredPos_j * stiffness);
+            }
         }
     }
 
-    //fix predected positions
+    //calculate new position and velocity
+    for(const auto& point : m_points) {
+        point->simulate(m_globalSimulationSettings.get());
+    }
+}
+
+void Scene::initShapeMatching() {
+    // original - center of mass
+    m_original_cm = glm::vec2(0, 0);
+    float w_sum = 0.0;
+
+    for(const auto& point : m_points) {
+        float w_i = 1.0 / (point->getSimProp()->getInvMass() + 0.0000001);
+        w_sum += w_i;
+        m_original_cm += w_i * point->getSimProp()->getPosition();
+        point->getSimProp()->setOriginalPosition(point->getSimProp()->getPosition());
+    }
+    if (w_sum > 0.0) {
+        m_original_cm = m_original_cm / w_sum;
+    }
+
+    // original - A matrix
+    Eigen::Array22f Aqq = Eigen::Array22f::Zero();
+    for(const auto& point: m_points) {
+        glm::vec2 qi = point->getSimProp()->getPosition() - m_original_cm;
+        float w_i = 1.0 / (point->getSimProp()->getInvMass() + 0.0000001);
+        Aqq(0, 0) += w_i * qi.x * qi.x;
+        Aqq(0, 1) += w_i * qi.x * qi.y;
+        Aqq(1, 0) += w_i * qi.y * qi.x;
+        Aqq(1, 1) += w_i * qi.y * qi.y;
+    }
+    A_firstrow = glm::vec2(Aqq(0, 0), Aqq(0, 1));
+    A_secondrow = glm::vec2(Aqq(1, 0), Aqq(1, 1));
+}
+
+void Scene::shapeMatching() {
+    //initShapeMatching();
+    // calculate predicted positions
+    float timestep = m_globalSimulationSettings->getTimestep();
+    // calculate other forces for each points
+
 //    for(const auto& point : m_points) {
-//        glm::vec2 predPos = point->getSimProp()->getPredictedPosition();
-//        glm::vec2 deltaPredPos = point->getSimProp()->getDeltaPredictedPos();
-//        point->getSimProp()->setPredictedPosition(predPos + deltaPredPos);
+//        if(m_globalSimulationSettings->isGravityEnabled() && !point->isStatic()) {
+//            glm::vec2 v = point->getSimProp()->getVelocity() + timestep * point->getSimProp()->getInvMass() * m_globalSimulationSettings->getGravity();
+//            point->getSimProp()->setVelocity(v); // add gravity
+//        }
 //    }
+//    for(const auto& point : m_points) {
+//        glm::vec2 x = point->getSimProp()->getPosition();
+//        glm::vec2 v = point->getSimProp()->getVelocity();
+//        point->getSimProp()->setPredictedPosition(x + timestep * v);
+//    }
+
+    // new - center of mass
+    glm::vec2 new_cm = glm::vec2(0, 0);
+    float w_sum = 0.0;
+
+    for(const auto& point : m_points) {
+        float w_i = 1.0 / (point->getSimProp()->getInvMass() + 0.0000001);
+        w_sum += w_i;
+        new_cm += w_i * point->getSimProp()->getPredictedPosition();
+    }
+    if (w_sum > 0.0) {
+        new_cm = new_cm / w_sum;
+    }
+
+    // new - A matrix
+    Eigen::Array22f Apq = Eigen::Array22f::Zero();
+    for(const auto& point: m_points) {
+        glm::vec2 qi = point->getSimProp()->getOriginalPosition() - m_original_cm;
+        glm::vec2 pi = point->getSimProp()->getPredictedPosition() - new_cm;
+        float w_i = 1.0 / (point->getSimProp()->getInvMass() + 0.0000001);
+        Apq(0, 0) += w_i * pi.x * qi.x;
+        Apq(0, 1) += w_i * pi.x * qi.y;
+        Apq(1, 0) += w_i * pi.y * qi.x;
+        Apq(1, 1) += w_i * pi.y * qi.y;
+    }
+
+    // correction
+    Eigen::Array22f Aqq;
+    Aqq << A_firstrow.x, A_firstrow.y, A_secondrow.x, A_secondrow.y;
+    Eigen::Matrix2f A = Apq.matrix() * Aqq.matrix().inverse();
+    Eigen::JacobiSVD<Eigen::Matrix2f> svd(A, Eigen::ComputeFullU | Eigen::ComputeFullV);
+
+    const Eigen::Matrix2f &U = svd.matrixU();
+    const Eigen::Matrix2f &V = svd.matrixV();
+
+    Eigen::Matrix2f R = U * V.transpose();
+
+    float beta = m_globalSimulationSettings->getBeta();
+    for(const auto& point : m_points) {
+        glm::vec2 q_i = point->getSimProp()->getOriginalPosition() - m_original_cm;
+        Eigen::Vector2f qi = Eigen::Vector2f(q_i.x, q_i.y);
+//        Eigen::Vector2f final_pos = (R * qi) + Eigen::Vector2f(new_cm.x, new_cm.y);
+        Eigen::Vector2f final_pos = ((beta * A + (1-beta) * R) * qi) + Eigen::Vector2f(new_cm.x, new_cm.y);
+
+        glm::vec2 newpos = glm::vec2(final_pos.x(), final_pos.y());
+        point->getSimProp()->setPredictedPosition( newpos);
+//        printf("%f %f \t%f %f\n",
+//               point->getSimProp()->getPosition().x,
+//               point->getSimProp()->getPosition().y,
+//               point->getSimProp()->getPredictedPosition().x,
+//               point->getSimProp()->getPredictedPosition().y);
+    }
 
     //calculate new position and velocity
     for(const auto& point : m_points) {
@@ -661,11 +915,15 @@ void Scene::modifyAllSpring(float stretching, float damping, float defaultLength
     }
 }
 
-float Scene::getSimulationTime() const {
+long long Scene::getSimulationTime() const {
     return m_simTime;
 }
 
 glm::vec2 Scene::orthoProjection(glm::vec2 a, glm::vec2 b) {
     glm::vec2 b_norm = glm::normalize(b);
     return (glm::dot(a, b_norm) / glm::dot(b_norm, b_norm)) * b_norm;
+}
+
+void Scene::resetShapeMatchingInit() {
+    m_shapeMatchingInitialized = false;
 }

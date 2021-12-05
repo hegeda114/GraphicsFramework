@@ -21,6 +21,8 @@ private:
     int m_pbdIterNum = 10;
     float m_pbdSystemStiffness = 0.01f;
 
+    float m_beta = 0.0f;
+
     double m_timestep;
     glm::vec2 m_gravity = {0, -9.8};
 
@@ -37,6 +39,9 @@ public:
 
     PBDConstraint getPBDConstraint() const;
     void setPBDConstaint(PBDConstraint constraint);
+
+    float getBeta() const;
+    void setBeta(float beta);
 
     double getTimestep() const;
     void setTimestep(double timestep);

@@ -111,7 +111,10 @@ bool IO::loadTextureFromFile(const char* filename, GLuint* out_texture, int* out
     return true;
 }
 
-void IO::save_record_info(const std::string &filePath, const GuiState *guiState, const Scene *scene, const std::vector<int> &simTimeList) {
+void IO::save_record_info(const std::string &filePath, const GuiState *guiState, const Scene *scene,
+                          const std::vector<long long> &simTimeList,
+                          const std::vector<glm::vec2> &simActivePosList,
+                          const std::vector<glm::vec2> &simActiveVelList) {
     std::ofstream infoFile(filePath + "/info.txt");
 
     if (!infoFile.is_open()) {
@@ -124,6 +127,8 @@ void IO::save_record_info(const std::string &filePath, const GuiState *guiState,
         case MassSpringSystem: simulationApproach = "Mass Spring System";
             break;
         case PositionBasedDynamics: simulationApproach = "Position Based Dynamics";
+            break;
+        case ShapeMatching: simulationApproach = "Shape Matching";
             break;
     }
 
@@ -157,9 +162,14 @@ void IO::save_record_info(const std::string &filePath, const GuiState *guiState,
 
     infoFile << "Average Simulation Time per Frame: " << std::endl;
 
-    for(const auto& item : simTimeList) {
-        infoFile << item << " ";
+    infoFile << "\n";
+    infoFile << "\n";
+    infoFile << "Frame\tFPS\tPosX\tPosY\tVelX\tVelY\n";
+    for(size_t i = 0; i < simActivePosList.size(); i++) {
+        infoFile << i << "\t" << simTimeList[i] << "\t" << simActivePosList[i].x << "\t" << simActivePosList[i].y << "\t"
+        << simActiveVelList[i].x << "\t" << simActiveVelList[i].y << "\n";
     }
+
     infoFile << std::endl;
 
     // Close the file

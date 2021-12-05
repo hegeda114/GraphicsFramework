@@ -93,7 +93,7 @@ void SelectedObjectSettingsWindow::createSpringSettings(Spring* activeSpring) co
     float currentLength = activeSpring->getCurrentLength();
 
     if(!m_editMode) {
-        floatOutput("Stretching: ", stretching);
+        floatOutput("Stiffness: ", stretching);
         floatOutput("Damping Coefficient: ", damping);
         floatOutput("Default Length: ", defaultLength);
         floatOutput("Current Length: ", currentLength);

@@ -10,7 +10,7 @@
 void GlobalSettingsWindow::create() {
     if(ImGui::Begin("Global Settings")) {
         auto timestep = (float) m_scene->getGlobalSimulationSettings()->getTimestep();
-        ImGui::Text("Stepsize: ");
+        ImGui::Text("Timestep: ");
         ImGui::SameLine();
         ImGui::PushItemWidth(130);
         ImGui::InputFloat("##timestep", &timestep, 0.0001f, 0.001f, "%.06f", ImGuiInputTextFlags_AutoSelectAll);
@@ -35,17 +35,31 @@ void GlobalSettingsWindow::create() {
         m_scene->getGlobalSimulationSettings()->setGravity({gravity[0], gravity[1]});
         ImGui::Spacing();
 
-        const char* sim_approach[] = {"Mass Spring System", "Position Based Dynamics"};
+        bool hideHelpers = m_scene->getHideHelperVectors();
+        ImGui::Text("Hide all vector: ");
+        ImGui::SameLine();
+        ImGui::Checkbox("##hidehelperschb", &hideHelpers);
+        m_scene->setHideHelperVectors(hideHelpers);
+
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();
+
+        const char* sim_approach[] = {"Mass Spring System", "Position Based Dynamics", "Shape Matching"};
         int sim_approach_curr = m_scene->getGlobalSimulationSettings()->getSimApproach();
         ImGui::Text("Simulation Approach: ");
-        ImGui::SameLine();
+        ImGui::Spacing();
         ImGui::PushItemWidth(160);
         ImGui::Combo("##combo_approach", &sim_approach_curr, sim_approach, IM_ARRAYSIZE(sim_approach));
         ImGui::PopItemWidth();
         m_scene->getGlobalSimulationSettings()->setSimApproach(static_cast<SimulationApproach>(sim_approach_curr));
+
+        ImGui::Spacing();
+        ImGui::Separator();
         ImGui::Spacing();
 
-
+        ImGui::Text("Mass-Spring System Settings");
+        ImGui::Spacing();
         const char* items[] = {"Explicit Euler", "Semi-Implicit Euler", "Runge Kutta Second Order", "Runge Kutta Fourth Order" };
         int item_current = m_scene->getGlobalSimulationSettings()->getSimMode();
         ImGui::Text("Integrator: ");
@@ -56,19 +70,12 @@ void GlobalSettingsWindow::create() {
         m_scene->getGlobalSimulationSettings()->setSimMode(static_cast<SimulationMode>(item_current));
         ImGui::Spacing();
 
-
-        bool hideHelpers = m_scene->getHideHelperVectors();
-        ImGui::Text("Hide all helper: ");
-        ImGui::SameLine();
-        ImGui::Checkbox("##hidehelperschb", &hideHelpers);
-        m_scene->setHideHelperVectors(hideHelpers);
-
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Spacing();
 
         ImGui::Text("Position Based Dynamics Settings");
-
+        ImGui::Spacing();
         auto iter_num = m_scene->getGlobalSimulationSettings()->getPBDIterNum();
         ImGui::Text("Iteration Number: ");
         ImGui::SameLine();
@@ -78,12 +85,7 @@ void GlobalSettingsWindow::create() {
         if(iter_num < 1) {
             iter_num = 1;
         }
-        if(iter_num > (int)(1.0f / m_scene->getGlobalSimulationSettings()->getPBDSystemStiffness())) {
-            iter_num = (int)(1.0f / m_scene->getGlobalSimulationSettings()->getPBDSystemStiffness());
-        }
         m_scene->getGlobalSimulationSettings()->setPBDIterNum(iter_num);
-
-        ImGui::Spacing();
 
         auto system_stiffness = m_scene->getGlobalSimulationSettings()->getPBDSystemStiffness();
         ImGui::Text("System Stiffness: ");
@@ -99,6 +101,25 @@ void GlobalSettingsWindow::create() {
         }
         m_scene->getGlobalSimulationSettings()->setPBDSystemStiffness(system_stiffness);
 
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();
+
+        ImGui::Text("Shape Matching Settings");
+        ImGui::Spacing();
+        auto beta = m_scene->getGlobalSimulationSettings()->getBeta();
+        ImGui::Text("Beta: ");
+        ImGui::SameLine();
+        ImGui::PushItemWidth(130);
+        ImGui::InputFloat("##beta", &beta, 0.01f, 0.1f, "%.3f", ImGuiInputTextFlags_AutoSelectAll);
+        ImGui::PopItemWidth();
+        if(beta < 0) {
+            beta = 0;
+        }
+        if(beta > 1) {
+            beta = 1;
+        }
+        m_scene->getGlobalSimulationSettings()->setBeta(beta);
 
 //        if(m_guiState->renderStop) {
 //            if(ImGui::Button("Modify All Spring")) {

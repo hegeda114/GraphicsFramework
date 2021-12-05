@@ -164,3 +164,11 @@ float GlobalSimulationSettings::getPBDSystemStiffness() const {
 void GlobalSimulationSettings::setPBDSystemStiffness(float systemStiffness) {
     m_pbdSystemStiffness = systemStiffness;
 }
+
+float GlobalSimulationSettings::getBeta() const {
+    return m_beta;
+}
+
+void GlobalSimulationSettings::setBeta(float beta) {
+    m_beta = beta;
+}
